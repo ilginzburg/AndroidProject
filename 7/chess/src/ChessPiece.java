@@ -30,12 +30,7 @@ abstract class ChessPiece {
         }
         if((toLine >  line) && (toColumn < column)) { // up left
             for (int i = line + 1; i < toLine; ++i) {
-                //  System.out.println("line = " + line + ",column = " + column + ",toLine = " + toLine + ",toColumn = " + toColumn);
-
-
                 if (chessBoard.board[i][column - i + line] != null) {
-                    System.out.println("line = " + i + "col = " + (column - i + line));
-
                 return chessBoard.board[i][column - i + line];
             }
             }
