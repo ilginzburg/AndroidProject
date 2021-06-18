@@ -2,13 +2,14 @@ package com.skillfactory.android12.ilya;
 
 import java.util.Scanner;
 
-public class Seller extends Member {
+public class Trader implements Marketeer {
 
     final int potionPrice = 10;
     final int healthDeltaPlus = 200;
+    final String name;
 
-    public Seller() {
-        super("Мустафа Абрамович Чингачгук");
+    public Trader() {
+        this.name = "Старьёвщик Джо";
     }
 
     public void makeService(Warrior warrior, Scanner scanner) {
@@ -35,21 +36,12 @@ public class Seller extends Member {
                 ans.equals("да") || ans.equals("Н") || ans.equals("Y");
     }
 
-
     private boolean sellPotion(Warrior warrior) {
         if (warrior.setGold(-potionPrice)) {
             warrior.setHealth(healthDeltaPlus);
             return true;
         }
         return false;
-    }
-
-    private void sayGoodByeNo() {
-        System.out.println("Ну нет, так нет. Надумаешь - приходи.");
-    }
-
-    private void sayGoodByeYes() {
-        System.out.println("Поздравляю с удачной покупкой.");
     }
 
     private void sayGoodBye(Warrior warrior) {

@@ -32,12 +32,20 @@ abstract class Member {
 
     public void attack(Member member) {
         if (isHit(member)) {
-            member.setHealth(-force);
-            System.out.println(name + " больно ударил " + member.getName() + "а");
+            hit(member);
         } else
-            System.out.println(name + " промахнулся! ");
+            miss(member);
         turn = !turn;
         member.setTurn(!member.getTurn());
+    }
+
+    private void hit(Member member){
+        member.setHealth(-force);
+        System.out.println(name + " больно ударил " + member.getName() + "а");
+    }
+
+    public void miss(Member member){
+        System.out.println(name + " промахнулся! ");
     }
 
     private boolean isHit(Member member) {

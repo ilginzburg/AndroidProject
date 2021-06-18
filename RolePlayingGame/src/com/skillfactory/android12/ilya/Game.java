@@ -59,6 +59,8 @@ public class Game {
                 System.out.println(warrior.getName()+", нажми 'я' для удара");
                 if(scanner.next().equals("я"))
                     warrior.attack(monster);
+                else
+                    warrior.miss(monster);
             }
         }
     }

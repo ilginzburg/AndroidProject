@@ -43,7 +43,7 @@ public class UserInterface {
         switch(scanner.next()){
             case "a": case "A": case"ф" :case"Ф":
             case "а": case "А": case"f" :case"F":
-                new Seller().makeService(game.getWarrior(),scanner);
+                new Trader().makeService(game.getWarrior(),scanner);
                 return false;
             case "d":case "D": case"в" :case"В":
                 game.getWarrior().printState();
