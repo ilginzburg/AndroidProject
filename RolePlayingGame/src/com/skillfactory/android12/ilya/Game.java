@@ -56,8 +56,8 @@ public class Game {
             if (monster.getTurn())
                 monster.attack(warrior);
             else {
-                System.out.println(warrior.getName()+", нажми 'я' для удара");
-                if(scanner.next().equals("я"))
+                System.out.println(warrior.getName() + ", нажми 'я' для удара");
+                if (scanner.next().equals("я"))
                     warrior.attack(monster);
                 else
                     warrior.miss(monster);

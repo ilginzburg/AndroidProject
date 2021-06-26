@@ -2,7 +2,7 @@ package com.skillfactory.android12.ilya;
 
 import java.util.Random;
 
-abstract class Member {
+abstract public class Member {
 
     protected String name;
     protected int health;

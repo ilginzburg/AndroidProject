@@ -22,7 +22,7 @@ public class UserInterface {
     }
 
     public void userChoice(){
-        boolean isPassed = false;
+        boolean isPassed;
 
             System.out.println("Слушай, " + game.getWarrior().getName() + "!");
             System.out.println("Вот идёшь ты, идёшь....");
@@ -41,19 +41,16 @@ public class UserInterface {
 
     private boolean decodeChoice(){
         switch(scanner.next()){
-            case "a": case "A": case"ф" :case"Ф":
-            case "а": case "А": case"f" :case"F":
+            case "a","A","ф","Ф","а","А","f","F":
                 new Trader().makeService(game.getWarrior(),scanner);
                 return false;
-            case "d":case "D": case"в" :case"В":
+            case "d","D","в","В":
                 game.getWarrior().printState();
                 return false;
-            case "x":case "X": case"ч" :case"Ч":
+            case "x","X","ч","Ч":
                 game.endGame();
                 return true;
-            case "w":case "W": case"ц" :case"Ц":
-
-
+            case "w", "W","ц","Ц":
                 Thread t1 = new Thread() {
                     public void run() {
                         game.fightFlow();
@@ -65,14 +62,6 @@ public class UserInterface {
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-
-//                new Thread(new Runnable() {
-//                    @Override
-//                    public void run() {
-//                        game.fightFlow();
-//                    }
-//                }).start();
-
                 return false;
             default:
                 System.out.println("Не туда жмёшь. Попробуй ещё разок.");
