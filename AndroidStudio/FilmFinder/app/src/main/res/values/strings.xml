@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">FilmFinder</string>
+    <string name="disclaimer">Изображения предоставлены https://www.movieposters.com</string>
+    <string name="btn_menu">Меню</string>
+    <string name="btn_favorite">Избранное</string>
+    <string name="btn_watch_later">Посмотреть позже</string>
+    <string name="btn_properties">Подробности</string>
+    <string name="btn_settings">Настройки</string>
 </resources>
