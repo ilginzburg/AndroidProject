@@ -81,6 +81,7 @@
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
             app:title="@string/page_title"
+            style="@style/SettingsIcon"
             app:menu="@menu/toolbar_menu"
             app:navigationIcon="@drawable/ic_round_menu" />
 
