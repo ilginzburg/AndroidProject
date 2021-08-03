@@ -1,1 +1,2 @@
-# AndroidProject Android application for movies searching
+# AndroidProject 
+Android application for movies searching
