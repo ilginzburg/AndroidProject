@@ -34,9 +34,7 @@
         <item name="iconTint">@color/icons_dark</item>
     </style>
 
-    <style name="SettingsIcon">
-        <item name="iconTint">@color/icons_dark</item>
-    </style>
+
 
 
 </resources>
