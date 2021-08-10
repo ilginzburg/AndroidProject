@@ -1,0 +1,146 @@
+[
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-xhdpi_ic_launcher_round.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\layout_activity_main.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\layout\\activity_main.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-xxhdpi_ic_launcher_round.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_poster_21.webp.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\poster_21.webp"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_poster_4.webp.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\poster_4.webp"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-mdpi_ic_launcher.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable-v24_ic_launcher_foreground.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable-v24\\ic_launcher_foreground.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_poster_22.webp.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\poster_22.webp"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_menu_white.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\ic_menu_white.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\menu_toolbar_menu.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\menu\\toolbar_menu.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_poster_3.webp.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\poster_3.webp"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-mdpi_ic_launcher_round.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-mdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-xxhdpi_ic_launcher.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-xxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-anydpi-v26_ic_launcher.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-anydpi-v26\\ic_launcher.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_watch_later_white.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\ic_watch_later_white.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\anim_card_animation.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\anim\\card_animation.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\animator_press_button_animation.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\animator\\press_button_animation.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-anydpi-v26_ic_launcher_round.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-anydpi-v26\\ic_launcher_round.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-xhdpi_ic_launcher.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-xhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_favorite_white.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\ic_favorite_white.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-hdpi_ic_launcher_round.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_launcher_background.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\ic_launcher_background.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_poster_23.webp.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\poster_23.webp"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_poster_2.webp.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\poster_2.webp"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-xxxhdpi_ic_launcher_round.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher_round.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_round_settings.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\ic_round_settings.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\anim_layout_anim.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\anim\\layout_anim.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_round_menu.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\ic_round_menu.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-hdpi_ic_launcher.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_poster_1.webp.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\poster_1.webp"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\mipmap-xxxhdpi_ic_launcher.png.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\mipmap-xxxhdpi\\ic_launcher.png"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_settings_white.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\ic_settings_white.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_poster_24.webp.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\poster_24.webp"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\menu_navigation_menu.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\menu\\navigation_menu.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_corner_background.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\corner_background.xml"
+    },
+    {
+        "merged": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\build\\intermediates\\merged_res\\debug\\drawable_ic_selections_white.xml.flat",
+        "source": "D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\src\\main\\res\\drawable\\ic_selections_white.xml"
+    }
+]

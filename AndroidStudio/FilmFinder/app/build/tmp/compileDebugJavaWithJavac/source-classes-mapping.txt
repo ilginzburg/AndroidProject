@@ -1,0 +1,2 @@
+com/ginzburgworks/filmfinder/BuildConfig.java
+ com.ginzburgworks.filmfinder.BuildConfig
