@@ -1,18 +1,42 @@
 package com.ginzburgworks.filmfinder
 
-import androidx.appcompat.app.AppCompatActivity
+import android.animation.AnimatorInflater.loadStateListAnimator
+import android.animation.AnimatorSet
+import android.animation.ObjectAnimator
+import android.animation.StateListAnimator
 import android.os.Bundle
+import android.view.MotionEvent
+import android.view.View
 import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.size
 import kotlinx.android.synthetic.main.activity_main.*
+
 
 class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         initNavigation()
+        initAnimation()
 
 
     }
+
+    private fun initAnimation() {
+        val stateListAnimator = loadStateListAnimator(
+            this,
+            R.animator.press_button_animation
+        )
+        for (n in 0 until central_container.size) {
+            val img = central_container.getChildAt(n)
+            img.setOnClickListener {
+                it.stateListAnimator = stateListAnimator
+
+            }
+        }
+    }
+
 
     private fun initNavigation() {
         topAppBar.setOnMenuItemClickListener {
