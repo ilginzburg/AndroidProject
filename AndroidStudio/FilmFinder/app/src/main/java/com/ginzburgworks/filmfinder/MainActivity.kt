@@ -25,15 +25,17 @@ class MainActivity : AppCompatActivity() {
 
 
     private fun initAnimation() {
-        val stateListAnimator = loadStateListAnimator(
-            this,
-            R.animator.press_button_animation
-        )
+        val animators = mutableListOf<StateListAnimator>()
+        for (n in 0 until central_container.size) {
+            animators.add( loadStateListAnimator(
+                this,
+                R.animator.press_button_animation
+            ))
+        }
         for (n in 0 until central_container.size) {
             val img = central_container.getChildAt(n)
             img.setOnClickListener {
-                it.stateListAnimator = stateListAnimator
-             //   Log.d("OOOOOO------OOOOOOO",it.stateListAnimator.)
+                it.stateListAnimator = animators[n]
             }
         }
     }
