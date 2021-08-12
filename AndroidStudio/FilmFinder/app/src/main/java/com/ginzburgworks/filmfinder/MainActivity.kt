@@ -5,6 +5,7 @@ import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.animation.StateListAnimator
 import android.os.Bundle
+import android.util.Log
 import android.view.MotionEvent
 import android.view.View
 import android.widget.Toast
@@ -19,9 +20,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.activity_main)
         initNavigation()
         initAnimation()
-
-
     }
+
+
 
     private fun initAnimation() {
         val stateListAnimator = loadStateListAnimator(
@@ -32,7 +33,7 @@ class MainActivity : AppCompatActivity() {
             val img = central_container.getChildAt(n)
             img.setOnClickListener {
                 it.stateListAnimator = stateListAnimator
-
+             //   Log.d("OOOOOO------OOOOOOO",it.stateListAnimator.)
             }
         }
     }
