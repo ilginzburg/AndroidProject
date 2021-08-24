@@ -10,4 +10,7 @@
     <color name="app_bar_dark">#2A2D36</color>
     <color name="bottom_bar_dark">#352545</color>
     <color name="icons_dark">#3BF212</color>
+    <color name="colorPrimary">#6200EE</color>
+    <color name="colorPrimaryDark">#3700B3</color>
+    <color name="colorAccent">#03DAC5</color>
 </resources>
