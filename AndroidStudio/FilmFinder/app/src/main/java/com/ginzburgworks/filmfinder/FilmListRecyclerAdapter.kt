@@ -34,13 +34,14 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
         items = list
         diffResult.dispatchUpdatesTo(this)
 
-
+/*
         //Сначала очищаем(если не реализовать DiffUtils)
-      //  items.clear()
+        items.clear()
         //Добавляем
-     //   items.addAll(list)
+        items.addAll(list)
         //Уведомляем RV, что пришел новый список, и ему нужно заново все "привязывать"
-     //   notifyDataSetChanged()
+        notifyDataSetChanged()
+        */
     }
 
     interface OnItemClickListener {

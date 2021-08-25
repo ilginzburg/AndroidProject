@@ -10,9 +10,9 @@ class DetailsActivity : AppCompatActivity() {
         setContentView(R.layout.activity_details)
 
         //Получаем наш фильм из переданного бандла
-        val film = intent.extras?.get("film") as Film
-        details_toolbar.title = film.title
-        details_poster.setImageResource(film.poster)
-        details_description.text = film.description
+        val film: Film? = intent.extras?.get("film") as Film
+        details_toolbar.title = film?.title?:"none"
+        details_poster.setImageResource(film?.poster?:(R.drawable.corner_background))
+        details_description.text = film?.description?:"none"
     }
 }
