@@ -1,7 +1,10 @@
 package com.ginzburgworks.filmfinder
 
 import android.os.Bundle
+import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentManager
 
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +23,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
+
     fun launchDetailsFragment(film: Film) {
         //Создаем "посылку"
         val bundle = Bundle()
@@ -34,6 +38,32 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_placeholder, fragment)
+            .addToBackStack(null)
+            .commit()
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+
+        if (supportFragmentManager.backStackEntryCount == 0)
+            AlertDialog.Builder(this)
+                .setTitle("Вы хотите выйти?")
+                .setPositiveButton("Да") { _, _ ->
+                    finish()
+                }
+                .setNegativeButton("Нет") { _, _ ->
+                    loadHomeFragment()
+                }
+                .setNeutralButton("Не знаю") { _, _ ->
+                    Toast.makeText(this, "Решайся", Toast.LENGTH_SHORT).show()
+                }
+                .show()
+    }
+
+    private fun loadHomeFragment() {
+        supportFragmentManager
+            .beginTransaction()
+            .add(R.id.fragment_placeholder, HomeFragment())
             .addToBackStack(null)
             .commit()
     }
