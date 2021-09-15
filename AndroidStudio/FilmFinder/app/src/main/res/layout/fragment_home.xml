@@ -9,17 +9,17 @@
     <androidx.cardview.widget.CardView
         android:id="@+id/top_bar"
         android:layout_width="match_parent"
-        android:layout_height="100dp"
-        android:layout_margin="10dp"
-        android:elevation="5dp"
-        app:cardCornerRadius="15dp"
+        android:layout_height="@dimen/top_bar_height"
+        android:layout_margin="@dimen/top_bar_margin"
+        android:elevation="@dimen/top_bar_elevation"
+        app:cardCornerRadius="@dimen/top_bar_cardCornerRadius"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="100dp"
+            android:layout_height="@dimen/frame_height"
             android:orientation="horizontal">
 
             <ImageView
@@ -61,8 +61,8 @@
         android:id="@+id/disclaimer"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:layout_marginEnd="16dp"
+        android:layout_marginTop="@dimen/disclaimer_margin"
+        android:layout_marginEnd="@dimen/disclaimer_margin"
         android:autoLink="web"
         android:linksClickable="true"
         android:text="@string/disclaimer"
@@ -73,7 +73,7 @@
         android:id="@+id/main_recycler"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:padding="8dp"
+        android:padding="@dimen/rv_padding"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"

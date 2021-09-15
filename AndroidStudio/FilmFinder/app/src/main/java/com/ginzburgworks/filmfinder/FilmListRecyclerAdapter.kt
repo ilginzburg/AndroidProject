@@ -27,21 +27,14 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
         }
     }
 
-    fun addItems(list: MutableList<Film>) {
-
-        val diff = FilmDiff(items , list )
-        val diffResult = DiffUtil.calculateDiff(diff)
-        items = list
-        diffResult.dispatchUpdatesTo(this)
-
-/*
-        //Сначала очищаем(если не реализовать DiffUtils)
+    //Метод для добавления объектов в наш список
+    fun addItems(list: List<Film>) {
+        //Сначала очишаем(если не реализовать DiffUtils)
         items.clear()
         //Добавляем
         items.addAll(list)
-        //Уведомляем RV, что пришел новый список, и ему нужно заново все "привязывать"
+        //Уведомляем RV, что пришел новый список и ему нужно заново все "привязывать"
         notifyDataSetChanged()
-        */
     }
 
     interface OnItemClickListener {

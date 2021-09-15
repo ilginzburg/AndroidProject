@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="top_bar_height">100dp</dimen>
+    <dimen name="top_bar_margin">10dp</dimen>
+    <dimen name="top_bar_elevation">5dp</dimen>
+    <dimen name="top_bar_cardCornerRadius">15dp</dimen>
+    <dimen name="frame_height">100dp</dimen>
+    <dimen name="disclaimer_margin">16dp</dimen>
+    <dimen name="rv_padding">8dp</dimen>
+    <dimen name="item_container_height">150dp</dimen>
+    <dimen name="item_container_elevation">1dp</dimen>
+    <dimen name="item_container_cardCornerRadius">10dp</dimen>
+    <dimen name="item_width">150dp</dimen>
+    <dimen name="item_title_padding">8dp</dimen>
+    <dimen name="item_desc_padding">8dp</dimen>
+    <dimen name="app_bar_height">200dp</dimen>
+    <dimen name="collapsing_bar_min_height">60dp</dimen>
+    <dimen name="action_button_margin">16dp</dimen>
+    <dimen name="scroll_view_margin">8dp</dimen>
+</resources>

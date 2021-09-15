@@ -5,9 +5,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="150dp"
-    android:elevation="1dp"
-    app:cardCornerRadius="10dp">
+    android:layout_height="@dimen/item_container_height"
+    android:elevation="@dimen/item_container_elevation"
+    app:cardCornerRadius="@dimen/item_container_cardCornerRadius">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -15,7 +15,7 @@
 
         <ImageView
             android:id="@+id/poster"
-            android:layout_width="150dp"
+            android:layout_width="@dimen/item_width"
             android:layout_height="match_parent"
             android:scaleType="centerCrop"
             app:layout_constraintLeft_toLeftOf="parent"
@@ -27,7 +27,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:textAlignment="center"
-            android:padding="8dp"
+            android:padding="@dimen/item_title_padding"
             android:textAppearance="@style/TextAppearance.AppCompat.Headline"
             app:layout_constraintLeft_toRightOf="@+id/poster"
             app:layout_constraintRight_toRightOf="parent"
@@ -38,7 +38,7 @@
             android:id="@+id/description"
             android:layout_width="0dp"
             android:layout_height="0dp"
-            android:padding="8dp"
+            android:padding="@dimen/item_desc_padding"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintLeft_toRightOf="@+id/poster"
             app:layout_constraintRight_toRightOf="parent"
