@@ -17,16 +17,6 @@
 
     </style>
 
-    <style name="FilmFinderFDayNight">
-        <item name="android:background">@color/black</item>
-    </style>
-
-    <style name="BottomBarFDayNight">
-        <item name="android:background">@color/bottom_bar_dark</item>
-        <item name="itemIconTint">@color/icons_dark</item>
-        <item name="itemTextColor">@color/icons_dark</item>
-    </style>
-
 
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextColor">@color/icons_dark</item>

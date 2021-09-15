@@ -20,16 +20,6 @@
 
     </style>
 
-    <style name="FilmFinderFDayNight">
-        <item name="android:background">@drawable/corner_background</item>
-    </style>
-
-
-    <style name="BottomBarFDayNight">
-        <item name="android:background">@color/purple_200</item>
-        <item name="itemIconTint">@android:color/white</item>
-        <item name="itemTextColor">@android:color/white</item>
-    </style>
 
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextColor">@color/white</item>
