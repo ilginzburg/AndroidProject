@@ -1,16 +1,27 @@
 package com.ginzburgworks.filmfinder
 
 import android.os.Bundle
+import android.view.Gravity
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.transition.Slide
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.android.synthetic.main.fragment_home.*
 
 
 class FavoritesFragment : Fragment() {
+
+
+    init {
+        enterTransition = Slide(Gravity.END).apply { duration = 800 }
+        reenterTransition = Slide(Gravity.START).apply { duration = 800; }
+        returnTransition = Slide(Gravity.END).apply { duration = 800;mode = Slide.MODE_OUT }
+        exitTransition = Slide(Gravity.START).apply { duration = 800;mode = Slide.MODE_OUT }
+    }
+
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
 
     override fun onCreateView(

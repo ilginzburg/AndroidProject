@@ -2,16 +2,26 @@ package com.ginzburgworks.filmfinder
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Gravity
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.transition.Slide
 import kotlinx.android.synthetic.main.fragment_details.*
 
 private const val KEY_FILM = "film"
 
 
 class DetailsFragment : Fragment() {
+
+    init {
+        enterTransition = Slide(Gravity.END).apply { duration = 800 }
+        reenterTransition = Slide(Gravity.START).apply { duration = 800; }
+        returnTransition = Slide(Gravity.END).apply { duration = 800;mode = Slide.MODE_OUT }
+        exitTransition = Slide(Gravity.START).apply { duration = 800;mode = Slide.MODE_OUT }
+    }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
