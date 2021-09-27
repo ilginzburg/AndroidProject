@@ -15,13 +15,6 @@ private const val KEY_FILM = "film"
 
 class DetailsFragment : Fragment() {
 
-    init {
-        enterTransition = Slide(Gravity.END).apply { duration = 800 }
-        reenterTransition = Slide(Gravity.START).apply { duration = 800; }
-        returnTransition = Slide(Gravity.END).apply { duration = 800;mode = Slide.MODE_OUT }
-        exitTransition = Slide(Gravity.START).apply { duration = 800;mode = Slide.MODE_OUT }
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?

@@ -10,17 +10,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.transition.Slide
 import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_selected.*
 
 
 class FavoritesFragment : Fragment() {
-
-
-    init {
-        enterTransition = Slide(Gravity.END).apply { duration = 800 }
-        reenterTransition = Slide(Gravity.START).apply { duration = 800; }
-        returnTransition = Slide(Gravity.END).apply { duration = 800;mode = Slide.MODE_OUT }
-        exitTransition = Slide(Gravity.START).apply { duration = 800;mode = Slide.MODE_OUT }
-    }
 
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
 
@@ -35,8 +28,6 @@ class FavoritesFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         //Получаем список при транзакции фрагмента
-
-
         favorites_recycler
             .apply {
                 filmsAdapter =
@@ -55,6 +46,8 @@ class FavoritesFragment : Fragment() {
             }
         //Кладем нашу БД в RV
         filmsAdapter.addItems(Favorites.favoritesList)
+        AnimationHelper.performFragmentCircularRevealAnimation(favorites_fragment_root, requireActivity(), 4)
 
     }
 }
+
