@@ -11,12 +11,10 @@ class FilmDiff (val oldList: MutableList <Film> , val newList: MutableList <Film
         return newList.size
     }
 
-    //Элементы одинаковые
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         return oldList[oldItemPosition].id == newList[newItemPosition].id
     }
 
-    //Содержимое одинаковое
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldProduct = oldList[oldItemPosition]
         val newProduct = newList[newItemPosition]

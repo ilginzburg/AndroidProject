@@ -21,13 +21,11 @@ class FavoritesFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_favorites, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        //Получаем список при транзакции фрагмента
         favorites_recycler
             .apply {
                 filmsAdapter =
@@ -36,18 +34,17 @@ class FavoritesFragment : Fragment() {
                             (requireActivity() as MainActivity).launchDetailsFragment(film)
                         }
                     })
-                //Присваиваем адаптер
                 adapter = filmsAdapter
-                //Присвои layoutmanager
                 layoutManager = LinearLayoutManager(requireContext())
-                //Применяем декоратор для отступов
                 val decorator = TopSpacingItemDecoration(8)
                 addItemDecoration(decorator)
             }
-        //Кладем нашу БД в RV
         filmsAdapter.addItems(Favorites.favoritesList)
-        AnimationHelper.performFragmentCircularRevealAnimation(favorites_fragment_root, requireActivity(), 4)
-
+        AnimationHelper.performFragmentCircularRevealAnimation(
+            favorites_fragment_root,
+            requireActivity(),
+            4
+        )
     }
 }
 

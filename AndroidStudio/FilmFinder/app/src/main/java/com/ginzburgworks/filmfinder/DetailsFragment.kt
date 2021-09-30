@@ -12,7 +12,6 @@ import kotlinx.android.synthetic.main.fragment_details.*
 
 private const val KEY_FILM = "film"
 
-
 class DetailsFragment : Fragment() {
 
     override fun onCreateView(
@@ -24,8 +23,6 @@ class DetailsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
-        //Получаем наш фильм из переданного бандла
         val film = arguments?.get(KEY_FILM) as Film
         details_toolbar.title = film?.title ?: "none"
         details_poster.setImageResource(film?.poster ?: (R.drawable.corner_background))
@@ -49,18 +46,13 @@ class DetailsFragment : Fragment() {
         }
 
         details_fab_share.setOnClickListener {
-            //Создаем интент
             val intent = Intent()
-            //Указываем action с которым он запускается
             intent.action = Intent.ACTION_SEND
-            //Кладем данные о нашем фильме
             intent.putExtra(
                 Intent.EXTRA_TEXT,
                 "Check out this film: ${film.title} \n\n ${film.description}"
             )
-            //Указываем MIME тип, чтобы система знала, какое приложения предложить
             intent.type = "text/plain"
-            //Запускаем наше активити
             startActivity(Intent.createChooser(intent, "Share To:"))
         }
     }

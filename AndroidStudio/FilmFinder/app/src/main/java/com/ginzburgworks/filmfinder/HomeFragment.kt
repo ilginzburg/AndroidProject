@@ -71,14 +71,9 @@ class HomeFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         AnimationHelper.performFragmentCircularRevealAnimation(home_fragment_root, requireActivity(), 1)
-
         initSearchView()
-
-        //находим наш RV
         initRecycler()
-        //Кладем нашу БД в RV
         filmsAdapter.addItems(filmsDataBase)
     }
 
@@ -87,27 +82,21 @@ class HomeFragment : Fragment() {
             search_view.isIconified = false
         }
 
-        //Подключаем слушателя изменений введенного текста в поиска
         search_view.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            //Этот метод отрабатывает при нажатии кнопки "поиск" на софт клавиатуре
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
 
-            //Этот метод отрабатывает на каждое изменения текста
             override fun onQueryTextChange(newText: String): Boolean {
-                //Если ввод пуст то вставляем в адаптер всю БД
                 if (newText.isEmpty()) {
                     filmsAdapter.addItems(filmsDataBase)
                     return true
                 }
-                //Фильтруем список на поискк подходящих сочетаний
+
                 val result = filmsDataBase.filter {
-                    //Чтобы все работало правильно, нужно и запроси и имя фильма приводить к нижнему регистру
                     it.title.toLowerCase(Locale.getDefault())
                         .contains(newText.toLowerCase(Locale.getDefault()))
                 }
-                //Добавляем в адаптер
                 filmsAdapter.addItems(result)
                 return true
             }
@@ -122,14 +111,10 @@ class HomeFragment : Fragment() {
                         (requireActivity() as MainActivity).launchDetailsFragment(film)
                     }
                 })
-            //Присваиваем адаптер
             adapter = filmsAdapter
-            //Присвои layoutmanager
             layoutManager = LinearLayoutManager(requireContext())
-            //Применяем декоратор для отступов
             val decorator = TopSpacingItemDecoration(8)
             addItemDecoration(decorator)
         }
     }
-
 }

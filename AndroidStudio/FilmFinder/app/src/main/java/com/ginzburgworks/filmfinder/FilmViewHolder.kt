@@ -12,14 +12,9 @@ class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     fun bind(film: Film) {
         title.text = film.title
-        //poster.setImageResource(film.poster)
-        //Указываем контейнер, в котором будет "жить" наша картинка
         Glide.with(itemView)
-            //Загружаем сам ресурс
             .load(film.poster)
-            //Центруем изображение
             .centerCrop()
-            //Указываем ImageView, куда будем загружать изображение
             .into(poster)
         description.text = film.description
     }

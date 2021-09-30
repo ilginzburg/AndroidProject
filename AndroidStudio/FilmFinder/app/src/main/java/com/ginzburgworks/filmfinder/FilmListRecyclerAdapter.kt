@@ -9,9 +9,7 @@ import kotlinx.android.synthetic.main.film_item.view.*
 class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items = mutableListOf<Film>()
-
     override fun getItemCount() = items.size
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         return FilmViewHolder(LayoutInflater.from(parent.context).inflate(R.layout.film_item, parent, false))
     }
@@ -27,13 +25,9 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
         }
     }
 
-    //Метод для добавления объектов в наш список
     fun addItems(list: List<Film>) {
-        //Сначала очишаем(если не реализовать DiffUtils)
         items.clear()
-        //Добавляем
         items.addAll(list)
-        //Уведомляем RV, что пришел новый список и ему нужно заново все "привязывать"
         notifyDataSetChanged()
     }
 
