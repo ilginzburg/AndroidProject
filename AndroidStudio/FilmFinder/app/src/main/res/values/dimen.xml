@@ -14,4 +14,20 @@
     <dimen name="search_view_margin">8dp</dimen>
     <dimen name="recycler_view_margin">8dp</dimen>
     <dimen name="recycler_view_padding">5dp</dimen>
+    <dimen name="main_recycler_width">0dp</dimen>
+    <dimen name="main_recycler_height">0dp</dimen>
+    <dimen name="main_recycler_margin">8dp</dimen>
+    <dimen name="film_item_height">150dp</dimen>
+    <dimen name="fragment_placeholder_height">0dp</dimen>
+    <dimen name="rating_view_side">50dp</dimen>
+    <dimen name="rating_translationZ">11dp</dimen>
+    <dimen name="card_view_margin">10dp</dimen>
+    <dimen name="card_view_elevation">1dp</dimen>
+    <dimen name="card_view_corner_radius">10dp</dimen>
+    <dimen name="poster_width">150dp</dimen>
+    <dimen name="title_width">0dp</dimen>
+    <dimen name="title_padding">8dp</dimen>
+    <dimen name="description_width">0dp</dimen>
+    <dimen name="description_height">0dp</dimen>
+    <dimen name="description_padding">8dp</dimen>
 </resources>
