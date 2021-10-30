@@ -6,17 +6,20 @@ import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
 
-const val radiusFactor = 0.8f
-const val startAngle = -90f
-const val defSize = 300
-const val toDegreesFactor = 3.6f
+private const val RADIUS_FACTOR = 0.8f
+private const val START_ANGLE = -90f
+private const val DEFAULT_SIZE = 300
+private const val TO_DEGREES_FACTOR = 3.6f
 
-const val redMin = 0
-const val redMax = 25
-const val orangeMin = 26
-const val orangeMax = 50
-const val yellowMin = 51
-const val yellowMax = 75
+private const val LOW_FROM = 0
+private const val LOW_TO = 25
+private const val MID_LOW_FROM = 26
+private const val MID_LOW_TO = 50
+private const val MID_HIGH_FROM = 51
+private const val MID_HIGH_TO = 75
+
+private const val ANIM_ROTATION_DURATION : Long = 400
+private const val ANIM_REPEAT_COUNT = 3
 
 class RatingDonutView @JvmOverloads constructor(
     context: Context,
@@ -33,21 +36,33 @@ class RatingDonutView @JvmOverloads constructor(
     private lateinit var strokePaint: Paint
     private lateinit var digitPaint: Paint
     private lateinit var circlePaint: Paint
+
+    private  var lowColor = "#e84258"
+    private  var midLowColor = "#fd8060"
+    private  var midHighColor = "#fee191"
+    private  var highColor = "#b0d8a4"
+
     private val animRotation = ObjectAnimator.ofFloat(this, View.ROTATION, 360F)
 
     init {
+
         val a =
             context.theme.obtainStyledAttributes(attributeSet, R.styleable.RatingDonutView, 0, 0)
         try {
-            stroke = a.getFloat(
-                R.styleable.RatingDonutView_stroke, stroke
-            )
+            stroke = a.getFloat(R.styleable.RatingDonutView_stroke, stroke )
             progress = a.getInt(R.styleable.RatingDonutView_progress, progress)
+            lowColor = (a.getString(R.styleable.RatingDonutView_low_color)?:lowColor).toString()
+            midLowColor = (a.getString(R.styleable.RatingDonutView_mid_low_color)?:midLowColor).toString()
+            midHighColor = (a.getString(R.styleable.RatingDonutView_mid_high_color)?:midHighColor).toString()
+            highColor = (a.getString(R.styleable.RatingDonutView_high_color)?:highColor).toString()
+
         } finally {
             a.recycle()
         }
         initPaint()
     }
+
+
 
     fun setProgress(pr: Int) {
         progress = pr
@@ -78,11 +93,12 @@ class RatingDonutView @JvmOverloads constructor(
     }
 
 
+
     private fun getPaintColor(progress: Int): Int = when (progress) {
-        in redMin..redMax -> Color.parseColor("#e84258")
-        in orangeMin..orangeMax -> Color.parseColor("#fd8060")
-        in yellowMin..yellowMax -> Color.parseColor("#fee191")
-        else -> Color.parseColor("#b0d8a4")
+        in LOW_FROM..LOW_TO -> Color.parseColor(lowColor)
+        in MID_LOW_FROM..MID_LOW_TO -> Color.parseColor(midLowColor)
+        in MID_HIGH_FROM..MID_HIGH_TO -> Color.parseColor(midHighColor)
+        else -> Color.parseColor(highColor)
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -113,28 +129,26 @@ class RatingDonutView @JvmOverloads constructor(
     private fun chooseDimension(mode: Int, size: Int) =
         when (mode) {
             MeasureSpec.AT_MOST, MeasureSpec.EXACTLY -> size
-            else -> defSize
+            else -> DEFAULT_SIZE
         }
 
 
 
     private fun drawRating(canvas: Canvas) {
-        val scale = radius * radiusFactor
+        val scale = radius * RADIUS_FACTOR
         canvas.save()
         canvas.translate(centerX, centerY)
         oval.set(0f - scale, 0f - scale, scale, scale)
-        //Рисуем задний фон(Желательно его отрисовать один раз в bitmap, так как он статичный)
         canvas.drawCircle(0f, 0f, radius, circlePaint)
-        //Рисуем "арки", из них и будет состоять наше кольцо + у нас тут специальный метод
-        canvas.drawArc(oval, startAngle, convertProgressToDegrees(progress), false, strokePaint)
+        canvas.drawArc(oval, START_ANGLE, convertProgressToDegrees(progress), false, strokePaint)
         canvas.restore()
         animateRating()
     }
 
     private fun animateRating(){
-        animRotation.duration = 400
+        animRotation.duration = ANIM_ROTATION_DURATION
         animRotation.repeatMode = ObjectAnimator.RESTART
-        animRotation.repeatCount = 3
+        animRotation.repeatCount = ANIM_REPEAT_COUNT
         animRotation.start()
     }
 
@@ -147,8 +161,7 @@ class RatingDonutView @JvmOverloads constructor(
         canvas.drawText(message, centerX - advance / 2, centerY + advance / 4, digitPaint)
     }
 
-    private fun convertProgressToDegrees(progress: Int): Float = progress * toDegreesFactor
-
+    private fun convertProgressToDegrees(progress: Int): Float = progress * TO_DEGREES_FACTOR
 
 
     override fun onDraw(canvas: Canvas) {

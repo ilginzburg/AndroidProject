@@ -55,8 +55,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun changeFragment(fragment: Fragment, tag: String) {
-
-        Toast.makeText(this, "Фрагмент", Toast.LENGTH_SHORT).show()
         supportFragmentManager
             .beginTransaction()
             .replace(R.id.fragment_placeholder, fragment, tag)
