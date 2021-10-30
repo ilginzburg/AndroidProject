@@ -10,6 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import kotlinx.android.synthetic.main.fragment_home.*
 import java.util.*
 
+private const val ANIM_POSITION = 1
+private const val DECORATOR_PADDING = 8
+
 class HomeFragment : Fragment() {
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
     private val filmsDataBase = mutableListOf(
@@ -81,7 +84,7 @@ class HomeFragment : Fragment() {
         AnimationHelper.performFragmentCircularRevealAnimation(
             home_fragment_root,
             requireActivity(),
-            1
+            ANIM_POSITION
         )
         initSearchView()
         initRecycler()
@@ -124,7 +127,7 @@ class HomeFragment : Fragment() {
                 })
             adapter = filmsAdapter
             layoutManager = LinearLayoutManager(requireContext())
-            val decorator = TopSpacingItemDecoration(8)
+            val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
             addItemDecoration(decorator)
         }
     }

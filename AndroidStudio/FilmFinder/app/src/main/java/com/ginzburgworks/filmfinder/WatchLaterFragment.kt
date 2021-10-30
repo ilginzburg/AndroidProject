@@ -8,6 +8,8 @@ import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_selected.*
 import kotlinx.android.synthetic.main.fragment_watch_later.*
 
+private const val ANIM_POSITION = 4
+
 class WatchLaterFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,7 +25,7 @@ class WatchLaterFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AnimationHelper.performFragmentCircularRevealAnimation(watch_later_fragment_root, requireActivity(), 4)
+        AnimationHelper.performFragmentCircularRevealAnimation(watch_later_fragment_root, requireActivity(), ANIM_POSITION)
     }
 
 }

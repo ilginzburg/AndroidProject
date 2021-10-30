@@ -21,6 +21,7 @@
 /RolePlayingGame
 /tests
 /Android_конспект_Синхронизация_потоков._Потокобезопасные_коллекции.pdf
+/.gitignore.txt
 /Java Collection.jpg
 /start_android.bat
 /start_android.bat - Shortcut.lnk
@@ -33,15 +34,35 @@
 /AndroidStudio/23
 /AndroidStudio/24
 /AndroidStudio/25
+/AndroidStudio/26
+/AndroidStudio/27
+/AndroidStudio/28
+/AndroidStudio/29
+/AndroidStudio/30
+/AndroidStudio/31
+/AndroidStudio/32
+/AndroidStudio/33
+/AndroidStudio/34
+/AndroidStudio/35
+/AndroidStudio/36
+/AndroidStudio/37
 /AndroidStudio/AndroidDevCourse
 /AndroidStudio/images
 /AndroidStudio/ViewPager2
 /AndroidStudio/FilmFinder/.gitignore
 /AndroidStudio/FilmFinder/app/.gitignore
 /AndroidStudio/FilmFinder/app/build
+/AndroidStudio/FilmFinder/app/build.gradle
+/AndroidStudio/FilmFinder/build.gradle
 /AndroidStudio/FilmFinder/.idea
-/AndroidStudio/FilmFinder/.gradle/7.0.2/executionHistory
-/AndroidStudio/FilmFinder/.gradle/7.0.2/fileHashes/fileHashes.bin
-/AndroidStudio/FilmFinder/.gradle/7.0.2/fileHashes/fileHashes.lock
-/AndroidStudio/FilmFinder/.gradle/7.0.2/javaCompile/javaCompile.lock
+/AndroidStudio/FilmFinder/.gradle*
+
+
+    
+    
+    
+
+
+
+/books/kotlin_programmirovanie_na_primerakh_2020_adelekan_ianu.pdf
 /AndroidStudio/FilmFinder/.gradle/buildOutputCleanup
