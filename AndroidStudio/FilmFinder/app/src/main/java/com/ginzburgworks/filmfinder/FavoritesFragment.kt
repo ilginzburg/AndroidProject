@@ -12,6 +12,8 @@ import kotlinx.android.synthetic.main.fragment_favorites.*
 import kotlinx.android.synthetic.main.fragment_home.*
 import kotlinx.android.synthetic.main.fragment_selected.*
 
+private const val DECORATOR_PADDING = 8
+private const val ANIM_POSITION = 4
 
 class FavoritesFragment : Fragment() {
 
@@ -36,14 +38,14 @@ class FavoritesFragment : Fragment() {
                     })
                 adapter = filmsAdapter
                 layoutManager = LinearLayoutManager(requireContext())
-                val decorator = TopSpacingItemDecoration(8)
+                val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
                 addItemDecoration(decorator)
             }
         filmsAdapter.addItems(Favorites.favoritesList)
         AnimationHelper.performFragmentCircularRevealAnimation(
             favorites_fragment_root,
             requireActivity(),
-            4
+            ANIM_POSITION
         )
     }
 }

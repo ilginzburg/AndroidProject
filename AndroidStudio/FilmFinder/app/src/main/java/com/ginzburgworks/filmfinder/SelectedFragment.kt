@@ -7,6 +7,8 @@ import android.view.View
 import android.view.ViewGroup
 import kotlinx.android.synthetic.main.fragment_selected.*
 
+private const val ANIM_POSITION = 1
+
 class SelectionsFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -23,6 +25,6 @@ class SelectionsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AnimationHelper.performFragmentCircularRevealAnimation(selected_fragment_root, requireActivity(), 4)
+        AnimationHelper.performFragmentCircularRevealAnimation(selected_fragment_root, requireActivity(), ANIM_POSITION)
     }
 }

@@ -10,16 +10,29 @@ private const val RADIUS_FACTOR = 0.8f
 private const val START_ANGLE = -90f
 private const val DEFAULT_SIZE = 300
 private const val TO_DEGREES_FACTOR = 3.6f
-
 private const val LOW_FROM = 0
 private const val LOW_TO = 25
 private const val MID_LOW_FROM = 26
 private const val MID_LOW_TO = 50
 private const val MID_HIGH_FROM = 51
 private const val MID_HIGH_TO = 75
-
-private const val ANIM_ROTATION_DURATION : Long = 400
+private const val ANIM_ROTATION_DURATION = 400L
+private const val ANIM_ROTATION_DEGREE = 360f
 private const val ANIM_REPEAT_COUNT = 3
+private const val WIDTH_DIVISION_FACTOR = 2f
+private const val HEIGHT_DIVISION_FACTOR = 2f
+private const val MIN_SIDE_X_DIVISION_FACTOR = 2f
+private const val MIN_SIDE_Y_DIVISION_FACTOR = 2f
+private const val DIGIT_STROKE_WIDTH = 2f
+private const val DIGIT_SHADE_LAYER_RADIUS = 5f
+private const val PROGRESS_DEFAULT = 50
+private const val STROKE_DEFAULT = 10f
+
+private const val SCALE_SIZE = 60f
+private const val LOW_COLOR_DEF = "#e84258"
+private const val MID_LOW_COLOR_DEF = "#fd8060"
+private const val MID_HIGH_COLOR_DEF = "#fee191"
+private const val HIGH_COLOR_DEF = "#b0d8a4"
 
 class RatingDonutView @JvmOverloads constructor(
     context: Context,
@@ -27,25 +40,26 @@ class RatingDonutView @JvmOverloads constructor(
 ) : View(context, attributeSet) {
 
     private val oval = RectF()
-    private var radius: Float = 0f
-    private var centerX: Float = 0f
-    private var centerY: Float = 0f
-    private var stroke = 10f
-    private var progress = 50
-    private var scaleSize = 60f
+    private var radius = 0f
+    private var centerX = 0f
+    private var centerY = 0f
+    private var stroke = STROKE_DEFAULT
+    private var progress = PROGRESS_DEFAULT
     private lateinit var strokePaint: Paint
     private lateinit var digitPaint: Paint
     private lateinit var circlePaint: Paint
 
-    private  var lowColor = "#e84258"
-    private  var midLowColor = "#fd8060"
-    private  var midHighColor = "#fee191"
-    private  var highColor = "#b0d8a4"
+    private  var lowColor = LOW_COLOR_DEF
+    private  var midLowColor = MID_LOW_COLOR_DEF
+    private  var midHighColor = MID_HIGH_COLOR_DEF
+    private  var highColor = HIGH_COLOR_DEF
 
-    private val animRotation = ObjectAnimator.ofFloat(this, View.ROTATION, 360F)
+    private val animRotation = ObjectAnimator.ofFloat(this, View.ROTATION, ANIM_ROTATION_DEGREE)
+    companion object {
+        const val RATING_FACTOR = 10f
+    }
 
     init {
-
         val a =
             context.theme.obtainStyledAttributes(attributeSet, R.styleable.RatingDonutView, 0, 0)
         try {
@@ -62,8 +76,6 @@ class RatingDonutView @JvmOverloads constructor(
         initPaint()
     }
 
-
-
     fun setProgress(pr: Int) {
         progress = pr
         initPaint()
@@ -79,9 +91,9 @@ class RatingDonutView @JvmOverloads constructor(
         }
         digitPaint = Paint().apply {
             style = Paint.Style.FILL_AND_STROKE
-            strokeWidth = 2f
-            setShadowLayer(5f, 0f, 0f, Color.DKGRAY)
-            textSize = scaleSize
+            strokeWidth = DIGIT_STROKE_WIDTH
+            setShadowLayer(DIGIT_SHADE_LAYER_RADIUS, 0f, 0f, Color.DKGRAY)
+            textSize = SCALE_SIZE
             typeface = Typeface.SANS_SERIF
             color = getPaintColor(progress)
             isAntiAlias = true
@@ -92,8 +104,6 @@ class RatingDonutView @JvmOverloads constructor(
         }
     }
 
-
-
     private fun getPaintColor(progress: Int): Int = when (progress) {
         in LOW_FROM..LOW_TO -> Color.parseColor(lowColor)
         in MID_LOW_FROM..MID_LOW_TO -> Color.parseColor(midLowColor)
@@ -103,9 +113,9 @@ class RatingDonutView @JvmOverloads constructor(
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
         radius = if (width > height) {
-            height.div(2f)
+            height.div(HEIGHT_DIVISION_FACTOR)
         } else {
-            width.div(2f)
+            width.div(WIDTH_DIVISION_FACTOR)
         }
     }
 
@@ -120,8 +130,8 @@ class RatingDonutView @JvmOverloads constructor(
         val chosenHeight = chooseDimension(heightMode, heightSize)
 
         val minSide = Math.min(chosenWidth, chosenHeight)
-        centerX = minSide.div(2f)
-        centerY = minSide.div(2f)
+        centerX = minSide.div(MIN_SIDE_X_DIVISION_FACTOR)
+        centerY = minSide.div(MIN_SIDE_Y_DIVISION_FACTOR)
 
         setMeasuredDimension(minSide, minSide)
     }
@@ -131,7 +141,6 @@ class RatingDonutView @JvmOverloads constructor(
             MeasureSpec.AT_MOST, MeasureSpec.EXACTLY -> size
             else -> DEFAULT_SIZE
         }
-
 
 
     private fun drawRating(canvas: Canvas) {
@@ -153,7 +162,7 @@ class RatingDonutView @JvmOverloads constructor(
     }
 
     private fun drawText(canvas: Canvas) {
-        val message = String.format("%.1f", progress / 10f)
+        val message = String.format("%.1f", progress / RATING_FACTOR)
         val widths = FloatArray(message.length)
         digitPaint.getTextWidths(message, widths)
         var advance = 0f
@@ -162,7 +171,6 @@ class RatingDonutView @JvmOverloads constructor(
     }
 
     private fun convertProgressToDegrees(progress: Int): Float = progress * TO_DEGREES_FACTOR
-
 
     override fun onDraw(canvas: Canvas) {
         drawRating(canvas)

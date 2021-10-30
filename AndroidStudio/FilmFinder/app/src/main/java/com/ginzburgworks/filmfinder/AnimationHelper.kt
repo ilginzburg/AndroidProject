@@ -8,9 +8,9 @@ import java.util.concurrent.Executors
 import kotlin.math.hypot
 import kotlin.math.roundToInt
 
-const val startRadius = 0
-const val DURATION = 500L
-private const val menuItems = 4
+private const val START_RADIUS = 0f
+private const val DURATION = 500L
+private const val MENU_ITEMS = 4
 
 object AnimationHelper {
     fun performFragmentCircularRevealAnimation(rootView: View, activity: Activity, position: Int) {
@@ -18,12 +18,12 @@ object AnimationHelper {
             while (true) {
                 if (rootView.isAttachedToWindow) {
                     activity.runOnUiThread {
-                        val itemCenter = rootView.width / (menuItems * 2)
+                        val itemCenter = rootView.width / (MENU_ITEMS * 2)
                         val step = (itemCenter * 2) * (position - 1) + itemCenter
                         val x: Int = step
                         val y: Int = rootView.y.roundToInt() + rootView.height
                         val endRadius = hypot(rootView.width.toDouble(), rootView.height.toDouble())
-                        ViewAnimationUtils.createCircularReveal(rootView, x, y, startRadius.toFloat(), endRadius.toFloat()).apply {
+                        ViewAnimationUtils.createCircularReveal(rootView, x, y, START_RADIUS, endRadius.toFloat()).apply {
                             duration = DURATION
                             interpolator = AccelerateDecelerateInterpolator()
                             start()
