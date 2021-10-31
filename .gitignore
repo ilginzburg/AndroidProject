@@ -52,7 +52,6 @@
 /AndroidStudio/FilmFinder/.gitignore
 /AndroidStudio/FilmFinder/app/.gitignore
 /AndroidStudio/FilmFinder/app/build
-/AndroidStudio/FilmFinder/app/build.gradle
 /AndroidStudio/FilmFinder/build.gradle
 /AndroidStudio/FilmFinder/.idea
 /AndroidStudio/FilmFinder/.gradle*
