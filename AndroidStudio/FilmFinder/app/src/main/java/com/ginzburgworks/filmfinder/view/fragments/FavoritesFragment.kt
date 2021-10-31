@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder
+package com.ginzburgworks.filmfinder.view.fragments
 
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -6,7 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ginzburgworks.filmfinder.data.Favorites
+import com.ginzburgworks.filmfinder.MainActivity
 import com.ginzburgworks.filmfinder.databinding.FragmentFavoritesBinding
+import com.ginzburgworks.filmfinder.domain.Film
+import com.ginzburgworks.filmfinder.utils.AnimationHelper
+import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
+import com.ginzburgworks.filmfinder.view.rv_adapters.TopSpacingItemDecoration
 
 private const val DECORATOR_PADDING = 8
 private const val ANIM_POSITION = 4

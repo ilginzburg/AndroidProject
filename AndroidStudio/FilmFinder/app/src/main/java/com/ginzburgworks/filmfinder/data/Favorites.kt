@@ -1,4 +1,6 @@
-package com.ginzburgworks.filmfinder
+package com.ginzburgworks.filmfinder.data
+
+import com.ginzburgworks.filmfinder.domain.Film
 
 class Favorites {
 

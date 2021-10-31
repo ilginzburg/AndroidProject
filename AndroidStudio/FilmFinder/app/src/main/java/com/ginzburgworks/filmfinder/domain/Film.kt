@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder
+package com.ginzburgworks.filmfinder.domain
 
 import android.os.Parcelable
 import kotlinx.android.parcel.Parcelize

@@ -1,10 +1,11 @@
-package com.ginzburgworks.filmfinder
+package com.ginzburgworks.filmfinder.view.customviews
 
 import android.animation.ObjectAnimator
 import android.content.Context
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
+import com.ginzburgworks.filmfinder.R
 
 private const val RADIUS_FACTOR = 0.8f
 private const val START_ANGLE = -90f

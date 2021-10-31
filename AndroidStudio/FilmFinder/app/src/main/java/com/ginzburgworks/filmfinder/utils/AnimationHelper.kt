@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder
+package com.ginzburgworks.filmfinder.utils
 
 import android.app.Activity
 import android.view.View
