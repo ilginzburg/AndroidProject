@@ -50,26 +50,30 @@ class RatingDonutView @JvmOverloads constructor(
     private lateinit var digitPaint: Paint
     private lateinit var circlePaint: Paint
 
-    private  var lowColor = LOW_COLOR_DEF
-    private  var midLowColor = MID_LOW_COLOR_DEF
-    private  var midHighColor = MID_HIGH_COLOR_DEF
-    private  var highColor = HIGH_COLOR_DEF
+    private var lowColor = LOW_COLOR_DEF
+    private var midLowColor = MID_LOW_COLOR_DEF
+    private var midHighColor = MID_HIGH_COLOR_DEF
+    private var highColor = HIGH_COLOR_DEF
 
     private val animRotation = ObjectAnimator.ofFloat(this, View.ROTATION, ANIM_ROTATION_DEGREE)
+
     companion object {
-        const val RATING_FACTOR = 10f
+        const val RATING_FACTOR: Float = 10f
     }
 
     init {
         val a =
             context.theme.obtainStyledAttributes(attributeSet, R.styleable.RatingDonutView, 0, 0)
         try {
-            stroke = a.getFloat(R.styleable.RatingDonutView_stroke, stroke )
+            stroke = a.getFloat(R.styleable.RatingDonutView_stroke, stroke)
             progress = a.getInt(R.styleable.RatingDonutView_progress, progress)
-            lowColor = (a.getString(R.styleable.RatingDonutView_low_color)?:lowColor).toString()
-            midLowColor = (a.getString(R.styleable.RatingDonutView_mid_low_color)?:midLowColor).toString()
-            midHighColor = (a.getString(R.styleable.RatingDonutView_mid_high_color)?:midHighColor).toString()
-            highColor = (a.getString(R.styleable.RatingDonutView_high_color)?:highColor).toString()
+            lowColor = (a.getString(R.styleable.RatingDonutView_low_color) ?: lowColor).toString()
+            midLowColor =
+                (a.getString(R.styleable.RatingDonutView_mid_low_color) ?: midLowColor).toString()
+            midHighColor =
+                (a.getString(R.styleable.RatingDonutView_mid_high_color) ?: midHighColor).toString()
+            highColor =
+                (a.getString(R.styleable.RatingDonutView_high_color) ?: highColor).toString()
 
         } finally {
             a.recycle()
@@ -121,11 +125,11 @@ class RatingDonutView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val widthMode = View.MeasureSpec.getMode(widthMeasureSpec)
+        val widthSize = View.MeasureSpec.getSize(widthMeasureSpec)
 
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        val heightMode = View.MeasureSpec.getMode(heightMeasureSpec)
+        val heightSize = View.MeasureSpec.getSize(heightMeasureSpec)
 
         val chosenWidth = chooseDimension(widthMode, widthSize)
         val chosenHeight = chooseDimension(heightMode, heightSize)
@@ -139,7 +143,7 @@ class RatingDonutView @JvmOverloads constructor(
 
     private fun chooseDimension(mode: Int, size: Int) =
         when (mode) {
-            MeasureSpec.AT_MOST, MeasureSpec.EXACTLY -> size
+            View.MeasureSpec.AT_MOST, View.MeasureSpec.EXACTLY -> size
             else -> DEFAULT_SIZE
         }
 
@@ -155,7 +159,7 @@ class RatingDonutView @JvmOverloads constructor(
         animateRating()
     }
 
-    private fun animateRating(){
+    private fun animateRating() {
         animRotation.duration = ANIM_ROTATION_DURATION
         animRotation.repeatMode = ObjectAnimator.RESTART
         animRotation.repeatCount = ANIM_REPEAT_COUNT

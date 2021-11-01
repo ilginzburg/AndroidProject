@@ -8,6 +8,10 @@
             name="film"
             type="com.ginzburgworks.filmfinder.domain.Film" />
 
+        <variable
+            name="RatingDonut"
+            type="com.ginzburgworks.filmfinder.view.customviews.RatingDonutView" />
+
     </data>
 
     <FrameLayout
@@ -20,6 +24,7 @@
             android:layout_height="@dimen/rating_view_side"
             android:translationZ="@dimen/rating_translationZ"
             android:layout_gravity="bottom|left"
+            app:progress="@{(int)(film.rating * RatingDonut.RATING_FACTOR)}"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toRightOf="parent" />

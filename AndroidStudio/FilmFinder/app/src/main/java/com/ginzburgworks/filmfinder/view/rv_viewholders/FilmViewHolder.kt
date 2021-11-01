@@ -8,7 +8,6 @@ import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.view.customviews.RatingDonutView
 
-
 class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
     val binding: FilmItemBinding = DataBindingUtil.bind(itemView)!!
@@ -19,6 +18,5 @@ class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .load(film.poster)
             .centerCrop()
             .into(binding.poster)
-        binding.ratingDonut.setProgress((film.rating * RatingDonutView.RATING_FACTOR).toInt())
     }
 }
