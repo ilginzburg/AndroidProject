@@ -4,7 +4,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat
-import com.ginzburgworks.filmfinder.MainActivity
+import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.R
 import kotlinx.android.synthetic.main.activity_splash_screen.*
 

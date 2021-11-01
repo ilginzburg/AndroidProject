@@ -9,7 +9,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ginzburgworks.filmfinder.MainActivity
+import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper

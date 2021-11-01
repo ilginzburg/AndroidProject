@@ -1,8 +1,9 @@
-package com.ginzburgworks.filmfinder
+package com.ginzburgworks.filmfinder.view
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.databinding.ActivityMainBinding
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.view.fragments.*
