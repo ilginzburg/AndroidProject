@@ -6,13 +6,12 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
+import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import com.ginzburgworks.filmfinder.view.rv_adapters.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
@@ -36,11 +35,6 @@ class HomeFragment : Fragment() {
             filmsAdapter.addItems(field)
         }
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        retainInstance = true
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -59,7 +53,7 @@ class HomeFragment : Fragment() {
         initSearchView()
         initRecycler()
         filmsAdapter.addItems(filmsDataBase)
-        viewModel.filmsListLiveData.observe(viewLifecycleOwner, Observer<List<Film>> {
+        viewModel.filmsListLiveData.observe(viewLifecycleOwner, {
             filmsDataBase = it
         })
     }

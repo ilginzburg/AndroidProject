@@ -8,7 +8,6 @@ import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.R
 import kotlinx.android.synthetic.main.activity_splash_screen.*
 
-
 private const val ANIM_DURATION = 3500L
 private const val ANIM_ALFA_START = 0f
 private const val ANIM_ALFA_END = 1f
