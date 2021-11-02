@@ -65,9 +65,12 @@ class RatingDonutView @JvmOverloads constructor(
         val a =
             context.theme.obtainStyledAttributes(attributeSet, R.styleable.RatingDonutView, 0, 0)
         try {
-            stroke = a.getFloat(R.styleable.RatingDonutView_stroke, stroke)
-            progress = a.getInt(R.styleable.RatingDonutView_progress, progress)
-            lowColor = (a.getString(R.styleable.RatingDonutView_low_color) ?: lowColor).toString()
+            stroke =
+                a.getFloat(R.styleable.RatingDonutView_stroke, stroke)
+            progress =
+                a.getInt(R.styleable.RatingDonutView_progress, progress)
+            lowColor =
+                (a.getString(R.styleable.RatingDonutView_low_color) ?: lowColor).toString()
             midLowColor =
                 (a.getString(R.styleable.RatingDonutView_mid_low_color) ?: midLowColor).toString()
             midHighColor =

@@ -11,27 +11,29 @@ import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.databinding.FragmentDetailsBinding
 import com.ginzburgworks.filmfinder.domain.Film
 
-private const val KEY_FILM = "film"
-
 class DetailsFragment : Fragment() {
 
     private lateinit var binding: FragmentDetailsBinding
+
+    companion object {
+        const val KEY_FILM = "film"
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentDetailsBinding.inflate(inflater, container, false)
-       return binding.root
+        return binding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         val film = arguments?.get(KEY_FILM) as Film
-        binding.titleText = film?.title
-        binding.detailsPoster.setImageResource(film?.poster)
-        binding.descriptionText = film?.description
-
+        binding.titleText = film.title
+        binding.detailsPoster.setImageResource(film.poster)
+        binding.descriptionText = film.description
         binding.detailsFabFavorites.setImageResource(
             if (film.isInFavorites) R.drawable.ic_baseline_favorite_24
             else R.drawable.ic_baseline_favorite_border_24
