@@ -16,17 +16,13 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initNavigation()
-        supportFragmentManager
-            .beginTransaction()
-            .add(R.id.fragment_placeholder, HomeFragment())
-            .addToBackStack(null)
-            .commit()
+        val tag = "home"
+        val fragment = checkFragmentExistence(tag)
+        changeFragment(fragment ?: HomeFragment(), tag)
     }
 
-
-
     private fun initNavigation() {
-        binding.bottomNavigation.setOnNavigationItemSelectedListener {
+        binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> {
                     val tag = "home"
@@ -70,13 +66,10 @@ class MainActivity : AppCompatActivity() {
 
     fun launchDetailsFragment(film: Film) {
         val bundle = Bundle()
-        bundle.putParcelable("film", film)
+        bundle.putParcelable(DetailsFragment.KEY_FILM, film)
         val fragment = DetailsFragment()
+        val tag = "details"
         fragment.arguments = bundle
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_placeholder, fragment)
-            .addToBackStack(null)
-            .commit()
+        changeFragment(fragment, tag)
     }
 }

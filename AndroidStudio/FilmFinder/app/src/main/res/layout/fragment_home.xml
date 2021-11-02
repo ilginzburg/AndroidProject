@@ -7,7 +7,7 @@
     android:id="@+id/home_fragment_root"
     tools:visibility="visible"
     android:background="@drawable/background_home"
-    tools:context=".HomeFragment">
+    tools:context="view.fragments.HomeFragment">
 
     <androidx.appcompat.widget.SearchView
         android:id="@+id/search_view"
@@ -21,11 +21,13 @@
         android:id="@+id/main_recycler"
         android:layout_width="@dimen/main_recycler_width"
         android:layout_height="@dimen/main_recycler_height"
-        tools:listitem="@layout/film_item"
         android:layout_margin="@dimen/main_recycler_margin"
-        app:layout_constraintTop_toBottomOf="@+id/search_view"
         app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintHorizontal_bias="@dimen/recycler_layout_bias"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/search_view"
+        app:layout_constraintVertical_bias="@dimen/recycler_layout_bias"
+        tools:listitem="@layout/film_item" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
