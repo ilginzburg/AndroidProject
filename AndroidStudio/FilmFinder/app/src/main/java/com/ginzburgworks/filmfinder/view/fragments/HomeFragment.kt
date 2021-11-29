@@ -76,7 +76,7 @@ class HomeFragment : Fragment() {
 
                 val result = filmsDataBase.filter {
                     it.title.toLowerCase(Locale.getDefault())
-                        .contains(newText.toLowerCase(Locale.getDefault()))
+                        .contains(newText.lowercase(Locale.getDefault()))
                 }
                 filmsAdapter.addItems(result)
                 return true
@@ -96,6 +96,7 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
             addItemDecoration(decorator)
+
         }
     }
 }
