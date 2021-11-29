@@ -12,7 +12,7 @@ import com.ginzburgworks.filmfinder.databinding.FragmentFavoritesBinding
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
-import com.ginzburgworks.filmfinder.view.rv_adapters.TopSpacingItemDecoration
+import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 
 private const val DECORATOR_PADDING = 8
 private const val ANIM_POSITION = 4

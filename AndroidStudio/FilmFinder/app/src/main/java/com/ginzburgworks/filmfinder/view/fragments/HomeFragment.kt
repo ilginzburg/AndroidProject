@@ -13,7 +13,7 @@ import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
-import com.ginzburgworks.filmfinder.view.rv_adapters.TopSpacingItemDecoration
+import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
 import java.util.*
 
