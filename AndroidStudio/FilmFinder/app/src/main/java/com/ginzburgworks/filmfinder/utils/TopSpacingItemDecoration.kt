@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder.view.rv_adapters
+package com.ginzburgworks.filmfinder.utils
 
 import android.content.res.Resources
 import android.graphics.Rect
