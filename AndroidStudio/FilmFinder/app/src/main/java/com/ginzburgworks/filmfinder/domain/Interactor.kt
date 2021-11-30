@@ -18,7 +18,10 @@ class Interactor(private val retrofitService: TmdbApi) {
                 callback.onSuccess(
                     com.ginzburgworks.filmfinder.utils.Converter.convertApiListToDtoList(
                         response.body()?.tmdbFilms
-                    )
+                    ),
+
+
+                    totalPages = response.body()?.totalPages
                 )
             }
 
