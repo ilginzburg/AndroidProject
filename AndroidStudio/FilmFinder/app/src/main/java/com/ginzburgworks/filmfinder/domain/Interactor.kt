@@ -15,14 +15,16 @@ class Interactor(private val retrofitService: TmdbApi) {
                 call: Call<TmdbResultsDto>,
                 response: Response<TmdbResultsDto>
             ) {
-                callback.onSuccess(
-                    com.ginzburgworks.filmfinder.utils.Converter.convertApiListToDtoList(
-                        response.body()?.tmdbFilms
-                    ),
+                response.body()?.totalPages?.let {
+                    callback.onSuccess(
+                        com.ginzburgworks.filmfinder.utils.Converter.convertApiListToDtoList(
+                            response.body()?.tmdbFilms
+                        ),
 
 
-                    totalPages = response.body()?.totalPages
-                )
+                        totalPages = it
+                    )
+                }
             }
 
             override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {

@@ -10,6 +10,7 @@ import com.ginzburgworks.filmfinder.domain.Interactor
 class HomeFragmentViewModel : ViewModel() {
     val filmsListLiveData = MutableLiveData<List<Film>>()
     private var interactor: Interactor = App.instance.interactor
+    var lastPage = 10
 
     init {
         requestNextPage(PageManager.Page.First)
@@ -17,9 +18,9 @@ class HomeFragmentViewModel : ViewModel() {
 
     fun requestNextPage(page: Int) {
         interactor.getFilmsFromApi(page, object : ApiCallback {
-            override fun onSuccess(films: List<Film>, totalPages: Int?) {
+            override fun onSuccess(films: List<Film>, totalPages: Int) {
                 filmsListLiveData.postValue(films)
-                PageManager.Page.Last = totalPages ?: 0
+                this@HomeFragmentViewModel.lastPage = totalPages
             }
 
             override fun onFailure() {
@@ -28,7 +29,7 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     interface ApiCallback {
-        fun onSuccess(films: List<Film>, totalPages: Int?)
+        fun onSuccess(films: List<Film>, totalPages: Int)
         fun onFailure()
     }
 }

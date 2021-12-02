@@ -9,7 +9,7 @@ private const val PAGE_SIZE = 20
 private const val ITEMS_AFTER_START = 7
 private const val ITEMS_BEFORE_END = 5
 
-class PageManager(
+open class PageManager(
     private val viewModel: HomeFragmentViewModel,
     private val layoutManager: LinearLayoutManager
 ) : RecyclerView.OnScrollListener() {
@@ -20,7 +20,7 @@ class PageManager(
     object Page {
         const val First = 1
         var Next = 1
-        var Last = 10
+        val Last: Int by lazy { HomeFragmentViewModel().lastPage }
     }
 
 
@@ -35,21 +35,21 @@ class PageManager(
             isPageRequested = false
     }
 
-    private fun bottomItemPosition() = (layoutManager.findLastCompletelyVisibleItemPosition())
+    private fun bottomItemPosition() = layoutManager.findLastCompletelyVisibleItemPosition()
 
-    private fun startPagePosition() = (layoutManager.itemCount - PAGE_SIZE + ITEMS_AFTER_START)
+    private fun startPagePosition() = layoutManager.itemCount - PAGE_SIZE + ITEMS_AFTER_START
 
-    private fun endPagePosition() = (layoutManager.itemCount - ITEMS_BEFORE_END)
+    private fun endPagePosition() = layoutManager.itemCount - ITEMS_BEFORE_END
 
-    private fun isPageOnStart() = (bottomItemPosition() == startPagePosition())
+    private fun isPageOnStart() = bottomItemPosition() == startPagePosition()
 
-    private fun isPageOnEnd() = (bottomItemPosition() == endPagePosition())
+    private fun isPageOnEnd() = bottomItemPosition() == endPagePosition()
 
-    private fun isNotLastPage() = (Page.Next < Page.Last)
+    private fun isNotLastPage() = Page.Next < Page.Last
 
-    private fun isScrollingDown(dy: Int) = (dy > 0)
+    private fun isScrollingDown(dy: Int) = dy > 0
 
     private fun isNeedToRequestNextPage(dy: Int) =
-        (isPageOnEnd() && !isPageRequested && isScrollingDown(dy) && isNotLastPage())
+        isPageOnEnd() && !isPageRequested && isScrollingDown(dy) && isNotLastPage()
 
 }
