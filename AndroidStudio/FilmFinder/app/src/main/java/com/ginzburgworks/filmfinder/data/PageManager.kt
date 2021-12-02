@@ -33,8 +33,6 @@ open class PageManager(
 
         if (isPageOnStart())
             isPageRequested = false
-
-        Log.d("!!!!", "last =  ${Page.Last}")
     }
 
     private fun bottomItemPosition() = layoutManager.findLastCompletelyVisibleItemPosition()
