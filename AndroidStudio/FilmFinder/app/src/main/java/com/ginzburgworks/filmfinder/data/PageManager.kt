@@ -1,5 +1,6 @@
 package com.ginzburgworks.filmfinder.data
 
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
@@ -14,13 +15,12 @@ open class PageManager(
     private val layoutManager: LinearLayoutManager
 ) : RecyclerView.OnScrollListener() {
 
-
     private var isPageRequested = false
 
     object Page {
         const val First = 1
         var Next = 1
-        val Last: Int by lazy { HomeFragmentViewModel().lastPage }
+        lateinit var Last: Number
     }
 
 
@@ -33,6 +33,8 @@ open class PageManager(
 
         if (isPageOnStart())
             isPageRequested = false
+
+        Log.d("!!!!", "last =  ${Page.Last}")
     }
 
     private fun bottomItemPosition() = layoutManager.findLastCompletelyVisibleItemPosition()
@@ -45,7 +47,7 @@ open class PageManager(
 
     private fun isPageOnEnd() = bottomItemPosition() == endPagePosition()
 
-    private fun isNotLastPage() = Page.Next < Page.Last
+    private fun isNotLastPage() = Page.Next < Page.Last.toInt()
 
     private fun isScrollingDown(dy: Int) = dy > 0
 
