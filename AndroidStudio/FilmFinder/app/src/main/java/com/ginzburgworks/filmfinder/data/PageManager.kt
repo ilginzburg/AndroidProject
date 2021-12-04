@@ -19,7 +19,7 @@ open class PageManager(
 
     object Page {
         const val First = 1
-        var Next = 1
+        var Next = First
         lateinit var Last: Number
     }
 
