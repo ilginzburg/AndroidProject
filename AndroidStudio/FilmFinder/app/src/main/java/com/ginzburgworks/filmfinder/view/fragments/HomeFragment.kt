@@ -71,14 +71,14 @@ class HomeFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isEmpty()) {
-                    filmsAdapter.addItems(filmsDataBase)
                     return true
                 }
 
-                val result = filmsDataBase.filter {
-                    it.title.toLowerCase(Locale.getDefault())
+                val result = filmsAdapter.getItems().filter {
+                    it.title.lowercase(Locale.getDefault())
                         .contains(newText.lowercase(Locale.getDefault()))
                 }
+                filmsAdapter.clear()
                 filmsAdapter.addItems(result)
                 return true
             }

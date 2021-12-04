@@ -10,14 +10,16 @@ import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder
 
 
-class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
+class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) :
+    RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
     private var items = mutableListOf<Film>()
     override fun getItemCount() = items.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
-        val binding: FilmItemBinding = DataBindingUtil.inflate(inflater, R.layout.film_item, parent,false)
-        return  FilmViewHolder(binding.root)
+        val binding: FilmItemBinding =
+            DataBindingUtil.inflate(inflater, R.layout.film_item, parent, false)
+        return FilmViewHolder(binding.root)
     }
 
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
@@ -35,8 +37,18 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) : 
         val itemCountBeforeAdding = itemCount
         val itemsAdded = list.size
         items.addAll(list)
-        notifyItemRangeInserted(itemCountBeforeAdding,itemsAdded)
-        notifyItemRangeChanged(0,itemCount)
+        notifyItemRangeInserted(itemCountBeforeAdding, itemsAdded)
+        notifyItemRangeChanged(0, itemCount)
+    }
+
+    fun getItems(): List<Film> {
+        return items
+    }
+
+    fun clear() {
+        val itemCountBeforeClear = itemCount
+        items.clear()
+        notifyItemRangeRemoved(0, itemCountBeforeClear)
     }
 
     interface OnItemClickListener {
