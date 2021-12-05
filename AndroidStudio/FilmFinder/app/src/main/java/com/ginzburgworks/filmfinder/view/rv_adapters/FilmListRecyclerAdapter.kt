@@ -13,7 +13,8 @@ import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder
 class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) :
     RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
-    private var items = mutableListOf<Film>()
+    var items = mutableListOf<Film>()
+
     override fun getItemCount() = items.size
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): RecyclerView.ViewHolder {
         val inflater = LayoutInflater.from(parent.context)
@@ -41,11 +42,8 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) :
         notifyItemRangeChanged(0, itemCount)
     }
 
-    fun getItems(): List<Film> {
-        return items
-    }
 
-    fun clear() {
+    fun clearItems() {
         val itemCountBeforeClear = itemCount
         items.clear()
         notifyItemRangeRemoved(0, itemCountBeforeClear)

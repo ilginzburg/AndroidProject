@@ -4,11 +4,11 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ginzburgworks.filmfinder.data.PageManager
+import com.ginzburgworks.filmfinder.data.SearchController
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
@@ -16,7 +16,6 @@ import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
-import java.util.*
 
 
 private const val ANIM_POSITION = 1
@@ -26,15 +25,8 @@ class HomeFragment : Fragment() {
 
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
     private lateinit var binding: FragmentHomeBinding
-    private val viewModel by lazy {
-        ViewModelProvider.NewInstanceFactory().create(HomeFragmentViewModel::class.java)
-    }
-    private var filmsDataBase = listOf<Film>()
-        set(value) {
-            if (field == value) return
-            field = value
-            filmsAdapter.addItems(field)
-        }
+    private val searchController by lazy { initSearchView() }
+    private val viewModel by lazy { ViewModelProvider(this)[HomeFragmentViewModel::class.java] }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,39 +43,30 @@ class HomeFragment : Fragment() {
             requireActivity(),
             ANIM_POSITION
         )
-        initSearchView()
+
         initRecycler()
-        filmsAdapter.addItems(filmsDataBase)
+        initSearchView()
         viewModel.filmsListLiveData.observe(viewLifecycleOwner, {
-            filmsDataBase = it
+            filmsAdapter.addItems(it)
         })
     }
 
-    private fun initSearchView() {
-        binding.searchView.setOnClickListener {
-            binding.searchView.isIconified = false
+    private fun initSearchView(): SearchController {
+        return SearchController(filmsAdapter, viewModel).apply {
+            binding.searchView.setOnClickListener {
+                saveItemsForSearch()
+                binding.searchView.isIconified = false;
+            }
+            binding.searchView.setOnCloseListener {
+                if (viewModel.itemsForSearch.size > 0) {
+                    filmsAdapter.clearItems()
+                    filmsAdapter.addItems(viewModel.itemsForSearch)
+                    viewModel.itemsForSearch.clear()
+                }
+                true
+            }
+            binding.searchView.setOnQueryTextListener(this)
         }
-
-        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
-            }
-
-            override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isEmpty()) {
-                    return true
-                }
-
-                val result = filmsAdapter.getItems().filter {
-                    it.title.lowercase(Locale.getDefault())
-                        .contains(newText.lowercase(Locale.getDefault()))
-                }
-                filmsAdapter.clear()
-                filmsAdapter.addItems(result)
-                return true
-            }
-        })
-
     }
 
     private fun initRecycler() {
@@ -99,7 +82,6 @@ class HomeFragment : Fragment() {
             val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
             addItemDecoration(decorator)
             addOnScrollListener(PageManager(viewModel, layoutManager as LinearLayoutManager))
-
         }
     }
 }
