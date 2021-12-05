@@ -7,8 +7,10 @@ import com.ginzburgworks.filmfinder.data.PageManager
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.domain.Interactor
 
-class HomeFragmentViewModel : ViewModel() {
+class HomeFragmentViewModel() : ViewModel() {
+
     val filmsListLiveData = MutableLiveData<List<Film>>()
+    val itemsForSearch = mutableListOf<Film>()
     private var interactor: Interactor = App.instance.interactor
 
     init {
