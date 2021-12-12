@@ -76,4 +76,7 @@ dependencies {
     implementation 'com.google.dagger:dagger:2.30.1'
     kapt 'com.google.dagger:dagger-compiler:2.30.1'
     kapt 'org.jetbrains.kotlinx:kotlinx-metadata-jvm:0.2.0'
+
+    //ktx
+    implementation    'androidx.fragment:fragment-ktx:1.4.0'
 }

@@ -7,8 +7,12 @@ import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class Interactor(private val retrofitService: TmdbApi) {
+
+@Singleton
+class Interactor @Inject constructor(private val retrofitService: TmdbApi) {
     fun getFilmsFromApi(page: Int, callback: HomeFragmentViewModel.ApiCallback) {
         retrofitService.getFilms(API.KEY, "ru-RU", page).enqueue(object : Callback<TmdbResultsDto> {
             override fun onResponse(

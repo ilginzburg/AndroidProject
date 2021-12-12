@@ -1,5 +1,6 @@
 package com.ginzburgworks.filmfinder.view.fragments
 
+import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -7,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.data.PageManager
 import com.ginzburgworks.filmfinder.data.SearchController
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
@@ -16,6 +18,7 @@ import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
+import javax.inject.Inject
 
 
 private const val ANIM_POSITION = 1
@@ -26,7 +29,21 @@ class HomeFragment : Fragment() {
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
     private lateinit var binding: FragmentHomeBinding
     private val searchController by lazy { initSearchView() }
-    private val viewModel by lazy { ViewModelProvider(this)[HomeFragmentViewModel::class.java] }
+
+
+
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
+
+   // private lateinit var  viewModel : HomeFragmentViewModel
+   private val viewModel by lazy { ViewModelProvider(this, viewModelFactory)[HomeFragmentViewModel::class.java]}
+
+
+    override fun onAttach(context: Context) {
+        super.onAttach(context)
+        App.instance.appComponent.inject(this)
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,10 +63,14 @@ class HomeFragment : Fragment() {
 
         initRecycler()
         initSearchView()
+
+
+       // viewModel = ViewModelProvider(this, viewModelFactory)[HomeFragmentViewModel::class.java]
         viewModel.filmsListLiveData.observe(viewLifecycleOwner, {
             filmsAdapter.addItems(it)
         })
     }
+
 
     private fun initSearchView(): SearchController {
         return SearchController(filmsAdapter, viewModel).apply {
@@ -85,3 +106,4 @@ class HomeFragment : Fragment() {
         }
     }
 }
+

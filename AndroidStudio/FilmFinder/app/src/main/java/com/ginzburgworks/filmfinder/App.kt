@@ -5,12 +5,12 @@ import com.ginzburgworks.filmfinder.di.AppComponent
 import com.ginzburgworks.filmfinder.di.DaggerAppComponent
 
 class App : Application() {
-    lateinit var dagger: AppComponent
+    lateinit var appComponent: AppComponent
 
     override fun onCreate() {
         super.onCreate()
         instance = this
-        dagger = DaggerAppComponent.create()
+        appComponent = DaggerAppComponent.factory().create(this)
     }
 
     companion object {

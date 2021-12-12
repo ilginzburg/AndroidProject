@@ -2,22 +2,22 @@ package com.ginzburgworks.filmfinder.viewmodel
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.data.PageManager
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
+import javax.inject.Provider
+import javax.inject.Singleton
 
-class HomeFragmentViewModel() : ViewModel() {
+
+class HomeFragmentViewModel  @Inject constructor(private val interactor: Interactor)  : ViewModel() {
 
     val filmsListLiveData = MutableLiveData<List<Film>>()
     val itemsForSearch = mutableListOf<Film>()
 
-    @Inject
-    lateinit var interactor: Interactor
-
     init {
-        App.instance.dagger.inject(this)
         requestNextPage(PageManager.Page.First)
     }
 

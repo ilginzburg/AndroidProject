@@ -1,8 +1,11 @@
 package com.ginzburgworks.filmfinder.di
 
+import android.content.Context
 import com.ginzburgworks.filmfinder.di.modules.DomainModule
 import com.ginzburgworks.filmfinder.di.modules.RemoteModule
-import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
+import com.ginzburgworks.filmfinder.di.modules.ViewModelModule
+import com.ginzburgworks.filmfinder.view.fragments.HomeFragment
+import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
 
@@ -10,9 +13,16 @@ import javax.inject.Singleton
 @Component(
     modules = [
         RemoteModule::class,
-        DomainModule::class
+        DomainModule::class,
+        ViewModelModule::class
     ]
 )
 interface AppComponent {
-    fun inject(homeFragmentViewModel: HomeFragmentViewModel)
+
+    @Component.Factory
+    interface Factory {
+        fun create(@BindsInstance context: Context): AppComponent
+    }
+
+    fun inject(homeFragment: HomeFragment)
 }

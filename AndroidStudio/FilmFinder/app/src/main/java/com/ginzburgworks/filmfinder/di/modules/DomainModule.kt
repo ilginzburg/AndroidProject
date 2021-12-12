@@ -1,15 +1,13 @@
 package com.ginzburgworks.filmfinder.di.modules
 
-import com.ginzburgworks.filmfinder.data.TmdbApi
 import com.ginzburgworks.filmfinder.domain.Interactor
+import dagger.Binds
 import dagger.Module
-import dagger.Provides
-import javax.inject.Singleton
-
 
 @Module
-class DomainModule {
-    @Singleton
-    @Provides
-    fun provideInteractor(tmdbApi: TmdbApi) = Interactor(retrofitService = tmdbApi)
+abstract class DomainModule {
+    //@Binds
+   // abstract fun bindInteractor(InteractorImpl: Interactor): Interactor
 }
+
+//interface Domain {}
