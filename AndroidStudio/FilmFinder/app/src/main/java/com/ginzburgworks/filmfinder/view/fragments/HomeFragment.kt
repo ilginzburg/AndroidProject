@@ -19,6 +19,7 @@ import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
 import javax.inject.Inject
+import javax.inject.Singleton
 
 
 private const val ANIM_POSITION = 1
@@ -31,13 +32,16 @@ class HomeFragment : Fragment() {
     private val searchController by lazy { initSearchView() }
 
 
-
+    @Singleton
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-
-   // private lateinit var  viewModel : HomeFragmentViewModel
-   private val viewModel by lazy { ViewModelProvider(this, viewModelFactory)[HomeFragmentViewModel::class.java]}
+    private val viewModel by lazy {
+        ViewModelProvider(
+            this,
+            viewModelFactory
+        )[HomeFragmentViewModel::class.java]
+    }
 
 
     override fun onAttach(context: Context) {
@@ -64,8 +68,6 @@ class HomeFragment : Fragment() {
         initRecycler()
         initSearchView()
 
-
-       // viewModel = ViewModelProvider(this, viewModelFactory)[HomeFragmentViewModel::class.java]
         viewModel.filmsListLiveData.observe(viewLifecycleOwner, {
             filmsAdapter.addItems(it)
         })

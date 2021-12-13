@@ -4,7 +4,7 @@ import com.ginzburgworks.filmfinder.domain.Film
 
 class Favorites {
 
-    companion object{
+    companion object {
         val favoritesList: MutableList<Film> = mutableListOf()
     }
 }

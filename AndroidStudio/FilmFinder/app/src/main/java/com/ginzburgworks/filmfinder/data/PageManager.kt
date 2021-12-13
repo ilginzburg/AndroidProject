@@ -1,9 +1,9 @@
 package com.ginzburgworks.filmfinder.data
 
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
+import javax.inject.Inject
 
 
 private const val PAGE_SIZE = 20

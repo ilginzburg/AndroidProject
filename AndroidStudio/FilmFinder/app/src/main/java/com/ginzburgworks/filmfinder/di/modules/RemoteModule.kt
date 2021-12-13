@@ -17,41 +17,57 @@ import javax.inject.Inject
 @Module
 abstract class RemoteModule {
 
-    //@Binds
-    abstract fun provideOkHttpClient(okHttpClientImpl: OkHttpClient): OkHttpClient
+    @Binds
+    abstract fun bindOkHttpClient(okHttpClientCreator: OkHttpClientCreator): Remote
 
-
-    //@Binds
-    abstract fun provideRetrofit(retrofitImpl: Retrofit): Retrofit
-
-
+    @Binds
+    abstract fun bindRetrofit(retrofitCreator: RetrofitCreator): Remote
 
     @Binds
     abstract fun bindTmdbApi(apiImpl: TmdbApiImpl): TmdbApi
 
 }
 
-class TmdbApiImpl @Inject constructor() : TmdbApi {
 
-    private val okHttpClientImpl = OkHttpClient.Builder()
-        .callTimeout(30, TimeUnit.SECONDS)
-        .readTimeout(30, TimeUnit.SECONDS)
-        .addInterceptor(HttpLoggingInterceptor().apply {
-            if (BuildConfig.DEBUG) {
-                level = HttpLoggingInterceptor.Level.BASIC
-            }
-        })
-        .build()
+class OkHttpClientCreator @Inject constructor() : Remote {
 
-    private val retrofitImpl = Retrofit.Builder()
-        .baseUrl(ApiConstants.BASE_URL)
-        .addConverterFactory(GsonConverterFactory.create())
-        .client(okHttpClientImpl)
-        .build()
+    fun okHttpClientImpl(): OkHttpClient {
+        return OkHttpClient.Builder()
+            .callTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(30, TimeUnit.SECONDS)
+            .addInterceptor(HttpLoggingInterceptor().apply {
+                if (BuildConfig.DEBUG) {
+                    level = HttpLoggingInterceptor.Level.BASIC
+                }
+            })
+            .build()
+    }
+}
 
+class RetrofitCreator @Inject constructor() : Remote {
+
+    @Inject
+    lateinit var okHttpClientCreator: OkHttpClientCreator
+
+    fun retrofitImpl(): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(ApiConstants.BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create())
+            .client(okHttpClientCreator.okHttpClientImpl())
+            .build()
+    }
+}
+
+
+class TmdbApiImpl @Inject constructor() : TmdbApi, Remote {
+
+    @Inject
+    lateinit var retrofitCreator: RetrofitCreator
 
     override fun getFilms(apiKey: String, language: String, page: Int): Call<TmdbResultsDto> {
-        return  retrofitImpl.create(TmdbApi::class.java).getFilms(apiKey,language,page)
+        return retrofitCreator.retrofitImpl().create(TmdbApi::class.java)
+            .getFilms(apiKey, language, page)
     }
-
 }
+
+interface Remote {}
