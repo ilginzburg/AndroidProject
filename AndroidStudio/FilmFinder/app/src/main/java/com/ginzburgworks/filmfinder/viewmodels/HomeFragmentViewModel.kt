@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder.viewmodel
+package com.ginzburgworks.filmfinder.viewmodels
 
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel

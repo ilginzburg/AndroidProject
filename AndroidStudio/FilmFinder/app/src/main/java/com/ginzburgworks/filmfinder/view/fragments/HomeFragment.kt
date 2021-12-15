@@ -2,13 +2,16 @@ package com.ginzburgworks.filmfinder.view.fragments
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ginzburgworks.filmfinder.App
+import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.PageManager
 import com.ginzburgworks.filmfinder.data.SearchController
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
@@ -17,7 +20,7 @@ import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
-import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
+import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -43,6 +46,9 @@ class HomeFragment : Fragment() {
         )[HomeFragmentViewModel::class.java]
     }
 
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
+    private lateinit var pageManager: PageManager
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -64,10 +70,10 @@ class HomeFragment : Fragment() {
             requireActivity(),
             ANIM_POSITION
         )
-
         initRecycler()
         initSearchView()
-
+        swipeRefreshLayout = activity?.findViewById(R.id.pull_to_refresh) ?: binding.pullToRefresh
+        initPullToRefresh()
         viewModel.filmsListLiveData.observe(viewLifecycleOwner, {
             filmsAdapter.addItems(it)
         })
@@ -104,8 +110,24 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
             addItemDecoration(decorator)
-            addOnScrollListener(PageManager(viewModel, layoutManager as LinearLayoutManager))
+            pageManager = PageManager(viewModel, layoutManager as LinearLayoutManager)
+            addOnScrollListener(pageManager)
         }
+
     }
+
+    private fun initPullToRefresh() {
+
+        swipeRefreshLayout.setOnRefreshListener {
+            Log.d("OnRefresh", "entered")
+            pageManager.restartPages()
+            filmsAdapter.clearItems()
+            swipeRefreshLayout.isRefreshing = false
+        }
+
+    }
+
 }
+
+
 

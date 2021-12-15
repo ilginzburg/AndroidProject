@@ -33,4 +33,6 @@
     <dimen name="description_top_padding">10dp</dimen>
     <dimen name="description_font_size">26sp</dimen>
     <dimen name="recycler_layout_bias">1.0</dimen>
+    <dimen name="settings_radio_text_margin">8dp</dimen>
+    <dimen name="settings_radio_button_margin">16dp</dimen>
 </resources>

@@ -1,10 +1,12 @@
 package com.ginzburgworks.filmfinder.view.rv_adapters
 
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.filmfinder.R
+import com.ginzburgworks.filmfinder.data.PageManager
 import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder

@@ -2,8 +2,7 @@ package com.ginzburgworks.filmfinder.data
 
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
-import javax.inject.Inject
+import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 
 
 private const val PAGE_SIZE = 20
@@ -35,6 +34,7 @@ open class PageManager(
             isPageRequested = false
     }
 
+
     private fun bottomItemPosition() = layoutManager.findLastCompletelyVisibleItemPosition()
 
     private fun startPagePosition() = layoutManager.itemCount - PAGE_SIZE + ITEMS_AFTER_START
@@ -51,5 +51,12 @@ open class PageManager(
 
     private fun isNeedToRequestNextPage(dy: Int) =
         isPageOnEnd() && !isPageRequested && isScrollingDown(dy) && isNotLastPage()
+
+    fun restartPages() {
+        isPageRequested = false
+        Page.Next = Page.First
+        viewModel.requestNextPage(Page.Next++)
+        isPageRequested = true
+    }
 
 }

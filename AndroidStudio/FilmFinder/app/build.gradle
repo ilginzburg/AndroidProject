@@ -79,4 +79,8 @@ dependencies {
 
     //ktx
     implementation    'androidx.fragment:fragment-ktx:1.4.0'
+
+    //SwipeRefresh
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
 }

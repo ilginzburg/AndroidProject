@@ -2,7 +2,7 @@ package com.ginzburgworks.filmfinder.data
 
 import androidx.appcompat.widget.SearchView
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
-import com.ginzburgworks.filmfinder.viewmodel.HomeFragmentViewModel
+import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import java.util.*
 
 class SearchController(

@@ -64,9 +64,9 @@ class TmdbApiImpl @Inject constructor() : TmdbApi, Remote {
     @Inject
     lateinit var retrofitCreator: RetrofitCreator
 
-    override fun getFilms(apiKey: String, language: String, page: Int): Call<TmdbResultsDto> {
+    override fun getFilms(category: String,apiKey: String, language: String, page: Int): Call<TmdbResultsDto> {
         return retrofitCreator.retrofitImpl().create(TmdbApi::class.java)
-            .getFilms(apiKey, language, page)
+            .getFilms(category,apiKey, language, page)
     }
 }
 
