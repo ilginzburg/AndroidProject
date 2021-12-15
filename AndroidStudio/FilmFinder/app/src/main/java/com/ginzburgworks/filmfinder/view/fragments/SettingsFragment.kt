@@ -11,7 +11,6 @@ import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.databinding.FragmentSettingsBinding
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
-import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -20,6 +19,7 @@ private const val ANIM_POSITION = 5
 
 class SettingsFragment : Fragment() {
     private lateinit var binding: FragmentSettingsBinding
+
     @Singleton
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -48,17 +48,21 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AnimationHelper.performFragmentCircularRevealAnimation(binding.settingsFragmentRoot, requireActivity(),ANIM_POSITION)
+        AnimationHelper.performFragmentCircularRevealAnimation(
+            binding.settingsFragmentRoot,
+            requireActivity(),
+            ANIM_POSITION
+        )
         viewModel.categoryPropertyLifeData.observe(viewLifecycleOwner, {
-            when(it) {
+            when (it) {
                 POPULAR_CATEGORY -> binding.radioGroup.check(R.id.radio_popular)
                 TOP_RATED_CATEGORY -> binding.radioGroup.check(R.id.radio_top_rated)
                 UPCOMING_CATEGORY -> binding.radioGroup.check(R.id.radio_upcoming)
                 NOW_PLAYING_CATEGORY -> binding.radioGroup.check(R.id.radio_now_playing)
             }
         })
-        binding.radioGroup.setOnCheckedChangeListener { group, checkedId ->
-            when(checkedId) {
+        binding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
                 R.id.radio_popular -> viewModel.putCategoryProperty(POPULAR_CATEGORY)
                 R.id.radio_top_rated -> viewModel.putCategoryProperty(TOP_RATED_CATEGORY)
                 R.id.radio_upcoming -> viewModel.putCategoryProperty(UPCOMING_CATEGORY)

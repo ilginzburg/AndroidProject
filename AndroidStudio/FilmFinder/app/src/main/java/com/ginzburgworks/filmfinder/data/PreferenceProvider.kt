@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.core.content.edit
 import javax.inject.Inject
 
-private const val PREFERENCE_NAME = "settings"
+
 
 class PreferenceProvider @Inject constructor(context: Context) {
     private val appContext = context.applicationContext
@@ -29,5 +29,6 @@ class PreferenceProvider @Inject constructor(context: Context) {
         private const val KEY_FIRST_LAUNCH = "first_launch"
         private const val KEY_DEFAULT_CATEGORY = "default_category"
         private const val DEFAULT_CATEGORY = "popular"
+        const val PREFERENCE_NAME = "settings"
     }
 }

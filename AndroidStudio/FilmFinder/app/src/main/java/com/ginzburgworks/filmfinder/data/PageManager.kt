@@ -1,5 +1,6 @@
 package com.ginzburgworks.filmfinder.data
 
+import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
@@ -55,7 +56,7 @@ open class PageManager(
     fun restartPages() {
         isPageRequested = false
         Page.Next = Page.First
-        viewModel.requestNextPage(Page.Next++)
+        viewModel.requestNextPage(Page.Next)
         isPageRequested = true
     }
 

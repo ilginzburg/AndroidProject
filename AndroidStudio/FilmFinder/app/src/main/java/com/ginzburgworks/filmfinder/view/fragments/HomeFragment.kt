@@ -1,8 +1,8 @@
 package com.ginzburgworks.filmfinder.view.fragments
 
 import android.content.Context
+import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -13,6 +13,7 @@ import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.PageManager
+import com.ginzburgworks.filmfinder.data.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.SearchController
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.Film
@@ -47,8 +48,14 @@ class HomeFragment : Fragment() {
     }
 
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-
     private lateinit var pageManager: PageManager
+    private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
+    private val shared by lazy {
+        activity?.getSharedPreferences(
+            PreferenceProvider.PREFERENCE_NAME,
+            Context.MODE_PRIVATE
+        )
+    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -74,6 +81,7 @@ class HomeFragment : Fragment() {
         initSearchView()
         swipeRefreshLayout = activity?.findViewById(R.id.pull_to_refresh) ?: binding.pullToRefresh
         initPullToRefresh()
+        initRefreshOnChange()
         viewModel.filmsListLiveData.observe(viewLifecycleOwner, {
             filmsAdapter.addItems(it)
         })
@@ -113,18 +121,34 @@ class HomeFragment : Fragment() {
             pageManager = PageManager(viewModel, layoutManager as LinearLayoutManager)
             addOnScrollListener(pageManager)
         }
-
     }
 
     private fun initPullToRefresh() {
-
         swipeRefreshLayout.setOnRefreshListener {
-            Log.d("OnRefresh", "entered")
-            pageManager.restartPages()
-            filmsAdapter.clearItems()
+            updateAdapterBuffer()
             swipeRefreshLayout.isRefreshing = false
         }
+    }
 
+
+    private fun updateAdapterBuffer() {
+        pageManager.restartPages()
+        filmsAdapter.clearItems()
+    }
+
+
+    private fun initRefreshOnChange() {
+        onSharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+                updateAdapterBuffer()
+            }
+        shared?.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
+    }
+
+
+    override fun onDestroy() {
+        super.onDestroy()
+        shared?.unregisterOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
     }
 
 }
