@@ -12,7 +12,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 
-@Singleton
+
 class Interactor @Inject constructor(private val retrofitService: TmdbApi,private val preferences: PreferenceProvider) {
     fun getFilmsFromApi(page: Int, callback: HomeFragmentViewModel.ApiCallback) {
         retrofitService.getFilms(getDefaultCategoryFromPreferences(),API.KEY, "ru-RU", page).enqueue(object : Callback<TmdbResultsDto> {

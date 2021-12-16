@@ -9,6 +9,8 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
+import com.ginzburgworks.filmfinder.data.PreferenceProvider
+import com.ginzburgworks.filmfinder.data.SettingsManager
 import com.ginzburgworks.filmfinder.databinding.FragmentSettingsBinding
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
@@ -16,8 +18,10 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val ANIM_POSITION = 5
+var nightModeSwitched = false
 
-class SettingsFragment : Fragment() {
+open class SettingsFragment : Fragment() {
+
     private lateinit var binding: FragmentSettingsBinding
 
     @Singleton
@@ -32,9 +36,20 @@ class SettingsFragment : Fragment() {
     }
 
 
+    @Inject
+    lateinit var preferenceProvider: PreferenceProvider
+
+    @Inject
+    lateinit var settingsManager: SettingsManager
+
+
+    private lateinit var appContext: Context
+
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.instance.appComponent.inject(this)
+        appContext = context
     }
 
 
@@ -48,11 +63,10 @@ class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.settingsFragmentRoot,
-            requireActivity(),
-            ANIM_POSITION
-        )
+        settingsManager = SettingsManager(appContext)
+
+        updateNightModeCheckBox()
+
         viewModel.categoryPropertyLifeData.observe(viewLifecycleOwner, {
             when (it) {
                 POPULAR_CATEGORY -> binding.radioGroup.check(R.id.radio_popular)
@@ -69,6 +83,14 @@ class SettingsFragment : Fragment() {
                 R.id.radio_now_playing -> viewModel.putCategoryProperty(NOW_PLAYING_CATEGORY)
             }
         }
+        binding.nightMode.setOnCheckedChangeListener { _, isChecked ->
+            nightModeSwitched = true
+            settingsManager.setSelectedNightMode(isChecked)
+        }
+    }
+
+    private fun updateNightModeCheckBox() {
+        binding.nightMode.isChecked = SettingsManager.nightModeState
     }
 
     companion object {

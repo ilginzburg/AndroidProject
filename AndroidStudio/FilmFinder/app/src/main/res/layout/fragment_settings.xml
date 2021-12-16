@@ -1,21 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:id="@+id/settings_fragment_root"
-    android:background="@drawable/background_settings"
+    android:theme="@style/BackgroundSettings"
     tools:context=".view.fragments.SettingsFragment">
 
     <RadioGroup
         android:id="@+id/radio_group"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="@null"
         android:orientation="vertical">
+
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:background="@null"
             android:textColor="@android:color/white"
             android:layout_margin="@dimen/settings_radio_text_margin"
             android:text="@string/radio_group_header"/>
@@ -53,4 +56,29 @@
             android:textColor="@android:color/white"
             android:text="@string/radio_button_playing"/>
     </RadioGroup>
-</FrameLayout>
+
+        <TextView
+            android:id="@+id/appearance_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAppearance="@style/TextAppearance.AppCompat.Title"
+            android:background="@null"
+            android:textColor="@android:color/white"
+            android:layout_below="@id/radio_group"
+            android:layout_margin="@dimen/settings_radio_text_margin"
+            android:text="@string/radio_other_header"/>
+
+        <CheckBox
+            android:id="@+id/night_mode"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="@dimen/settings_radio_button_margin"
+            android:layout_marginRight="@dimen/settings_radio_button_margin"
+            android:layout_below="@id/appearance_title"
+            android:textColor="@android:color/white"
+            android:text="@string/radio_button_night"/>
+
+
+
+
+</RelativeLayout>

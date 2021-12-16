@@ -11,12 +11,16 @@ import com.ginzburgworks.filmfinder.view.fragments.*
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
+    private lateinit var tag: String
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initNavigation()
-        val tag = "home"
+        tag = "home"
+        if (nightModeSwitched)
+            tag = "settings"
         val fragment = checkFragmentExistence(tag)
         changeFragment(fragment ?: HomeFragment(), tag)
     }
@@ -45,13 +49,13 @@ class MainActivity : AppCompatActivity() {
                 R.id.selections -> {
                     val tag = "selections"
                     val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment ?: SelectionsFragment(), tag)
+                    changeFragment(fragment ?: SelectedFragment(), tag)
                     true
                 }
                 R.id.settings -> {
                     val tag = "settings"
                     val fragment = checkFragmentExistence(tag)
-                    changeFragment( fragment?: SettingsFragment(), tag)
+                    changeFragment(fragment ?: SettingsFragment(), tag)
                     true
                 }
                 else -> false
@@ -78,4 +82,6 @@ class MainActivity : AppCompatActivity() {
         fragment.arguments = bundle
         changeFragment(fragment, tag)
     }
+
+
 }

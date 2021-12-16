@@ -1,28 +1,36 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
-    <!-- Base application theme. -->
-    <style name="AppTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+
+    <!-- Base application theme. NIGHT-->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/purple_200</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
+        <item name="colorPrimary">@color/black</item>
+        <item name="colorPrimaryVariant">@color/black</item>
         <item name="colorOnPrimary">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
+        <item name="colorSecondary">@color/PurpleDark</item>
+        <item name="colorSecondaryVariant">@color/BlueDark</item>
         <item name="colorOnSecondary">@color/black</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
         <item name="toolbarStyle">@style/Toolbar</item>
         <item name="colorControlNormal">@color/icons_dark</item>
+        <item name="autoCompleteTextViewStyle">@style/SearchAutoCompleteTextView</item>
 
     </style>
 
+    <style name="SearchAutoCompleteTextView" parent="Widget.AppCompat.Light.AutoCompleteTextView">
+        <item name="android:textColor">@color/icons_dark</item>
+        <item name="android:textColorHint">@color/icons_dark</item>
+    </style>
 
     <style name="Toolbar" parent="Widget.MaterialComponents.Toolbar">
         <item name="titleTextColor">@color/icons_dark</item>
-        <item name="android:background">@color/app_bar_dark</item>
+        <item name="android:background">@color/Black</item>
         <item name="navigationIconTint">@color/icons_dark</item>
         <item name="iconTint">@color/icons_dark</item>
+        <item name="itemTextColor">@color/icons_dark</item>
+        <item name="itemIconTint">@color/icons_dark</item>
     </style>
 
     <declare-styleable name="RatingDonutView">
@@ -35,5 +43,35 @@
     </declare-styleable>
 
 
+    <style name = "BackgroundWatchLater">
+        <item name="android:background">@drawable/background_watch_later</item>
+    </style>
+
+    <style name="BackgroundFavorites">
+        <item name="android:background">@drawable/background_favorites</item>
+    </style>
+
+    <style name="BackgroundSettings">
+        <item name="android:background">@drawable/background_settings</item>
+    </style>
+
+    <style name="BackgroundHome">
+        <item name="android:background">@drawable/background_home</item>
+    </style>
+
+    <style name="BackgroundSelected">
+        <item name="android:background">@drawable/background_selected</item>
+    </style>
+
+    <style name="SearchViewStyle" parent="Widget.AppCompat.SearchView">
+        <item name="searchIcon">@drawable/ic_baseline_search_24</item>
+        <item name="android:background">@drawable/background_search_view</item>
+    </style>
+
+    <style name="ItemTextStyle">
+        <item name="android:background">@color/PurpleDark</item>
+        <item name="android:textColor">@color/icons_dark</item>
+        <item name="android:textColorHint">@color/icons_dark</item>
+    </style>
 
 </resources>

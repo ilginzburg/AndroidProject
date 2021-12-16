@@ -3,6 +3,7 @@ package com.ginzburgworks.filmfinder.di
 import android.content.Context
 import com.ginzburgworks.filmfinder.di.modules.DomainModule
 import com.ginzburgworks.filmfinder.di.modules.RemoteModule
+import com.ginzburgworks.filmfinder.di.modules.SettingsModule
 import com.ginzburgworks.filmfinder.di.modules.ViewModelModule
 import com.ginzburgworks.filmfinder.view.fragments.HomeFragment
 import com.ginzburgworks.filmfinder.view.fragments.SettingsFragment
@@ -15,6 +16,7 @@ import javax.inject.Singleton
     modules = [
         RemoteModule::class,
         DomainModule::class,
+        SettingsModule::class,
         ViewModelModule::class
     ]
 )

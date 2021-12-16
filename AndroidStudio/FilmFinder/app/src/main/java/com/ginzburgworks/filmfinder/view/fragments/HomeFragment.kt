@@ -35,7 +35,6 @@ class HomeFragment : Fragment() {
     private lateinit var binding: FragmentHomeBinding
     private val searchController by lazy { initSearchView() }
 
-
     @Singleton
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
@@ -47,15 +46,12 @@ class HomeFragment : Fragment() {
         )[HomeFragmentViewModel::class.java]
     }
 
+    @Inject
+    lateinit var preferenceProvider: PreferenceProvider
+
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var pageManager: PageManager
     private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
-    private val shared by lazy {
-        activity?.getSharedPreferences(
-            PreferenceProvider.PREFERENCE_NAME,
-            Context.MODE_PRIVATE
-        )
-    }
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -65,7 +61,7 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -142,15 +138,15 @@ class HomeFragment : Fragment() {
             SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
                 updateAdapterBuffer()
             }
-        shared?.registerOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
+        preferenceProvider.registerListener(onSharedPreferenceChangeListener)
     }
 
 
     override fun onDestroy() {
         super.onDestroy()
-        shared?.unregisterOnSharedPreferenceChangeListener(onSharedPreferenceChangeListener)
+        if (this::onSharedPreferenceChangeListener.isInitialized)
+            preferenceProvider.unRegisterListener(onSharedPreferenceChangeListener)
     }
-
 }
 
 
