@@ -18,9 +18,9 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initNavigation()
-        tag = "home"
+        tag = HOME_FRAGMENT_TAG
         if (nightModeSwitched)
-            tag = "settings"
+            tag = SETTINGS_FRAGMENT_TAG
         val fragment = checkFragmentExistence(tag)
         changeFragment(fragment ?: HomeFragment(), tag)
     }
@@ -29,33 +29,28 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> {
-                    val tag = "home"
-                    val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment ?: HomeFragment(), tag)
+                    val fragment = checkFragmentExistence(HOME_FRAGMENT_TAG)
+                    changeFragment(fragment ?: HomeFragment(), HOME_FRAGMENT_TAG)
                     true
                 }
                 R.id.favorites -> {
-                    val tag = "favorites"
-                    val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment ?: FavoritesFragment(), tag)
+                    val fragment = checkFragmentExistence(FAVORITES_FRAGMENT_TAG)
+                    changeFragment(fragment ?: FavoritesFragment(), FAVORITES_FRAGMENT_TAG)
                     true
                 }
                 R.id.watch_later -> {
-                    val tag = "watch_later"
-                    val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment ?: WatchLaterFragment(), tag)
+                    val fragment = checkFragmentExistence(WATCH_LATER_FRAGMENT_TAG)
+                    changeFragment(fragment ?: WatchLaterFragment(), WATCH_LATER_FRAGMENT_TAG)
                     true
                 }
                 R.id.selections -> {
-                    val tag = "selections"
-                    val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment ?: SelectedFragment(), tag)
+                    val fragment = checkFragmentExistence(SELECTIONS_FRAGMENT_TAG)
+                    changeFragment(fragment ?: SelectionsFragment(), SELECTIONS_FRAGMENT_TAG)
                     true
                 }
                 R.id.settings -> {
-                    val tag = "settings"
-                    val fragment = checkFragmentExistence(tag)
-                    changeFragment(fragment ?: SettingsFragment(), tag)
+                    val fragment = checkFragmentExistence(SETTINGS_FRAGMENT_TAG)
+                    changeFragment(fragment ?: SettingsFragment(), SETTINGS_FRAGMENT_TAG)
                     true
                 }
                 else -> false
@@ -78,10 +73,16 @@ class MainActivity : AppCompatActivity() {
         val bundle = Bundle()
         bundle.putParcelable(DetailsFragment.KEY_FILM, film)
         val fragment = DetailsFragment()
-        val tag = "details"
         fragment.arguments = bundle
-        changeFragment(fragment, tag)
+        changeFragment(fragment, DETAILS_FRAGMENT_TAG)
     }
 
-
+    companion object{
+        private const val DETAILS_FRAGMENT_TAG = "details"
+        private const val HOME_FRAGMENT_TAG = "home"
+        private const val SETTINGS_FRAGMENT_TAG = "settings"
+        private const val SELECTIONS_FRAGMENT_TAG = "selections"
+        private const val WATCH_LATER_FRAGMENT_TAG = "watch_later"
+        private const val FAVORITES_FRAGMENT_TAG = "favorites"
+    }
 }

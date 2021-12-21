@@ -1,6 +1,5 @@
 package com.ginzburgworks.filmfinder.data
 
-import android.util.Log
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
@@ -23,14 +22,11 @@ open class PageManager(
         lateinit var Last: Number
     }
 
-
     override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-
         if (isNeedToRequestNextPage(dy)) {
             viewModel.requestNextPage(++Page.Next)
             isPageRequested = true
         }
-
         if (isPageOnStart())
             isPageRequested = false
     }
@@ -59,5 +55,4 @@ open class PageManager(
         viewModel.requestNextPage(Page.Next)
         isPageRequested = true
     }
-
 }

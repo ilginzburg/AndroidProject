@@ -25,6 +25,7 @@ class HomeFragmentViewModel @Inject constructor(private val interactor: Interact
             }
 
             override fun onFailure() {
+                filmsListLiveData.postValue(interactor.getFilmsFromDB())
             }
         })
     }

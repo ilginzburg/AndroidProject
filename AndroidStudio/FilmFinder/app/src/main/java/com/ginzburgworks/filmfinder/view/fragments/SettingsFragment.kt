@@ -12,7 +12,6 @@ import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.SettingsManager
 import com.ginzburgworks.filmfinder.databinding.FragmentSettingsBinding
-import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -23,11 +22,7 @@ var nightModeSwitched = false
 open class SettingsFragment : Fragment() {
 
     private lateinit var binding: FragmentSettingsBinding
-
-    @Singleton
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
+    private lateinit var appContext: Context
     private val viewModel by lazy {
         ViewModelProvider(
             this,
@@ -35,6 +30,9 @@ open class SettingsFragment : Fragment() {
         )[SettingsFragmentViewModel::class.java]
     }
 
+    @Singleton
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
 
     @Inject
     lateinit var preferenceProvider: PreferenceProvider
@@ -42,16 +40,11 @@ open class SettingsFragment : Fragment() {
     @Inject
     lateinit var settingsManager: SettingsManager
 
-
-    private lateinit var appContext: Context
-
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.instance.appComponent.inject(this)
         appContext = context
     }
-
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -64,9 +57,7 @@ open class SettingsFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         settingsManager = SettingsManager(appContext)
-
         updateNightModeCheckBox()
-
         viewModel.categoryPropertyLifeData.observe(viewLifecycleOwner, {
             when (it) {
                 POPULAR_CATEGORY -> binding.radioGroup.check(R.id.radio_popular)

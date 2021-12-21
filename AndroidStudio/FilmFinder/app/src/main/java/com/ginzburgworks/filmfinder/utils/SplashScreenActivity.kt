@@ -1,5 +1,6 @@
 package com.ginzburgworks.filmfinder.utils
 
+import android.annotation.SuppressLint
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,6 +12,7 @@ import kotlinx.android.synthetic.main.activity_splash_screen.*
 private const val ANIM_DURATION = 3500L
 private const val ANIM_ALFA_START = 0f
 private const val ANIM_ALFA_END = 1f
+
 
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {

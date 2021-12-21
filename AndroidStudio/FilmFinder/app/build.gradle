@@ -8,12 +8,11 @@ android {
     buildToolsVersion "30.0.3"
 
     defaultConfig {
-        applicationId "com.amsdevelops.filmssearch"
-        minSdkVersion 21
+        applicationId "com.ginzburgworks.filmfinder"
+        minSdkVersion 23
         targetSdkVersion 31
         versionCode 1
         versionName "1.0"
-
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -37,8 +36,6 @@ android {
     kotlinOptions {
         jvmTarget = "1.8"
     }
-
-
 }
 
 dependencies {
@@ -56,6 +53,7 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.3'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
     androidTestImplementation 'androidx.test.espresso:espresso-contrib:3.4.0'
+    androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
 
     //MaterialDesign
     implementation 'com.google.android.material:material:1.4.0'

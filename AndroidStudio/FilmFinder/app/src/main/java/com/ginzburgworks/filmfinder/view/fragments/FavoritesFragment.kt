@@ -7,12 +7,12 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ginzburgworks.filmfinder.data.Favorites
-import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.databinding.FragmentFavoritesBinding
 import com.ginzburgworks.filmfinder.domain.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
-import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
+import com.ginzburgworks.filmfinder.view.MainActivity
+import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 
 private const val DECORATOR_PADDING = 8
 private const val ANIM_POSITION = 4
@@ -25,7 +25,7 @@ class FavoritesFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
+    ): View {
         binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -36,7 +36,7 @@ class FavoritesFragment : Fragment() {
             .apply {
                 filmsAdapter =
                     FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener {
-                        override fun click(film: Film) {
+                        override fun onClick(film: Film) {
                             (requireActivity() as MainActivity).launchDetailsFragment(film)
                         }
                     })

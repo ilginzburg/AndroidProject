@@ -27,9 +27,4 @@ class SearchController(
         filmsAdapter.addItems(result)
         return false
     }
-
-    fun saveItemsForSearch() {
-        viewModel.itemsForSearch.clear()
-        viewModel.itemsForSearch.addAll(filmsAdapter.items)
-    }
 }

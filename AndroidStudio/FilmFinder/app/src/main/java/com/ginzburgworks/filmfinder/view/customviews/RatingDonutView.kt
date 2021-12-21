@@ -2,6 +2,7 @@ package com.ginzburgworks.filmfinder.view.customviews
 
 import android.animation.ObjectAnimator
 import android.content.Context
+import android.content.res.TypedArray
 import android.graphics.*
 import android.util.AttributeSet
 import android.view.View
@@ -30,10 +31,6 @@ private const val PROGRESS_DEFAULT = 50
 private const val STROKE_DEFAULT = 10f
 
 private const val SCALE_SIZE = 60f
-private const val LOW_COLOR_DEF = "#e84258"
-private const val MID_LOW_COLOR_DEF = "#fd8060"
-private const val MID_HIGH_COLOR_DEF = "#fee191"
-private const val HIGH_COLOR_DEF = "#b0d8a4"
 
 class RatingDonutView @JvmOverloads constructor(
     context: Context,
@@ -50,12 +47,12 @@ class RatingDonutView @JvmOverloads constructor(
     private lateinit var digitPaint: Paint
     private lateinit var circlePaint: Paint
 
-    private var lowColor = LOW_COLOR_DEF
-    private var midLowColor = MID_LOW_COLOR_DEF
-    private var midHighColor = MID_HIGH_COLOR_DEF
-    private var highColor = HIGH_COLOR_DEF
+    private var lowColor = R.color.PinkLow
+    private var midLowColor = R.color.YellowMid
+    private var midHighColor = R.color.OrangeMid
+    private var highColor = R.color.GreenHigh
 
-    private val animRotation = ObjectAnimator.ofFloat(this, View.ROTATION, ANIM_ROTATION_DEGREE)
+    private val animRotation = ObjectAnimator.ofFloat(this, ROTATION, ANIM_ROTATION_DEGREE)
 
     companion object {
         const val RATING_FACTOR: Float = 10f
@@ -65,23 +62,20 @@ class RatingDonutView @JvmOverloads constructor(
         val a =
             context.theme.obtainStyledAttributes(attributeSet, R.styleable.RatingDonutView, 0, 0)
         try {
-            stroke =
-                a.getFloat(R.styleable.RatingDonutView_stroke, stroke)
-            progress =
-                a.getInt(R.styleable.RatingDonutView_progress, progress)
-            lowColor =
-                (a.getString(R.styleable.RatingDonutView_low_color) ?: lowColor).toString()
-            midLowColor =
-                (a.getString(R.styleable.RatingDonutView_mid_low_color) ?: midLowColor).toString()
-            midHighColor =
-                (a.getString(R.styleable.RatingDonutView_mid_high_color) ?: midHighColor).toString()
-            highColor =
-                (a.getString(R.styleable.RatingDonutView_high_color) ?: highColor).toString()
-
+            stroke = a.getFloat(R.styleable.RatingDonutView_stroke, stroke)
+            progress = a.getInt(R.styleable.RatingDonutView_progress, progress)
+            lowColor = getRatingColor(a, R.styleable.RatingDonutView_low_color, lowColor)
+            midLowColor = getRatingColor(a, R.styleable.RatingDonutView_mid_low_color, midLowColor)
+            midHighColor = getRatingColor(a, R.styleable.RatingDonutView_mid_high_color, midHighColor)
+            highColor = getRatingColor(a, R.styleable.RatingDonutView_high_color, highColor)
         } finally {
             a.recycle()
         }
         initPaint()
+    }
+
+    private fun getRatingColor(attributesArray: TypedArray, idx: Int, defColor: Int): Int {
+        return attributesArray.getColor(idx, resources.getColor(defColor, context.theme))
     }
 
     fun setProgress(pr: Int) {
@@ -113,10 +107,10 @@ class RatingDonutView @JvmOverloads constructor(
     }
 
     private fun getPaintColor(progress: Int): Int = when (progress) {
-        in LOW_FROM..LOW_TO -> Color.parseColor(lowColor)
-        in MID_LOW_FROM..MID_LOW_TO -> Color.parseColor(midLowColor)
-        in MID_HIGH_FROM..MID_HIGH_TO -> Color.parseColor(midHighColor)
-        else -> Color.parseColor(highColor)
+        in LOW_FROM..LOW_TO -> lowColor
+        in MID_LOW_FROM..MID_LOW_TO -> midLowColor
+        in MID_HIGH_FROM..MID_HIGH_TO -> midHighColor
+        else -> highColor
     }
 
     override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
@@ -128,28 +122,23 @@ class RatingDonutView @JvmOverloads constructor(
     }
 
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val widthMode = View.MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = View.MeasureSpec.getSize(widthMeasureSpec)
-
-        val heightMode = View.MeasureSpec.getMode(heightMeasureSpec)
-        val heightSize = View.MeasureSpec.getSize(heightMeasureSpec)
-
+        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
+        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
+        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
+        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
         val chosenWidth = chooseDimension(widthMode, widthSize)
         val chosenHeight = chooseDimension(heightMode, heightSize)
-
-        val minSide = Math.min(chosenWidth, chosenHeight)
+        val minSide = chosenWidth.coerceAtMost(chosenHeight)
         centerX = minSide.div(MIN_SIDE_X_DIVISION_FACTOR)
         centerY = minSide.div(MIN_SIDE_Y_DIVISION_FACTOR)
-
         setMeasuredDimension(minSide, minSide)
     }
 
     private fun chooseDimension(mode: Int, size: Int) =
         when (mode) {
-            View.MeasureSpec.AT_MOST, View.MeasureSpec.EXACTLY -> size
+            MeasureSpec.AT_MOST, MeasureSpec.EXACTLY -> size
             else -> DEFAULT_SIZE
         }
-
 
     private fun drawRating(canvas: Canvas) {
         val scale = radius * RADIUS_FACTOR

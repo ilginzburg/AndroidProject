@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="no_color_transparent">#00BB86FC</color>
     <color name="purple_200">#FFBB86FC</color>
     <color name="purple_500">#FF6200EE</color>
     <color name="purple_700">#FF3700B3</color>
@@ -8,7 +9,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="app_bar_dark">#2A2D36</color>
-    <color name="icons_dark">#3BF212</color>
+    <color name="green_on_dark">#3BF212</color>
     <color name="colorPrimaryDark">#3700B3</color>
     <color name="colorAccent">#03DAC5</color>
     <color name="PurpleDark">#2D1E47</color>
@@ -153,4 +154,8 @@
     <color name="DarkBlue">#00008B</color>
     <color name="Navy">#000080</color>
     <color name="Black">#000000</color>
+    <color name="PinkLow">#e84258</color>
+    <color name="YellowMid">#fd8060</color>
+    <color name="OrangeMid">#FBC304</color>
+    <color name="GreenHigh">#3EE00E</color>
 </resources>

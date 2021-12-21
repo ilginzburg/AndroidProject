@@ -1,14 +1,13 @@
 package com.ginzburgworks.filmfinder.data
 
 import android.content.Context
-import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatDelegate
 import com.ginzburgworks.filmfinder.di.modules.Settings
 import javax.inject.Inject
 
 private const val DAY_MODE = false
 
-class SettingsManager @Inject constructor(private val context: Context) : Settings {
+class SettingsManager @Inject constructor( context: Context) : Settings {
 
 
 private var pref = PreferenceProvider(context)

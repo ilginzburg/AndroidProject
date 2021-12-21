@@ -31,14 +31,12 @@ private const val DECORATOR_PADDING = 8
 
 class HomeFragment : Fragment() {
 
-    private lateinit var filmsAdapter: FilmListRecyclerAdapter
     private lateinit var binding: FragmentHomeBinding
+    private lateinit var filmsAdapter: FilmListRecyclerAdapter
+    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+    private lateinit var pageManager: PageManager
+    private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     private val searchController by lazy { initSearchView() }
-
-    @Singleton
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
     private val viewModel by lazy {
         ViewModelProvider(
             this,
@@ -46,12 +44,12 @@ class HomeFragment : Fragment() {
         )[HomeFragmentViewModel::class.java]
     }
 
+    @Singleton
+    @Inject
+    lateinit var viewModelFactory: ViewModelProvider.Factory
+
     @Inject
     lateinit var preferenceProvider: PreferenceProvider
-
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var pageManager: PageManager
-    private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -83,12 +81,11 @@ class HomeFragment : Fragment() {
         })
     }
 
-
     private fun initSearchView(): SearchController {
         return SearchController(filmsAdapter, viewModel).apply {
             binding.searchView.setOnClickListener {
-                saveItemsForSearch()
-                binding.searchView.isIconified = false;
+                filmsAdapter.saveItemsForSearch(viewModel)
+                binding.searchView.isIconified = false
             }
             binding.searchView.setOnCloseListener {
                 if (viewModel.itemsForSearch.size > 0) {
@@ -106,7 +103,7 @@ class HomeFragment : Fragment() {
         binding.mainRecycler.apply {
             filmsAdapter =
                 FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener {
-                    override fun click(film: Film) {
+                    override fun onClick(film: Film) {
                         (requireActivity() as MainActivity).launchDetailsFragment(film)
                     }
                 })
@@ -126,12 +123,10 @@ class HomeFragment : Fragment() {
         }
     }
 
-
     private fun updateAdapterBuffer() {
         pageManager.restartPages()
         filmsAdapter.clearItems()
     }
-
 
     private fun initRefreshOnChange() {
         onSharedPreferenceChangeListener =
@@ -140,7 +135,6 @@ class HomeFragment : Fragment() {
             }
         preferenceProvider.registerListener(onSharedPreferenceChangeListener)
     }
-
 
     override fun onDestroy() {
         super.onDestroy()

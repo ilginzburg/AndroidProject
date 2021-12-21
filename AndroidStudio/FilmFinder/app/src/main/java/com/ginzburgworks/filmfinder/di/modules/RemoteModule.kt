@@ -1,6 +1,6 @@
 package com.ginzburgworks.filmfinder.di.modules
 
-import com.ginzburgworks.filmfinder.BuildConfig
+import androidx.databinding.ktx.BuildConfig
 import com.ginzburgworks.filmfinder.data.ApiConstants
 import com.ginzburgworks.filmfinder.data.TmdbApi
 import com.ginzburgworks.filmfinder.data.entity.TmdbResultsDto
@@ -70,4 +70,4 @@ class TmdbApiImpl @Inject constructor() : TmdbApi, Remote {
     }
 }
 
-interface Remote {}
+interface Remote

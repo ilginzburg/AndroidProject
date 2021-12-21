@@ -2,7 +2,6 @@ package com.ginzburgworks.filmfinder.data
 
 import android.content.Context
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.core.content.edit
 import javax.inject.Inject
 
@@ -10,7 +9,6 @@ import javax.inject.Inject
 open class PreferenceProvider @Inject constructor(context: Context) {
     private val appContext = context.applicationContext
     private val preference = appContext.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
-
 
     init {
         if (preference.getBoolean(KEY_FIRST_LAUNCH, false)) {
@@ -27,15 +25,12 @@ open class PreferenceProvider @Inject constructor(context: Context) {
         return preference.getString(KEY_DEFAULT_CATEGORY, DEFAULT_CATEGORY) ?: DEFAULT_CATEGORY
     }
 
-
     fun registerListener(listener: SharedPreferences.OnSharedPreferenceChangeListener){
         preference.registerOnSharedPreferenceChangeListener(listener)
-
     }
 
     fun unRegisterListener(listener:SharedPreferences.OnSharedPreferenceChangeListener){
         preference.unregisterOnSharedPreferenceChangeListener(listener)
-
     }
 
     fun readSettings() {
@@ -56,7 +51,6 @@ open class PreferenceProvider @Inject constructor(context: Context) {
         private const val PREFERENCE_NAME = "settings"
         private const val KEY_NIGHT_MODE_STATE = "night_mode_key"
         private const val NIGHT_MODE = true
-        private const val DAY_MODE = false
         private const val DEFAULT_MODE = NIGHT_MODE
     }
 }
