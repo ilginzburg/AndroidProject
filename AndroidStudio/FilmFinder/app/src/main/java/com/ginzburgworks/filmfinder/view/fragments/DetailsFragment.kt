@@ -70,7 +70,6 @@ class DetailsFragment : Fragment() {
             .into(posterView)
     }
 
-
     companion object {
         const val KEY_FILM = "film"
     }

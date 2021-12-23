@@ -44,6 +44,7 @@ class Interactor @Inject constructor(
     }
 
     fun getFilmsFromDB(): List<Film> = repo.getAllFromDB()
+    fun getFilmByTitleFromDB(title:String) : Film = repo.getFilmByTitle(title)
 
     fun saveDefaultCategoryToPreferences(category: String) {
         preferences.saveDefaultCategory(category)

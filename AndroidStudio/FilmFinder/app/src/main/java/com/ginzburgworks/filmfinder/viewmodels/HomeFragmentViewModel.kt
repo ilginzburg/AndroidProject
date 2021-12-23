@@ -1,5 +1,6 @@
 package com.ginzburgworks.filmfinder.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ginzburgworks.filmfinder.data.PageManager
