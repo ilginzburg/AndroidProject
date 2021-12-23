@@ -5,7 +5,7 @@ import com.ginzburgworks.filmfinder.data.SettingsManager
 import com.ginzburgworks.filmfinder.di.AppComponent
 import com.ginzburgworks.filmfinder.di.DaggerAppComponent
 
-open class App : Application() {
+class App : Application() {
     lateinit var appComponent: AppComponent
     private lateinit var settingsManager: SettingsManager
 

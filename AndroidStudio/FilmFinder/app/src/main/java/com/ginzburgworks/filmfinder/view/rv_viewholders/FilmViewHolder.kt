@@ -1,38 +1,49 @@
 package com.ginzburgworks.filmfinder.view.rv_viewholders
 
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.ApiConstants
 import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
 import com.ginzburgworks.filmfinder.domain.Film
 
+private const val VIEW_HOLDER_IMG_SIZE = "w342"
+
 class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
 
-    private val filmItemBinding: FilmItemBinding? = DataBindingUtil.bind(itemView)
+    private val filmItemBinding: FilmItemBinding by lazy { getThisFilmItemBinding() }
 
-    fun bind(film: Film) {
-        filmItemBinding?.film = film
-        val fullUrl = ApiConstants.IMAGES_URL + "w342" + film.poster
-        if (filmItemBinding != null) {
-            loadImage(filmItemBinding.poster, itemView, fullUrl)
-        }
+    private fun getThisFilmItemBinding(): FilmItemBinding {
+        return DataBindingUtil.bind(itemView) ?: FilmItemBinding.inflate(
+            LayoutInflater.from(
+                itemView.context
+            )
+        )
     }
 
-    private fun loadImage(
-        posterView: ImageView,
-        itemView: View,
-        posterUrl: String
-    ) {
-        val defaultImage = R.drawable.tv_default
+    fun bind(film: Film) {
+        filmItemBinding.film = film
+        loadImage(filmItemBinding.poster, itemView, film.poster)
+    }
+
+    private fun loadImage(posterView: ImageView, itemView: View, posterUrl: String) {
+        val sourceImageUrl = ApiConstants.IMAGES_URL + VIEW_HOLDER_IMG_SIZE + posterUrl
+        val defaultImage = defaultFilm.poster
         Glide.with(itemView)
-            .load(posterUrl)
+            .load(sourceImageUrl)
             .centerCrop()
             .error(defaultImage)
             .into(posterView)
+    }
 
+    companion object {
+        private const val title = "defaultTitle"
+        private const val poster = "R.drawable.tv_default"
+        private const val description = "descriptionDefault"
+        private const val rating = 1.1
+        val defaultFilm = Film(title, poster, description, rating)
     }
 }

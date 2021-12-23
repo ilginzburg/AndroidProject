@@ -13,6 +13,9 @@ import com.ginzburgworks.filmfinder.data.ApiConstants
 import com.ginzburgworks.filmfinder.data.Favorites
 import com.ginzburgworks.filmfinder.databinding.FragmentDetailsBinding
 import com.ginzburgworks.filmfinder.domain.Film
+import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder
+
+private const val DETAILS_FRAG_IMG_SIZE = "w780"
 
 class DetailsFragment : Fragment() {
 
@@ -62,9 +65,10 @@ class DetailsFragment : Fragment() {
     }
 
     private fun loadImage(posterUrl: String, posterView: ImageView) {
-        val defaultImage = R.drawable.tv_default
+        val sourceImageUrl = ApiConstants.IMAGES_URL + DETAILS_FRAG_IMG_SIZE + posterUrl
+        val defaultImage = FilmViewHolder.defaultFilm.poster
         Glide.with(this)
-            .load(ApiConstants.IMAGES_URL + "w780" + posterUrl)
+            .load(sourceImageUrl)
             .centerCrop()
             .error(defaultImage)
             .into(posterView)
