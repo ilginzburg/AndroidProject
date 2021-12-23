@@ -17,7 +17,6 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val ANIM_POSITION = 5
-var nightModeSwitched = false
 
 open class SettingsFragment : Fragment() {
 
@@ -75,7 +74,6 @@ open class SettingsFragment : Fragment() {
             }
         }
         binding.nightMode.setOnCheckedChangeListener { _, isChecked ->
-            nightModeSwitched = true
             settingsManager.setSelectedNightMode(isChecked)
         }
     }

@@ -3,7 +3,9 @@ package com.ginzburgworks.filmfinder.data.db
 import android.content.ContentValues
 import android.database.Cursor
 import android.database.sqlite.SQLiteDatabase
+import android.util.Log
 import com.ginzburgworks.filmfinder.domain.Film
+import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder.Companion.defaultFilm
 import javax.inject.Inject
 
 class MainRepository @Inject constructor(databaseHelper: DatabaseHelper) {
@@ -37,6 +39,7 @@ class MainRepository @Inject constructor(databaseHelper: DatabaseHelper) {
                 val rating = cursor.getDouble(4)
                 result.add(Film(title, poster, description, rating))
             } while (cursor.moveToNext())
+            cursor.close()
         }
         return result
     }
@@ -46,14 +49,21 @@ class MainRepository @Inject constructor(databaseHelper: DatabaseHelper) {
             "SELECT * FROM ${DatabaseHelper.TABLE_NAME} WHERE ${DatabaseHelper.COLUMN_TITLE} LIKE \"$title\" ",
             null
         )
-        cursor.moveToFirst()
-        val poster = cursor.getString(2)
-        val description = cursor.getString(3)
-        val rating = cursor.getDouble(4)
-        cursor.close()
-        return Film(title, poster, description, rating)
-
+        var result = defaultFilm
+        if (cursor.moveToFirst()) {
+            do {
+                val poster = cursor.getString(2)
+                val description = cursor.getString(3)
+                val rating = cursor.getDouble(4)
+                result = Film(title, poster, description, rating)
+            } while (cursor.moveToNext())
+            cursor.close()
+        }
+        return result
     }
 
-
+    fun updateFilmByRowId(rowId: Int, film: Film) {
+        val sqliteString = "UPDATE ${DatabaseHelper.TABLE_NAME} SET ${DatabaseHelper.COLUMN_TITLE} = \"${film.title}\",${DatabaseHelper.COLUMN_POSTER} = \"${film.poster}\",${DatabaseHelper.COLUMN_DESCRIPTION} = \"${film.description}\", ${DatabaseHelper.COLUMN_RATING} = \"${film.rating}\" WHERE ID = $rowId "
+        sqlDb.execSQL(sqliteString)
+    }
 }

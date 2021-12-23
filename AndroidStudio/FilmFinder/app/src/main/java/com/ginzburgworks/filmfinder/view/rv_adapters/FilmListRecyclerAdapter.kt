@@ -29,7 +29,6 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) :
           filmItemBinding.itemContainer.setOnClickListener {
                 clickListener.onClick(items[position])
           }
-
     }
 
     fun addItems(list: List<Film>) {
@@ -50,7 +49,6 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) :
         viewModel.itemsForSearch.clear()
         viewModel.itemsForSearch.addAll(items)
     }
-
 
     interface OnItemClickListener {
         fun onClick(film: Film)
