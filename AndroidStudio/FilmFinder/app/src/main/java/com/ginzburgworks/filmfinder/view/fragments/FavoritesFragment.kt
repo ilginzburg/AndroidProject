@@ -8,7 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ginzburgworks.filmfinder.data.Favorites
 import com.ginzburgworks.filmfinder.databinding.FragmentFavoritesBinding
-import com.ginzburgworks.filmfinder.domain.Film
+import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity

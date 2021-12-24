@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.ginzburgworks.filmfinder.data.ApiConstants
 import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
-import com.ginzburgworks.filmfinder.domain.Film
+import com.ginzburgworks.filmfinder.data.Film
 
 private const val VIEW_HOLDER_IMG_SIZE = "w342"
 
@@ -40,10 +40,11 @@ class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     companion object {
+        private const val id = 1
         private const val title = "defaultTitle"
         private const val poster = "R.drawable.tv_default"
         private const val description = "descriptionDefault"
         private const val rating = 1.1
-        val defaultFilm = Film(title, poster, description, rating)
+        val defaultFilm = Film(id,title, poster, description, rating)
     }
 }

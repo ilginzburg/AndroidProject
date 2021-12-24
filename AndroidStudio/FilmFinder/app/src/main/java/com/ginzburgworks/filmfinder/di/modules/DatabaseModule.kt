@@ -1,8 +1,10 @@
 package com.ginzburgworks.filmfinder.di.modules
 
 import android.content.Context
-import com.ginzburgworks.filmfinder.data.db.DatabaseHelper
+import androidx.room.Room
+import com.ginzburgworks.filmfinder.data.db.AppDatabase
 import com.ginzburgworks.filmfinder.data.db.MainRepository
+import com.ginzburgworks.filmfinder.data.db.dao.FilmDao
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -11,9 +13,14 @@ import javax.inject.Singleton
 class DatabaseModule {
     @Singleton
     @Provides
-    fun provideDatabaseHelper(context: Context) = DatabaseHelper(context)
+    fun provideFilmDao(context: Context) =
+        Room.databaseBuilder(
+            context,
+            AppDatabase::class.java,
+            "film_db"
+        ).build().filmDao()
 
-    @Singleton
     @Provides
-    fun provideRepository(databaseHelper: DatabaseHelper) = MainRepository(databaseHelper)
+    @Singleton
+    fun provideRepository(filmDao: FilmDao) = MainRepository(filmDao)
 }

@@ -1,11 +1,11 @@
 package com.ginzburgworks.filmfinder.viewmodels
 
-import android.util.Log
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ginzburgworks.filmfinder.data.PageManager
-import com.ginzburgworks.filmfinder.domain.Film
+import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.domain.Interactor
+import java.util.concurrent.Executors
 import javax.inject.Inject
 
 
@@ -26,7 +26,9 @@ class HomeFragmentViewModel @Inject constructor(private val interactor: Interact
             }
 
             override fun onFailure() {
-                filmsListLiveData.postValue(interactor.getFilmsFromDB())
+                Executors.newSingleThreadExecutor().execute {
+                    filmsListLiveData.postValue(interactor.getFilmsFromDB())
+                }
             }
         })
     }

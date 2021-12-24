@@ -16,7 +16,7 @@ import com.ginzburgworks.filmfinder.data.PageManager
 import com.ginzburgworks.filmfinder.data.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.SearchController
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
-import com.ginzburgworks.filmfinder.domain.Film
+import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity

@@ -12,7 +12,7 @@ import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.ApiConstants
 import com.ginzburgworks.filmfinder.data.Favorites
 import com.ginzburgworks.filmfinder.databinding.FragmentDetailsBinding
-import com.ginzburgworks.filmfinder.domain.Film
+import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder
 
 private const val DETAILS_FRAG_IMG_SIZE = "w780"

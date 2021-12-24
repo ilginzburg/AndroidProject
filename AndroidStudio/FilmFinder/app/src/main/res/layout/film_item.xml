@@ -6,7 +6,7 @@
 
         <variable
             name="film"
-            type="com.ginzburgworks.filmfinder.domain.Film" />
+            type="com.ginzburgworks.filmfinder.data.Film" />
 
         <variable
             name="RatingDonut"

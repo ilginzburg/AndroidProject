@@ -1,5 +1,7 @@
 package com.ginzburgworks.filmfinder.domain
 
+
+import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.data.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.TmdbApi
 import com.ginzburgworks.filmfinder.data.db.MainRepository
@@ -26,9 +28,7 @@ class Interactor @Inject constructor(
                     response: Response<TmdbResultsDto>
                 ) {
                     val list = Converter.convertApiListToDtoList(response.body()?.tmdbFilms)
-                    list.forEach {
-                        repo.putToDb(film = it)
-                    }
+                    repo.putToDb(list)
                     response.body()?.totalPages?.let {
                         callback.onSuccess(
                             list,
@@ -44,8 +44,6 @@ class Interactor @Inject constructor(
     }
 
     fun getFilmsFromDB(): List<Film> = repo.getAllFromDB()
-    fun getFilmByTitleFromDB(title: String): Film = repo.getFilmByTitle(title)
-    fun updateFilmByRowIdInDB(rowId: Int, film: Film) = repo.updateFilmByRowId(rowId, film)
 
     fun saveDefaultCategoryToPreferences(category: String) {
         preferences.saveDefaultCategory(category)
