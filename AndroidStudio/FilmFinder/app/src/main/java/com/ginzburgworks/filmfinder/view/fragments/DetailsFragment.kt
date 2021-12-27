@@ -11,62 +11,96 @@ import com.bumptech.glide.Glide
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.ApiConstants
 import com.ginzburgworks.filmfinder.data.Favorites
-import com.ginzburgworks.filmfinder.databinding.FragmentDetailsBinding
 import com.ginzburgworks.filmfinder.data.Film
-import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder
-
-private const val DETAILS_FRAG_IMG_SIZE = "w780"
+import com.ginzburgworks.filmfinder.databinding.FragmentDetailsBinding
+import com.ginzburgworks.filmfinder.utils.Converter
 
 class DetailsFragment : Fragment() {
 
-    private lateinit var binding: FragmentDetailsBinding
+    private lateinit var fragmentDetailsBinding: FragmentDetailsBinding
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentDetailsBinding.inflate(inflater, container, false)
-        return binding.root
+        fragmentDetailsBinding = FragmentDetailsBinding.inflate(inflater, container, false)
+        return fragmentDetailsBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initComponents()
+    }
+
+    private fun initComponents() {
         val film = arguments?.get(KEY_FILM) as Film
-        binding.titleText = film.title
-        loadImage(film.poster, binding.detailsPoster)
-        binding.descriptionText = film.description
-        binding.detailsFabFavorites.setImageResource(
-            if (film.isInFavorites) R.drawable.ic_baseline_favorite_24
-            else R.drawable.ic_baseline_favorite_border_24
-        )
+        initPoster(film)
+        initTitle(film)
+        initDescription(film)
+        initFavoritesButton(film)
+        initShareButton(film)
+    }
 
-        binding.detailsFabFavorites.setOnClickListener {
-            if (!film.isInFavorites) {
-                binding.detailsFabFavorites.setImageResource(R.drawable.ic_baseline_favorite_24)
-                film.isInFavorites = true
-                Favorites.favoritesList.add(film)
-            } else {
-                binding.detailsFabFavorites.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-                film.isInFavorites = false
-                Favorites.favoritesList.remove(film)
-            }
-        }
+    private fun initPoster(film: Film) {
+        loadImage(film.poster, fragmentDetailsBinding.detailsPoster)
+    }
 
-        binding.detailsFabShare.setOnClickListener {
-            val intent = Intent()
-            intent.action = Intent.ACTION_SEND
-            intent.putExtra(
-                Intent.EXTRA_TEXT,
-                "Check out this film: ${film.title} \n\n ${film.description}"
-            )
-            intent.type = "text/plain"
-            startActivity(Intent.createChooser(intent, "Share To:"))
+    private fun initTitle(film: Film) {
+        fragmentDetailsBinding.titleText = film.title
+    }
+
+    private fun initDescription(film: Film) {
+        fragmentDetailsBinding.descriptionText = film.description
+    }
+
+    private fun initFavoritesButton(film: Film) {
+        setFavoritesIcon(film)
+        fragmentDetailsBinding.detailsFabFavorites.setOnClickListener {
+            toggleFavorites(film)
         }
     }
 
+    private fun toggleFavorites(film: Film) {
+        if (!film.isInFavorites)
+            addToFavorites(film)
+        else
+            removeFromFavorites(film)
+        setFavoritesIcon(film)
+    }
+
+    private fun addToFavorites(film: Film) {
+        film.isInFavorites = true
+        Favorites.favoritesList.add(film)
+    }
+
+    private fun removeFromFavorites(film: Film) {
+        film.isInFavorites = false
+        Favorites.favoritesList.remove(film)
+    }
+
+    private fun initShareButton(film: Film) {
+        fragmentDetailsBinding.detailsFabShare.setOnClickListener {
+            openShareDialog(film)
+        }
+    }
+
+    private fun openShareDialog(film: Film) {
+        Intent(Intent.ACTION_SEND).apply {
+            putExtra(
+                Intent.EXTRA_TEXT,
+                getIntentExtraText(film)
+            )
+            type = TYPE_OF_INTENT_TO_SHARE
+            startActivity(Intent.createChooser(this, TITLE_OF_INTENT_TO_SHARE))
+        }
+    }
+
+    private fun getIntentExtraText(film: Film): String =
+        "$MSG_INTENT_TO_SHARE ${film.title} \n ${film.description}"
+
     private fun loadImage(posterUrl: String, posterView: ImageView) {
         val sourceImageUrl = ApiConstants.IMAGES_URL + DETAILS_FRAG_IMG_SIZE + posterUrl
-        val defaultImage = FilmViewHolder.defaultFilm.poster
+        val defaultImage = Converter.DefaultFilm.film.poster
         Glide.with(this)
             .load(sourceImageUrl)
             .centerCrop()
@@ -74,7 +108,24 @@ class DetailsFragment : Fragment() {
             .into(posterView)
     }
 
+    private fun setFavoritesIcon(film: Film) {
+        if (film.isInFavorites) setAddedToFavoritesIcon()
+        else removeAddedToFavoritesIcon()
+    }
+
+    private fun setAddedToFavoritesIcon() {
+        fragmentDetailsBinding.detailsFabFavorites.setImageResource(R.drawable.ic_baseline_favorite_24)
+    }
+
+    private fun removeAddedToFavoritesIcon() {
+        fragmentDetailsBinding.detailsFabFavorites.setImageResource(R.drawable.ic_baseline_favorite_border_24)
+    }
+
     companion object {
         const val KEY_FILM = "film"
+        private const val DETAILS_FRAG_IMG_SIZE = "w780"
+        private const val MSG_INTENT_TO_SHARE = "Посмотрите этот фильм: "
+        private const val TYPE_OF_INTENT_TO_SHARE = "text/plain"
+        private const val TITLE_OF_INTENT_TO_SHARE = "Поделиться: "
     }
 }

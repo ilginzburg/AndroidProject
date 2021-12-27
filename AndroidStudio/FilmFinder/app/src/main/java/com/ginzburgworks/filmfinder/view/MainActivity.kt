@@ -10,23 +10,27 @@ import com.ginzburgworks.filmfinder.view.fragments.*
 
 class MainActivity : AppCompatActivity() {
 
-    private lateinit var binding: ActivityMainBinding
-    private lateinit var tag: String
+    private lateinit var activityMainBinding: ActivityMainBinding
+    private lateinit var fragmentTag: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityMainBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        activityMainBinding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(activityMainBinding.root)
         initNavigation()
-        tag = HOME_FRAGMENT_TAG
+        setInitialFragment()
+    }
+
+    private fun setInitialFragment(){
+        fragmentTag = HOME_FRAGMENT_TAG
         if (nightModeSwitched)
-            tag = SETTINGS_FRAGMENT_TAG
-        val fragment = checkFragmentExistence(tag)
-        changeFragment(fragment ?: HomeFragment(), tag)
+            fragmentTag = SETTINGS_FRAGMENT_TAG
+        val fragment = checkFragmentExistence(fragmentTag)
+        changeFragment(fragment ?: HomeFragment(), fragmentTag)
     }
 
     private fun initNavigation() {
-        binding.bottomNavigation.setOnItemSelectedListener {
+        activityMainBinding.bottomNavigation.setOnItemSelectedListener {
             when (it.itemId) {
                 R.id.home -> {
                     val fragment = checkFragmentExistence(HOME_FRAGMENT_TAG)

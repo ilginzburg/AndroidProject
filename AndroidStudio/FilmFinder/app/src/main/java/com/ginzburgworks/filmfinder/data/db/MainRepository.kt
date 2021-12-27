@@ -6,13 +6,21 @@ import java.util.concurrent.Executors
 
 class MainRepository(private val filmDao: FilmDao) {
 
-    fun putToDb(films: List<Film>) {
+
+    fun putPageOfFilmsToDb(pageOfFilms: List<Film>) {
         Executors.newSingleThreadExecutor().execute {
-            filmDao.insertAll(films)
+            filmDao.insertAll(pageOfFilms)
         }
     }
 
-    fun getAllFromDB(): List<Film> {
-        return filmDao.getCachedFilms()
+    fun getPageOfFilmsInCategoryFromDB(page: Int, category: String): List<Film> {
+        return filmDao.getCachedFilmsByPageAndCategory(page, category)
     }
+
+    fun deleteDB() {
+        Executors.newSingleThreadExecutor().execute {
+            filmDao.delete()
+        }
+    }
+
 }

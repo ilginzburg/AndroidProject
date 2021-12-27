@@ -14,7 +14,6 @@ import javax.inject.Singleton
         DomainModule::class,
         DatabaseModule::class,
         RemoteModule::class,
-        SettingsModule::class,
         ViewModelModule::class
     ]
 )

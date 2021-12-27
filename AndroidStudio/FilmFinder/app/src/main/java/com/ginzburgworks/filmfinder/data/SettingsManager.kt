@@ -2,37 +2,29 @@ package com.ginzburgworks.filmfinder.data
 
 import android.content.Context
 import androidx.appcompat.app.AppCompatDelegate
-import com.ginzburgworks.filmfinder.di.modules.Settings
 import javax.inject.Inject
 
 private const val DAY_MODE = false
 
-class SettingsManager @Inject constructor( context: Context) : Settings {
+class SettingsManager @Inject constructor(context: Context)  {
 
-
-private var pref = PreferenceProvider(context)
-
+    private var preferenceProvider = PreferenceProvider(context)
+    var savedNightMode = preferenceProvider.getNightModeSetting()
 
     fun setSelectedNightMode(selectedNightMode: Boolean) {
-        nightModeState = selectedNightMode
-        setUINightMode()
-        pref.saveSettings(selectedNightMode)
+        preferenceProvider.saveNightModeSetting(selectedNightMode)
+        setUINightMode(selectedNightMode)
     }
 
-
-    private fun setUINightMode() {
+    private fun setUINightMode(requestedNightMode:Boolean) {
         var appCompatDelegateMode = AppCompatDelegate.MODE_NIGHT_YES
-        if (nightModeState == DAY_MODE) appCompatDelegateMode = AppCompatDelegate.MODE_NIGHT_NO
+        if (requestedNightMode == DAY_MODE)
+            appCompatDelegateMode = AppCompatDelegate.MODE_NIGHT_NO
         AppCompatDelegate.setDefaultNightMode(appCompatDelegateMode)
     }
 
     fun initSettings() {
-        pref.readSettings()
-        setUINightMode()
-    }
-
-    companion object {
-        var nightModeState = DAY_MODE
+        setUINightMode(savedNightMode)
     }
 
 }

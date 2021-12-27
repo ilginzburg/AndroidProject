@@ -5,25 +5,32 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.ginzburgworks.filmfinder.R
+import com.ginzburgworks.filmfinder.databinding.FragmentSelectionsBinding
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
-import kotlinx.android.synthetic.main.fragment_selections.*
 
 private const val ANIM_POSITION = 1
 
 class SelectionsFragment : Fragment() {
 
+    private lateinit var fragmentSelectionsBinding: FragmentSelectionsBinding
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_selections, container, false)
+        fragmentSelectionsBinding = FragmentSelectionsBinding.inflate(inflater, container, false)
+        return fragmentSelectionsBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        initAnimation()
+
+    }
+
+    private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            fragment_selections_root,
+            fragmentSelectionsBinding.fragmentSelectionsRoot,
             requireActivity(),
             ANIM_POSITION
         )

@@ -7,8 +7,8 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.ginzburgworks.filmfinder.data.Favorites
-import com.ginzburgworks.filmfinder.databinding.FragmentFavoritesBinding
 import com.ginzburgworks.filmfinder.data.Film
+import com.ginzburgworks.filmfinder.databinding.FragmentFavoritesBinding
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
@@ -19,20 +19,25 @@ private const val ANIM_POSITION = 4
 
 class FavoritesFragment : Fragment() {
 
-    private lateinit var binding: FragmentFavoritesBinding
+    private lateinit var fragmentFavoritesBinding: FragmentFavoritesBinding
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentFavoritesBinding.inflate(inflater, container, false)
-        return binding.root
+        fragmentFavoritesBinding = FragmentFavoritesBinding.inflate(inflater, container, false)
+        return fragmentFavoritesBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        binding.favoritesRecycler
+        initRecycler()
+        initAnimation()
+    }
+
+    private fun initRecycler() {
+        fragmentFavoritesBinding.favoritesRecycler
             .apply {
                 filmsAdapter =
                     FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener {
@@ -46,8 +51,11 @@ class FavoritesFragment : Fragment() {
                 addItemDecoration(decorator)
             }
         filmsAdapter.addItems(Favorites.favoritesList)
+    }
+
+    private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.favoritesFragmentRoot,
+            fragmentFavoritesBinding.favoritesFragmentRoot,
             requireActivity(),
             ANIM_POSITION
         )

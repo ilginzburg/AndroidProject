@@ -5,20 +5,24 @@ import androidx.lifecycle.ViewModel
 import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
 
-class SettingsFragmentViewModel @Inject constructor(private val interactor: Interactor) : ViewModel() {
+private const val SAVE_DEFAULT_VALUE_FOR_OFFLINE = 0
 
-    val categoryPropertyLifeData: MutableLiveData<String> = MutableLiveData()
+class SettingsFragmentViewModel @Inject constructor(private val interactor: Interactor) :
+    ViewModel() {
+
+    val categoryPropertyLiveData: MutableLiveData<String> = MutableLiveData()
 
     init {
         getCategoryProperty()
     }
 
     private fun getCategoryProperty() {
-        categoryPropertyLifeData.value = interactor.getDefaultCategoryFromPreferences()
+        categoryPropertyLiveData.value = interactor.getFilmsCategoryFromPreferences()
     }
 
     fun putCategoryProperty(category: String) {
-        interactor.saveDefaultCategoryToPreferences(category)
+        interactor.saveFilmsCategoryToPreferences(category)
+        interactor.saveTotalPagesNumberToPreferences(SAVE_DEFAULT_VALUE_FOR_OFFLINE, category)
         getCategoryProperty()
     }
 }

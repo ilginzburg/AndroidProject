@@ -1,6 +1,6 @@
 package com.ginzburgworks.filmfinder.di.modules
 
-import androidx.databinding.ktx.BuildConfig
+import com.ginzburgworks.filmfinder.BuildConfig
 import com.ginzburgworks.filmfinder.data.ApiConstants
 import com.ginzburgworks.filmfinder.data.TmdbApi
 import com.ginzburgworks.filmfinder.data.entity.TmdbResultsDto
@@ -38,7 +38,7 @@ class OkHttpClientCreator @Inject constructor() : Remote {
             .addInterceptor(HttpLoggingInterceptor().apply {
                 if (BuildConfig.DEBUG) {
                     level = HttpLoggingInterceptor.Level.BASIC
-                }
+               }
             })
             .build()
     }
@@ -64,9 +64,14 @@ class TmdbApiImpl @Inject constructor() : TmdbApi, Remote {
     @Inject
     lateinit var retrofitCreator: RetrofitCreator
 
-    override fun getFilms(category: String,apiKey: String, language: String, page: Int): Call<TmdbResultsDto> {
+    override fun getFilms(
+        category: String,
+        apiKey: String,
+        language: String,
+        page: Int
+    ): Call<TmdbResultsDto> {
         return retrofitCreator.retrofitImpl().create(TmdbApi::class.java)
-            .getFilms(category,apiKey, language, page)
+            .getFilms(category, apiKey, language, page)
     }
 }
 

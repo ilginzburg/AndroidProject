@@ -12,11 +12,11 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
+import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.data.PageManager
 import com.ginzburgworks.filmfinder.data.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.SearchController
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
-import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
@@ -25,17 +25,15 @@ import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
-
 private const val ANIM_POSITION = 1
 private const val DECORATOR_PADDING = 8
 
 class HomeFragment : Fragment() {
 
-    private lateinit var binding: FragmentHomeBinding
+    private lateinit var fragmentHomeBinding: FragmentHomeBinding
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var pageManager: PageManager
-    private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     private val searchController by lazy { initSearchView() }
     private val viewModel by lazy {
         ViewModelProvider(
@@ -48,9 +46,6 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    @Inject
-    lateinit var preferenceProvider: PreferenceProvider
-
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.instance.appComponent.inject(this)
@@ -60,22 +55,25 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
-        return binding.root
+        fragmentHomeBinding = FragmentHomeBinding.inflate(inflater, container, false)
+        return fragmentHomeBinding.root
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.homeFragmentRoot,
-            requireActivity(),
-            ANIM_POSITION
-        )
+        initComponents()
+    }
+
+    private fun initComponents(){
+        initAnimation()
         initRecycler()
         initSearchView()
-        swipeRefreshLayout = activity?.findViewById(R.id.pull_to_refresh) ?: binding.pullToRefresh
         initPullToRefresh()
         initRefreshOnChange()
+        subscribeToFilmsListChanges()
+    }
+
+    private fun subscribeToFilmsListChanges() {
         viewModel.filmsListLiveData.observe(viewLifecycleOwner, {
             filmsAdapter.addItems(it)
         })
@@ -83,11 +81,11 @@ class HomeFragment : Fragment() {
 
     private fun initSearchView(): SearchController {
         return SearchController(filmsAdapter, viewModel).apply {
-            binding.searchView.setOnClickListener {
+            fragmentHomeBinding.searchView.setOnClickListener {
                 filmsAdapter.saveItemsForSearch(viewModel)
-                binding.searchView.isIconified = false
+                fragmentHomeBinding.searchView.isIconified = false
             }
-            binding.searchView.setOnCloseListener {
+            fragmentHomeBinding.searchView.setOnCloseListener {
                 if (viewModel.itemsForSearch.size > 0) {
                     filmsAdapter.clearItems()
                     filmsAdapter.addItems(viewModel.itemsForSearch)
@@ -95,12 +93,12 @@ class HomeFragment : Fragment() {
                 }
                 true
             }
-            binding.searchView.setOnQueryTextListener(this)
+            fragmentHomeBinding.searchView.setOnQueryTextListener(this)
         }
     }
 
     private fun initRecycler() {
-        binding.mainRecycler.apply {
+        fragmentHomeBinding.mainRecycler.apply {
             filmsAdapter =
                 FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener {
                     override fun onClick(film: Film) {
@@ -117,6 +115,8 @@ class HomeFragment : Fragment() {
     }
 
     private fun initPullToRefresh() {
+        swipeRefreshLayout =
+            activity?.findViewById(R.id.pull_to_refresh) ?: fragmentHomeBinding.pullToRefresh
         swipeRefreshLayout.setOnRefreshListener {
             updateAdapterBuffer()
             swipeRefreshLayout.isRefreshing = false
@@ -129,17 +129,20 @@ class HomeFragment : Fragment() {
     }
 
     private fun initRefreshOnChange() {
-        onSharedPreferenceChangeListener =
-            SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
-                updateAdapterBuffer()
+        viewModel.onSharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == PreferenceProvider.KEY_FILMS_CATEGORY)
+                    updateAdapterBuffer()
             }
-        preferenceProvider.registerListener(onSharedPreferenceChangeListener)
+        viewModel.interactor.preferenceProvider.registerListener(viewModel.onSharedPreferenceChangeListener)
     }
 
-    override fun onDestroy() {
-        super.onDestroy()
-        if (this::onSharedPreferenceChangeListener.isInitialized)
-            preferenceProvider.unRegisterListener(onSharedPreferenceChangeListener)
+    private fun initAnimation() {
+        AnimationHelper.performFragmentCircularRevealAnimation(
+            fragmentHomeBinding.homeFragmentRoot,
+            requireActivity(),
+            ANIM_POSITION
+        )
     }
 }
 

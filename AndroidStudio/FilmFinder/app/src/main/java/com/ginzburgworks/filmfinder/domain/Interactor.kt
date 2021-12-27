@@ -18,20 +18,26 @@ import javax.inject.Inject
 class Interactor @Inject constructor(
     private val repo: MainRepository,
     private val retrofitService: TmdbApi,
-    private val preferences: PreferenceProvider
+    val preferenceProvider: PreferenceProvider
 ) {
     fun getFilmsFromApi(page: Int, callback: HomeFragmentViewModel.ApiCallback) {
-        retrofitService.getFilms(getDefaultCategoryFromPreferences(), API.KEY, "ru-RU", page)
+        val currentFilmsCategory = getFilmsCategoryFromPreferences()
+        retrofitService.getFilms(currentFilmsCategory, API.KEY, "ru-RU", page)
             .enqueue(object : Callback<TmdbResultsDto> {
                 override fun onResponse(
                     call: Call<TmdbResultsDto>,
                     response: Response<TmdbResultsDto>
                 ) {
-                    val list = Converter.convertApiListToDtoList(response.body()?.tmdbFilms)
-                    repo.putToDb(list)
+                    val pageOfFilms = Converter.convertApiListToDtoList(
+                        response.body()?.tmdbFilms,
+                        page,
+                        currentFilmsCategory
+                    )
+                    repo.putPageOfFilmsToDb(pageOfFilms)
+
                     response.body()?.totalPages?.let {
                         callback.onSuccess(
-                            list,
+                            pageOfFilms,
                             totalPages = it
                         )
                     }
@@ -43,11 +49,30 @@ class Interactor @Inject constructor(
             })
     }
 
-    fun getFilmsFromDB(): List<Film> = repo.getAllFromDB()
+    fun getPageOfFilmsFromDB(page: Int): List<Film> =
+        repo.getPageOfFilmsInCategoryFromDB(page, getFilmsCategoryFromPreferences())
 
-    fun saveDefaultCategoryToPreferences(category: String) {
-        preferences.saveDefaultCategory(category)
+    fun deleteDB() = repo.deleteDB()
+
+    fun saveFilmsCategoryToPreferences(category: String) {
+        preferenceProvider.saveFilmsCategory(category)
     }
 
-    fun getDefaultCategoryFromPreferences() = preferences.getDefaultCategory()
+    fun getFilmsCategoryFromPreferences() = preferenceProvider.getFilmsCategory()
+
+    fun saveTotalPagesNumberToPreferences(TotalPagesNumber: Int,category:String) {
+        preferenceProvider.saveTotalPagesNumber(TotalPagesNumber,category)
+    }
+
+    fun getTotalPagesNumberFromPreferences(category:String): Int{
+        return preferenceProvider.getTotalPagesNumber(category)
+    }
+
+    fun saveUpdateDbTimeToPreferences(dbUpdateTime:Long){
+        preferenceProvider.saveUpdateDbTime(dbUpdateTime)
+    }
+
+    fun getLastUpdateTimeFromPreferences() = preferenceProvider.getLasBDUpdateTime()
+
 }
+
