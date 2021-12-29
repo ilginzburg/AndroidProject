@@ -1,7 +1,10 @@
 package com.ginzburgworks.filmfinder.domain
 
 
+import androidx.lifecycle.LiveData
 import com.ginzburgworks.filmfinder.data.Film
+import com.ginzburgworks.filmfinder.data.PageManager
+import com.ginzburgworks.filmfinder.data.PageManager.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.data.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.TmdbApi
 import com.ginzburgworks.filmfinder.data.db.MainRepository
@@ -12,6 +15,7 @@ import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 import javax.inject.Inject
 
 
@@ -30,17 +34,14 @@ class Interactor @Inject constructor(
                 ) {
                     val pageOfFilms = Converter.convertApiListToDtoList(
                         response.body()?.tmdbFilms,
-                        page,
+                        response.body()?.page,
                         currentFilmsCategory
                     )
                     repo.putPageOfFilmsToDb(pageOfFilms)
+                    saveUpdateDbTime()
+                    saveTotalPagesNumber(response.body()?.totalPages)
+                    callback.onSuccess()
 
-                    response.body()?.totalPages?.let {
-                        callback.onSuccess(
-                            pageOfFilms,
-                            totalPages = it
-                        )
-                    }
                 }
 
                 override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {
@@ -49,7 +50,13 @@ class Interactor @Inject constructor(
             })
     }
 
-    fun getPageOfFilmsFromDB(page: Int): List<Film> =
+    private fun saveUpdateDbTime() {
+        val dbUpdateTime = Calendar.getInstance().timeInMillis
+        saveUpdateDbTimeToPreferences(dbUpdateTime)
+    }
+
+
+    fun getPageOfFilmsFromDB(page: Int): LiveData<List<Film>> =
         repo.getPageOfFilmsInCategoryFromDB(page, getFilmsCategoryFromPreferences())
 
     fun deleteDB() = repo.deleteDB()
@@ -68,11 +75,23 @@ class Interactor @Inject constructor(
         return preferenceProvider.getTotalPagesNumber(category)
     }
 
-    fun saveUpdateDbTimeToPreferences(dbUpdateTime:Long){
+    fun getLastUpdateTimeFromPreferences() = preferenceProvider.getLasBDUpdateTime()
+
+    private fun saveUpdateDbTimeToPreferences(dbUpdateTime:Long){
         preferenceProvider.saveUpdateDbTime(dbUpdateTime)
     }
 
-    fun getLastUpdateTimeFromPreferences() = preferenceProvider.getLasBDUpdateTime()
+    private fun saveTotalPagesNumber(totalPagesNumber: Int?) {
+        if(totalPagesNumber?:0 == 0)
+            return
+        var totalPagesFromNetwork = PageManager.MAX_PAGES_NUM
+        if (totalPagesNumber!! < PageManager.MAX_PAGES_NUM)
+            totalPagesFromNetwork = totalPagesNumber
+        saveTotalPagesNumberToPreferences(
+            totalPagesFromNetwork,
+            getFilmsCategoryFromPreferences()
+        )
+    }
 
 }
 

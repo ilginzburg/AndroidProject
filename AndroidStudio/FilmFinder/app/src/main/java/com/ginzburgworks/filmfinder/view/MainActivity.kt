@@ -1,6 +1,7 @@
 package com.ginzburgworks.filmfinder.view
 
 import android.os.Bundle
+import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ginzburgworks.filmfinder.R
@@ -74,6 +75,7 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.findFragmentByTag(tag)
 
     fun launchDetailsFragment(film: Film) {
+        Log.d("--------->LAUNCH","entered")
         val bundle = Bundle()
         bundle.putParcelable(DetailsFragment.KEY_FILM, film)
         val fragment = DetailsFragment()

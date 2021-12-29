@@ -39,18 +39,18 @@ class FavoritesFragment : Fragment() {
     private fun initRecycler() {
         fragmentFavoritesBinding.favoritesRecycler
             .apply {
-                filmsAdapter =
-                    FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener {
-                        override fun onClick(film: Film) {
-                            (requireActivity() as MainActivity).launchDetailsFragment(film)
-                        }
-                    })
+                filmsAdapter = FilmListRecyclerAdapter()
                 adapter = filmsAdapter
                 layoutManager = LinearLayoutManager(requireContext())
                 val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
                 addItemDecoration(decorator)
             }
         filmsAdapter.addItems(Favorites.favoritesList)
+        filmsAdapter.setListener(object : FilmListRecyclerAdapter.OnItemClickListener {
+            override fun onClick(film: Film) {
+                (requireActivity() as MainActivity).launchDetailsFragment(film)
+            }
+        })
     }
 
     private fun initAnimation() {

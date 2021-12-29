@@ -3,9 +3,11 @@ package com.ginzburgworks.filmfinder.view.fragments
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -31,7 +33,9 @@ private const val DECORATOR_PADDING = 8
 class HomeFragment : Fragment() {
 
     private lateinit var fragmentHomeBinding: FragmentHomeBinding
-    private lateinit var filmsAdapter: FilmListRecyclerAdapter
+
+    @Inject
+    lateinit var filmsAdapter: FilmListRecyclerAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
     private lateinit var pageManager: PageManager
     private val searchController by lazy { initSearchView() }
@@ -64,19 +68,35 @@ class HomeFragment : Fragment() {
         initComponents()
     }
 
-    private fun initComponents(){
+    private fun initComponents() {
         initAnimation()
         initRecycler()
         initSearchView()
         initPullToRefresh()
         initRefreshOnChange()
         subscribeToFilmsListChanges()
+        subscribeToProgressBarChanges()
     }
 
+
     private fun subscribeToFilmsListChanges() {
-        viewModel.filmsListLiveData.observe(viewLifecycleOwner, {
-            filmsAdapter.addItems(it)
-        })
+        viewModel.filmsListLiveData.observe(viewLifecycleOwner) {
+            if (it.isEmpty())
+                Log.i("--------->LIVEDATA_OBSERVER", "EMPTY")
+            if (it.isNotEmpty()) {
+                filmsAdapter.addItems(it)
+                Log.i("--------->LIVEDATA_OBSERVER", "Page: ${it[0].page}")
+            }
+        }
+
+    }
+
+    private fun subscribeToProgressBarChanges() {
+        fragmentHomeBinding.progressBar.bringToFront()
+        viewModel.showProgressBar.observe(viewLifecycleOwner) {
+            fragmentHomeBinding.progressBar.isVisible = it
+        }
+
     }
 
     private fun initSearchView(): SearchController {
@@ -99,12 +119,6 @@ class HomeFragment : Fragment() {
 
     private fun initRecycler() {
         fragmentHomeBinding.mainRecycler.apply {
-            filmsAdapter =
-                FilmListRecyclerAdapter(object : FilmListRecyclerAdapter.OnItemClickListener {
-                    override fun onClick(film: Film) {
-                        (requireActivity() as MainActivity).launchDetailsFragment(film)
-                    }
-                })
             adapter = filmsAdapter
             layoutManager = LinearLayoutManager(requireContext())
             val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
@@ -112,6 +126,11 @@ class HomeFragment : Fragment() {
             pageManager = PageManager(viewModel, layoutManager as LinearLayoutManager)
             addOnScrollListener(pageManager)
         }
+        filmsAdapter.setListener(object : FilmListRecyclerAdapter.OnItemClickListener {
+            override fun onClick(film: Film) {
+                (requireActivity() as MainActivity).launchDetailsFragment(film)
+            }
+        })
     }
 
     private fun initPullToRefresh() {

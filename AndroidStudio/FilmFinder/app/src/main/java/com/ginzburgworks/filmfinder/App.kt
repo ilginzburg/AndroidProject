@@ -4,8 +4,9 @@ import android.app.Application
 import com.ginzburgworks.filmfinder.data.SettingsManager
 import com.ginzburgworks.filmfinder.di.AppComponent
 import com.ginzburgworks.filmfinder.di.DaggerAppComponent
+import javax.inject.Inject
 
-class App : Application() {
+class App @Inject constructor() : Application() {
     lateinit var appComponent: AppComponent
     private lateinit var settingsManager: SettingsManager
 

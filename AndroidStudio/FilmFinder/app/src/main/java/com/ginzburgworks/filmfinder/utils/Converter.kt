@@ -4,12 +4,12 @@ import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.data.entity.TmdbFilm
 
 object Converter {
-    fun convertApiListToDtoList(list: List<TmdbFilm>?, currentPage: Int, currentCategory: String): List<Film> {
+    fun convertApiListToDtoList(list: List<TmdbFilm>?, page: Int?, currentCategory: String): List<Film> {
         val result = mutableListOf<Film>()
         list?.forEach {
             result.add(
                 Film(
-                    page = currentPage,
+                    page = page?: DefaultFilm.film.page,
                     category = currentCategory,
                     title = it.title ?: DefaultFilm.film.title,
                     poster = it.posterPath ?: DefaultFilm.film.poster,

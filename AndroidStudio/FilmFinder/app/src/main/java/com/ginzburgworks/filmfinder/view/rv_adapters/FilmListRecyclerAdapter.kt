@@ -3,14 +3,20 @@ package com.ginzburgworks.filmfinder.view.rv_adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
 import com.ginzburgworks.filmfinder.data.Film
+import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
 import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 
 
-class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) :
-    RecyclerView.Adapter<FilmViewHolder>() {
+class FilmListRecyclerAdapter() : RecyclerView.Adapter<FilmViewHolder>() {
+
+
+    private lateinit var clickListener: OnItemClickListener
+
+    fun setListener(listener: OnItemClickListener) {
+        clickListener = listener
+    }
 
     private val items = mutableListOf<Film>()
     private lateinit var filmItemBinding: FilmItemBinding
@@ -25,9 +31,9 @@ class FilmListRecyclerAdapter(private val clickListener: OnItemClickListener) :
 
     override fun onBindViewHolder(holder: FilmViewHolder, position: Int) {
         holder.bind(items[position])
-          filmItemBinding.itemContainer.setOnClickListener {
-                clickListener.onClick(items[position])
-          }
+        filmItemBinding.itemContainer.setOnClickListener {
+            clickListener.onClick(items[position])
+        }
     }
 
     fun addItems(list: List<Film>) {

@@ -1,7 +1,9 @@
 package com.ginzburgworks.filmfinder.di.modules
 
+import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
 import dagger.Binds
@@ -27,6 +29,10 @@ abstract class ViewModelModule {
 
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
+
+    @Binds
+    abstract fun bindApplication(app: App):Application
+
 }
 
 @MustBeDocumented

@@ -60,7 +60,7 @@ class PageManager(
 
         const val MAX_PAGES_NUM = 500
         const val FIRST_PAGE = 1
-        private var NEXT_PAGE = FIRST_PAGE
+        var NEXT_PAGE = FIRST_PAGE
         private lateinit var totalNumberOfPagesInCurrentCategory: Number
 
         fun getDefaultTotalPagesByCategory(category: String): Int {

@@ -4,6 +4,8 @@ import android.content.Context
 import com.ginzburgworks.filmfinder.di.modules.*
 import com.ginzburgworks.filmfinder.view.fragments.HomeFragment
 import com.ginzburgworks.filmfinder.view.fragments.SettingsFragment
+import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
+import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -14,7 +16,8 @@ import javax.inject.Singleton
         DomainModule::class,
         DatabaseModule::class,
         RemoteModule::class,
-        ViewModelModule::class
+        ViewModelModule::class,
+        RecyclerModule::class
     ]
 )
 interface AppComponent {
@@ -24,6 +27,8 @@ interface AppComponent {
         fun create(@BindsInstance  context: Context): AppComponent
     }
 
+
+    fun inject(filmListRecyclerAdapter: FilmListRecyclerAdapter)
     fun inject(homeFragment: HomeFragment)
     fun inject(settingsFragment: SettingsFragment)
 }

@@ -1,81 +1,70 @@
 package com.ginzburgworks.filmfinder.viewmodels
 
+import android.app.Application
 import android.content.SharedPreferences
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.Transformations
 import com.ginzburgworks.filmfinder.data.Film
-import com.ginzburgworks.filmfinder.data.PageManager
+import com.ginzburgworks.filmfinder.data.PageManager.Companion.FIRST_PAGE
 import com.ginzburgworks.filmfinder.domain.Interactor
+import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import java.util.*
-import java.util.concurrent.Executors
-import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
 private const val MAX_TIME_AFTER_BD_UPDATE = 600000
 
-class HomeFragmentViewModel @Inject constructor(val interactor: Interactor) : ViewModel() {
+class HomeFragmentViewModel @Inject constructor(
+    val interactor: Interactor,
+    application: Application
+) : AndroidViewModel(application) {
 
-    val filmsListLiveData = MutableLiveData<List<Film>>()
+    @Inject
+    lateinit var adapter: FilmListRecyclerAdapter
     val itemsForSearch = mutableListOf<Film>()
     lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     var totalNumberOfPages =
         interactor.getTotalPagesNumberFromPreferences(interactor.getFilmsCategoryFromPreferences())
+    val showProgressBar: MutableLiveData<Boolean> = MutableLiveData()
+
+    private val currentPageLiveData = MutableLiveData(FIRST_PAGE)
+    val filmsListLiveData = Transformations.switchMap(currentPageLiveData) { page ->
+        interactor.getPageOfFilmsFromDB(page)
+    }
 
     init {
-        requestNextPage(PageManager.FIRST_PAGE)
+        requestNextPage(FIRST_PAGE)
     }
 
     fun requestNextPage(page: Int) {
-        if (isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLastUpdateTimeFromPreferences())) {
+      //  if (isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLastUpdateTimeFromPreferences())) {
             requestNextPageFromNetwork(page)
             interactor.deleteDB()
-        }
-        else if (!requestNextPageFromDB(page))
-            requestNextPageFromNetwork(page)
+            //   } else
+            //  requestNextPageFromDB(page)
+     //   }
     }
 
     private fun requestNextPageFromNetwork(page: Int) {
+        Log.i("--------->REQUEST","Page = $page ")
+        requestNextPageFromDB(page)
+        showProgressBar.postValue(true)
         interactor.getFilmsFromApi(page, object : ApiCallback {
-            override fun onSuccess(pageOfFilms: List<Film>, totalPages: Int) {
-                filmsListLiveData.postValue(pageOfFilms)
-                saveTotalPagesNumber(totalPages)
-                saveUpdateDbTime()
+            override fun onSuccess() {
+                showProgressBar.postValue(false)
             }
 
             override fun onFailure() {
-                requestNextPageFromDB(page)
+                showProgressBar.postValue(false)
             }
         })
     }
 
-    private fun requestNextPageFromDB(page: Int): Boolean {
-        var pageOfFilmsFromDB: List<Film> = mutableListOf()
-        val thread = Executors.newSingleThreadExecutor()
-        thread.execute {
-            pageOfFilmsFromDB = interactor.getPageOfFilmsFromDB(page)
-        }
-        thread.shutdown()
-        thread.awaitTermination(6, TimeUnit.SECONDS)
-        return if (pageOfFilmsFromDB.isNotEmpty()) {
-            filmsListLiveData.postValue(pageOfFilmsFromDB)
-            true
-        } else  false
+    private fun requestNextPageFromDB(page: Int) {
+        currentPageLiveData.value = page
     }
 
-    private fun saveTotalPagesNumber(totalPagesNumber: Int) {
-        var totalPagesFromNetwork = PageManager.MAX_PAGES_NUM
-        if (totalPagesNumber < PageManager.MAX_PAGES_NUM)
-            totalPagesFromNetwork = totalPagesNumber
-        interactor.saveTotalPagesNumberToPreferences(
-            totalPagesFromNetwork,
-            interactor.getFilmsCategoryFromPreferences()
-        )
-    }
-
-    private fun saveUpdateDbTime() {
-        val dbUpdateTime = Calendar.getInstance().timeInMillis
-        interactor.saveUpdateDbTimeToPreferences(dbUpdateTime)
-    }
 
     private fun isLastUpdateEarlierThanPredefinedMaxTime(timeBDUpdatedInMs: Long): Boolean {
         val currentTimeInMs = Calendar.getInstance().timeInMillis
@@ -83,7 +72,7 @@ class HomeFragmentViewModel @Inject constructor(val interactor: Interactor) : Vi
     }
 
     interface ApiCallback {
-        fun onSuccess(pageOfFilms: List<Film>, totalPages: Int)
+        fun onSuccess()
         fun onFailure()
     }
 
