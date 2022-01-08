@@ -35,4 +35,5 @@
     <dimen name="recycler_layout_bias">1.0</dimen>
     <dimen name="settings_radio_text_margin">8dp</dimen>
     <dimen name="settings_radio_button_margin">16dp</dimen>
+    <dimen name="progress_bar_scaling_factor">0.5</dimen>
 </resources>

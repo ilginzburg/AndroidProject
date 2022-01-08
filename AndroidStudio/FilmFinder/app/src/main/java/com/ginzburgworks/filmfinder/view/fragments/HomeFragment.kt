@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
@@ -76,6 +77,7 @@ class HomeFragment : Fragment() {
         initRefreshOnChange()
         subscribeToProgressBarChanges()
         subscribeToFilmsListChanges()
+        subscribeToNetworkErrorMessages()
     }
 
 
@@ -85,10 +87,26 @@ class HomeFragment : Fragment() {
                 viewModel.requestNextPageFromNetwork()
             }
             if (it.isNotEmpty()) {
-                filmsAdapter.addItems(it)
+                val pageNumAndCategoryReadFromDB = it[0].page to it[0].category
+                if (isPageAlreadyAddedToAdapter(pageNumAndCategoryReadFromDB)) {
+                    filmsAdapter.addItems(it)
+                    saveLastReadPageNumAndCategory(pageNumAndCategoryReadFromDB)
+                }
             }
         }
+    }
 
+
+    private fun isPageAlreadyAddedToAdapter(pageNumAndCategory: Pair<Int, String>): Boolean {
+        return isFirstPage() || (viewModel.lastReadPageNumAndCategory != pageNumAndCategory)
+    }
+
+    private fun isFirstPage(): Boolean {
+        return viewModel.lastReadPageNumAndCategory.first == 0
+    }
+
+    private fun saveLastReadPageNumAndCategory(pageNumAndCategory: Pair<Int, String>) {
+        viewModel.lastReadPageNumAndCategory = pageNumAndCategory
     }
 
     private fun subscribeToProgressBarChanges() {
@@ -97,6 +115,12 @@ class HomeFragment : Fragment() {
             fragmentHomeBinding.progressBar.isVisible = it
         }
 
+    }
+
+    private fun subscribeToNetworkErrorMessages() {
+        viewModel.errorEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+        }
     }
 
     private fun initSearchView(): SearchController {

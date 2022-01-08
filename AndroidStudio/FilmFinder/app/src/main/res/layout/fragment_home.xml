@@ -18,11 +18,11 @@
 
     <ProgressBar
         android:id="@+id/progressBar"
-        style="?android:attr/progressBarStyleSmall"
+        style="?android:attr/progressBarStyleSmallTitle"
+        android:scaleY="@dimen/progress_bar_scaling_factor"
+        android:scaleX="@dimen/progress_bar_scaling_factor"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:elevation="2dp"
-        android:translationZ="5dp"
         android:visibility="invisible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toTopOf="parent"

@@ -1,6 +1,5 @@
 package com.ginzburgworks.filmfinder.data.db
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.data.db.dao.FilmDao

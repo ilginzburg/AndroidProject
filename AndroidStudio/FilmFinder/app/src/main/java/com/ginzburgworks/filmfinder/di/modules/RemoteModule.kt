@@ -14,6 +14,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
 
+private const val TIMEOUT_VALUE = 30L
+
 @Module
 abstract class RemoteModule {
 
@@ -33,8 +35,8 @@ class OkHttpClientCreator @Inject constructor() : Remote {
 
     fun okHttpClientImpl(): OkHttpClient {
         return OkHttpClient.Builder()
-            .callTimeout(30, TimeUnit.SECONDS)
-            .readTimeout(30, TimeUnit.SECONDS)
+            .callTimeout(TIMEOUT_VALUE, TimeUnit.SECONDS)
+            .readTimeout(TIMEOUT_VALUE, TimeUnit.SECONDS)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 if (BuildConfig.DEBUG) {
                     level = HttpLoggingInterceptor.Level.BASIC
