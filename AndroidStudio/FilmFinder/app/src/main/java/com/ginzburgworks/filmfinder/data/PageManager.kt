@@ -57,7 +57,7 @@ class PageManager(
         isPageRequested = true
     }
 
-    companion object  {
+    companion object {
 
         const val MAX_PAGES_NUM = 500
         const val FIRST_PAGE = 1
@@ -69,7 +69,7 @@ class PageManager(
                 SettingsFragment.TOP_RATED_CATEGORY -> TOP_RATED_PAGES_DEFAULT
                 SettingsFragment.UPCOMING_CATEGORY -> UPCOMING_PAGES_DEFAULT
                 SettingsFragment.NOW_PLAYING_CATEGORY -> NOW_PLAYING_PAGES_DEFAULT
-                SettingsFragment.POPULAR_CATEGORY ->  POPULAR_PAGES_DEFAULT
+                SettingsFragment.POPULAR_CATEGORY -> POPULAR_PAGES_DEFAULT
                 else -> UPCOMING_PAGES_DEFAULT
             }
         }

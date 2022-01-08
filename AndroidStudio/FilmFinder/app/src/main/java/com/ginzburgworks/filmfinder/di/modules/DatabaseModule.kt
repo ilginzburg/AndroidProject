@@ -2,8 +2,6 @@ package com.ginzburgworks.filmfinder.di.modules
 
 import android.content.Context
 import androidx.room.Room
-import androidx.room.migration.Migration
-import androidx.sqlite.db.SupportSQLiteDatabase
 import com.ginzburgworks.filmfinder.data.db.AppDatabase
 import com.ginzburgworks.filmfinder.data.db.MainRepository
 import com.ginzburgworks.filmfinder.data.db.dao.FilmDao

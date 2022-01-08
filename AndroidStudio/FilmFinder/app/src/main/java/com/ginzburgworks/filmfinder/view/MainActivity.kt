@@ -1,12 +1,11 @@
 package com.ginzburgworks.filmfinder.view
 
 import android.os.Bundle
-import android.util.Log
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ginzburgworks.filmfinder.R
-import com.ginzburgworks.filmfinder.databinding.ActivityMainBinding
 import com.ginzburgworks.filmfinder.data.Film
+import com.ginzburgworks.filmfinder.databinding.ActivityMainBinding
 import com.ginzburgworks.filmfinder.view.fragments.*
 
 class MainActivity : AppCompatActivity() {
@@ -22,7 +21,7 @@ class MainActivity : AppCompatActivity() {
         setInitialFragment()
     }
 
-    private fun setInitialFragment(){
+    private fun setInitialFragment() {
         fragmentTag = HOME_FRAGMENT_TAG
         if (nightModeSwitched)
             fragmentTag = SETTINGS_FRAGMENT_TAG
@@ -75,7 +74,6 @@ class MainActivity : AppCompatActivity() {
         supportFragmentManager.findFragmentByTag(tag)
 
     fun launchDetailsFragment(film: Film) {
-        Log.d("--------->LAUNCH","entered")
         val bundle = Bundle()
         bundle.putParcelable(DetailsFragment.KEY_FILM, film)
         val fragment = DetailsFragment()
@@ -83,7 +81,7 @@ class MainActivity : AppCompatActivity() {
         changeFragment(fragment, DETAILS_FRAGMENT_TAG)
     }
 
-    companion object{
+    companion object {
         private const val DETAILS_FRAGMENT_TAG = "details"
         private const val HOME_FRAGMENT_TAG = "home"
         private const val SETTINGS_FRAGMENT_TAG = "settings"

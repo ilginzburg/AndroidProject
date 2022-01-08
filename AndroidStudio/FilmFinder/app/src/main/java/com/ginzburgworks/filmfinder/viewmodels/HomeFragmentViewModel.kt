@@ -8,12 +8,15 @@ import androidx.lifecycle.Transformations
 import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.data.PageManager.Companion.FIRST_PAGE
 import com.ginzburgworks.filmfinder.data.PageManager.Companion.NEXT_PAGE
+import com.ginzburgworks.filmfinder.data.SingleLiveEvent
 import com.ginzburgworks.filmfinder.domain.Interactor
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import java.util.*
 import javax.inject.Inject
 
 private const val MAX_TIME_AFTER_BD_UPDATE = 600000
+private const val NETWORK_ERROR_MESSAGE = "Network connection failed..."
+private const val FIRST_TIME_PAGE_DUMMY_CATEGORY = "first_time"
 
 class HomeFragmentViewModel @Inject constructor(
     val interactor: Interactor,
@@ -28,10 +31,14 @@ class HomeFragmentViewModel @Inject constructor(
         interactor.getTotalPagesNumberFromPreferences(interactor.getFilmsCategoryFromPreferences())
     val showProgressBar: MutableLiveData<Boolean> = MutableLiveData()
 
-    private val currentPageLiveData = MutableLiveData(FIRST_PAGE)
+    private val currentPageLiveData = MutableLiveData<Int>()
     val filmsListLiveData = Transformations.switchMap(currentPageLiveData) { page ->
         interactor.getPageOfFilmsFromDB(page)
     }
+
+    val errorEvent = SingleLiveEvent<String>()
+
+    var lastReadPageNumAndCategory: Pair<Int, String> = 0 to FIRST_TIME_PAGE_DUMMY_CATEGORY
 
 
     init {
@@ -55,6 +62,7 @@ class HomeFragmentViewModel @Inject constructor(
 
             override fun onFailure() {
                 showProgressBar.postValue(false)
+                errorEvent.postValue(NETWORK_ERROR_MESSAGE)
             }
         })
     }
