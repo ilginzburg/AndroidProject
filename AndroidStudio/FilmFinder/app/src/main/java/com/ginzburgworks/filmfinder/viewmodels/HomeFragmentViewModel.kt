@@ -2,12 +2,12 @@ package com.ginzburgworks.filmfinder.viewmodels
 
 import android.app.Application
 import android.content.SharedPreferences
-import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
 import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.data.PageManager.Companion.FIRST_PAGE
+import com.ginzburgworks.filmfinder.data.PageManager.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.domain.Interactor
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import java.util.*
@@ -33,24 +33,22 @@ class HomeFragmentViewModel @Inject constructor(
         interactor.getPageOfFilmsFromDB(page)
     }
 
+
     init {
         requestNextPage(FIRST_PAGE)
     }
 
     fun requestNextPage(page: Int) {
-      //  if (isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLastUpdateTimeFromPreferences())) {
-            requestNextPageFromNetwork(page)
+        val isPageInDataBaseOutdated =
+            isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLastUpdateTimeFromPreferences())
+        if (isPageInDataBaseOutdated)
             interactor.deleteDB()
-            //   } else
-            //  requestNextPageFromDB(page)
-     //   }
+        requestNextPageFromDB(page)
     }
 
-    private fun requestNextPageFromNetwork(page: Int) {
-        Log.i("--------->REQUEST","Page = $page ")
-        requestNextPageFromDB(page)
+    fun requestNextPageFromNetwork() {
         showProgressBar.postValue(true)
-        interactor.getFilmsFromApi(page, object : ApiCallback {
+        interactor.getFilmsFromApi(NEXT_PAGE, object : ApiCallback {
             override fun onSuccess() {
                 showProgressBar.postValue(false)
             }

@@ -3,7 +3,6 @@ package com.ginzburgworks.filmfinder.view.fragments
 import android.content.Context
 import android.content.SharedPreferences
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -50,6 +49,7 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
+
     override fun onAttach(context: Context) {
         super.onAttach(context)
         App.instance.appComponent.inject(this)
@@ -74,18 +74,18 @@ class HomeFragment : Fragment() {
         initSearchView()
         initPullToRefresh()
         initRefreshOnChange()
-        subscribeToFilmsListChanges()
         subscribeToProgressBarChanges()
+        subscribeToFilmsListChanges()
     }
 
 
     private fun subscribeToFilmsListChanges() {
         viewModel.filmsListLiveData.observe(viewLifecycleOwner) {
-            if (it.isEmpty())
-                Log.i("--------->LIVEDATA_OBSERVER", "EMPTY")
+            if (it.isEmpty()) {
+                viewModel.requestNextPageFromNetwork()
+            }
             if (it.isNotEmpty()) {
                 filmsAdapter.addItems(it)
-                Log.i("--------->LIVEDATA_OBSERVER", "Page: ${it[0].page}")
             }
         }
 

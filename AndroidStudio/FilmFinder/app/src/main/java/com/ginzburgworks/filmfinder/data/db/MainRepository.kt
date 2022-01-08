@@ -11,13 +11,11 @@ class MainRepository(private val filmDao: FilmDao) {
 
     fun putPageOfFilmsToDb(pageOfFilms: List<Film>) {
         Executors.newSingleThreadExecutor().execute {
-            Log.i("--------->REPO_PUT","${pageOfFilms[0].category}, ${pageOfFilms[0].page} ")
             filmDao.insertAll(pageOfFilms)
         }
     }
 
     fun getPageOfFilmsInCategoryFromDB(page: Int, category: String): LiveData<List<Film>> {
-        Log.i("--------->REPO_GET","$category, $page ")
         return filmDao.getCachedFilmsByPageAndCategory(page, category)
     }
 

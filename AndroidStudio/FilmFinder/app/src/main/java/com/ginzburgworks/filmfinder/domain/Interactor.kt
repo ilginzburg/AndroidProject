@@ -4,7 +4,6 @@ package com.ginzburgworks.filmfinder.domain
 import androidx.lifecycle.LiveData
 import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.data.PageManager
-import com.ginzburgworks.filmfinder.data.PageManager.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.data.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.TmdbApi
 import com.ginzburgworks.filmfinder.data.db.MainRepository
@@ -59,6 +58,7 @@ class Interactor @Inject constructor(
     fun getPageOfFilmsFromDB(page: Int): LiveData<List<Film>> =
         repo.getPageOfFilmsInCategoryFromDB(page, getFilmsCategoryFromPreferences())
 
+
     fun deleteDB() = repo.deleteDB()
 
     fun saveFilmsCategoryToPreferences(category: String) {
@@ -67,22 +67,22 @@ class Interactor @Inject constructor(
 
     fun getFilmsCategoryFromPreferences() = preferenceProvider.getFilmsCategory()
 
-    fun saveTotalPagesNumberToPreferences(TotalPagesNumber: Int,category:String) {
-        preferenceProvider.saveTotalPagesNumber(TotalPagesNumber,category)
+    fun saveTotalPagesNumberToPreferences(TotalPagesNumber: Int, category: String) {
+        preferenceProvider.saveTotalPagesNumber(TotalPagesNumber, category)
     }
 
-    fun getTotalPagesNumberFromPreferences(category:String): Int{
+    fun getTotalPagesNumberFromPreferences(category: String): Int {
         return preferenceProvider.getTotalPagesNumber(category)
     }
 
     fun getLastUpdateTimeFromPreferences() = preferenceProvider.getLasBDUpdateTime()
 
-    private fun saveUpdateDbTimeToPreferences(dbUpdateTime:Long){
+    private fun saveUpdateDbTimeToPreferences(dbUpdateTime: Long) {
         preferenceProvider.saveUpdateDbTime(dbUpdateTime)
     }
 
     private fun saveTotalPagesNumber(totalPagesNumber: Int?) {
-        if(totalPagesNumber?:0 == 0)
+        if (totalPagesNumber ?: 0 == 0)
             return
         var totalPagesFromNetwork = PageManager.MAX_PAGES_NUM
         if (totalPagesNumber!! < PageManager.MAX_PAGES_NUM)

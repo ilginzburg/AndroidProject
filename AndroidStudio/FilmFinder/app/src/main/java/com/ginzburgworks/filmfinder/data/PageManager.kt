@@ -30,6 +30,7 @@ class PageManager(
         }
         if (isPageOnStart())
             isPageRequested = false
+
     }
 
     private fun bottomItemPosition() = layoutManager.findLastCompletelyVisibleItemPosition()

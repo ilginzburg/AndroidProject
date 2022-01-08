@@ -6,7 +6,7 @@ import javax.inject.Inject
 
 private const val DAY_MODE = false
 
-class SettingsManager @Inject constructor(context: Context)  {
+class SettingsManager @Inject constructor(context: Context) {
 
     private var preferenceProvider = PreferenceProvider(context)
     var savedNightMode = preferenceProvider.getNightModeSetting()
@@ -16,7 +16,7 @@ class SettingsManager @Inject constructor(context: Context)  {
         setUINightMode(selectedNightMode)
     }
 
-    private fun setUINightMode(requestedNightMode:Boolean) {
+    private fun setUINightMode(requestedNightMode: Boolean) {
         var appCompatDelegateMode = AppCompatDelegate.MODE_NIGHT_YES
         if (requestedNightMode == DAY_MODE)
             appCompatDelegateMode = AppCompatDelegate.MODE_NIGHT_NO

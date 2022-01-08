@@ -33,7 +33,7 @@ open class PreferenceProvider @Inject constructor(context: Context) {
         preference.unregisterOnSharedPreferenceChangeListener(listener)
     }
 
-    fun getNightModeSetting():Boolean {
+    fun getNightModeSetting(): Boolean {
         return preference.getBoolean(
             KEY_NIGHT_MODE_STATE,
             DEFAULT_MODE
@@ -55,15 +55,18 @@ open class PreferenceProvider @Inject constructor(context: Context) {
     }
 
 
-    fun saveTotalPagesNumber(totalPagesNumber: Int,category:String) {
+    fun saveTotalPagesNumber(totalPagesNumber: Int, category: String) {
         var totalPagesNumberToSave = totalPagesNumber
-        if(totalPagesNumberToSave == 0)
+        if (totalPagesNumberToSave == 0)
             totalPagesNumberToSave = PageManager.getDefaultTotalPagesByCategory(category)
-        preference.edit().putInt(KEY_TOTAL_PAGES_NUMBER+category, totalPagesNumberToSave).apply()
+        preference.edit().putInt(KEY_TOTAL_PAGES_NUMBER + category, totalPagesNumberToSave).apply()
     }
 
-    fun getTotalPagesNumber(category:String): Int {
-        return preference.getInt(KEY_TOTAL_PAGES_NUMBER+category, PageManager.getDefaultTotalPagesByCategory(category))
+    fun getTotalPagesNumber(category: String): Int {
+        return preference.getInt(
+            KEY_TOTAL_PAGES_NUMBER + category,
+            PageManager.getDefaultTotalPagesByCategory(category)
+        )
     }
 
 
@@ -78,6 +81,5 @@ open class PreferenceProvider @Inject constructor(context: Context) {
         private const val KEY_LAST_BD_UPDATE_TIME = "last_bd_update_time_key"
         private const val DEFAULT_BD_UPDATE_TIME = 0L
         private const val KEY_TOTAL_PAGES_NUMBER = "total_pages_number_key"
-      //  private const val DEFAULT_TOTAL_PAGES_NUMBER = 7
     }
 }
