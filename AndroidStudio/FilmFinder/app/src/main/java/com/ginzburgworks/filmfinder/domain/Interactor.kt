@@ -26,7 +26,6 @@ class Interactor @Inject constructor(
     fun getFilmsFromApi(page: Int, callback: HomeFragmentViewModel.ApiCallback) {
         val currentFilmsCategory = getFilmsCategoryFromPreferences()
        retrofitService.getFilms(currentFilmsCategory, API.KEY, "ru-RU", page)
-     //   retrofitService.getFilms(currentFilmsCategory, "1234", "ru-RU", page)
             .enqueue(object : Callback<TmdbResultsDto> {
                 override fun onResponse(
                     call: Call<TmdbResultsDto>,

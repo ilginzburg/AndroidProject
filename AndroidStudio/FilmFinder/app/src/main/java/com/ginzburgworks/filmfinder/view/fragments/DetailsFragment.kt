@@ -1,14 +1,17 @@
 package com.ginzburgworks.filmfinder.view.fragments
 
 import android.Manifest
+import android.content.ContentResolver
 import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,9 +33,10 @@ import com.ginzburgworks.filmfinder.utils.Converter
 import com.ginzburgworks.filmfinder.viewmodels.DetailsFragmentViewModel
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
+import java.io.FileNotFoundException
+import java.io.OutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
-
 
 
 class DetailsFragment : Fragment() {
@@ -147,7 +151,7 @@ class DetailsFragment : Fragment() {
     }
 
     private fun getIntentExtraText(film: Film): String =
-        "${R.string.share_msg} ${film.title} \n ${film.description}"
+        App.instance.getString(R.string.share_msg) + "  " + film.title + "\n" + film.description
 
     private fun loadImage(posterUrl: String, posterView: ImageView) {
         val sourceImageUrl = ApiConstants.IMAGES_URL + DETAILS_FRAG_IMG_SIZE + posterUrl
@@ -173,6 +177,40 @@ class DetailsFragment : Fragment() {
     }
 
 
+    private fun performAsyncLoadOfPoster(film: Film) {
+        if (!checkPermission()) {
+            requestPermission()
+            return
+        }
+        MainScope().launch {
+            fragmentDetailsBinding.progressBar.isVisible = true
+            val job = scope.async {
+                viewModel.loadWallpaper(ApiConstants.IMAGES_URL + "original" + film.poster)
+            }
+            job.await()?.let {
+                saveToGallery(it, film)
+                initSnackBar()
+            }
+            fragmentDetailsBinding.progressBar.isVisible = false
+        }
+    }
+
+    private fun initSnackBar() {
+        Snackbar.make(
+            fragmentDetailsBinding.root,
+            R.string.downloaded_to_gallery,
+            Snackbar.LENGTH_LONG
+        ).setAction(R.string.open) {
+            Intent(Intent.ACTION_VIEW).apply {
+                type = TYPE_OF_VIEW_INTENT
+                flags = Intent.FLAG_ACTIVITY_NEW_TASK
+                startActivity(this)
+            }
+        }
+            .show()
+    }
+
+
     private fun checkPermission(): Boolean {
         val result = ContextCompat.checkSelfPermission(
             requireContext(),
@@ -189,34 +227,32 @@ class DetailsFragment : Fragment() {
         )
     }
 
-    private fun saveToGallery(bitmap: Bitmap,film: Film) {
+    private fun saveToGallery(bitmap: Bitmap, film: Film) {
+        val contentResolver = requireActivity().contentResolver
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            val contentValues = ContentValues().apply {
+            ContentValues().apply {
                 put(MediaStore.Images.Media.TITLE, film.title.handleSingleQuote())
-                put(
-                    MediaStore.Images.Media.DISPLAY_NAME,
-                    film.title.handleSingleQuote()
-                )
+                put(MediaStore.Images.Media.DISPLAY_NAME, film.title.handleSingleQuote())
                 put(MediaStore.Images.Media.MIME_TYPE, MEDIA_MIME_TYPE)
-                put(
-                    MediaStore.Images.Media.DATE_ADDED,
-                    System.currentTimeMillis() / 1000
-                )
+                put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
                 put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
                 put(MediaStore.Images.Media.RELATIVE_PATH, APP_GALLERY_RELATIVE_PATH)
+            }.also { values ->
+                contentResolver.insert(
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
+                    values
+                )?.let { uri ->
+                    requestOutputStream(uri, contentResolver)?.let {
+                        if (!bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESS_FACTOR, it))
+                            viewModel.postErrorMessage(R.string.bitmap_compress_err_msg)
+                        it.close()
+                    }
+                } ?: viewModel.postErrorMessage(R.string.uri_err_msg)
             }
-            val contentResolver = requireActivity().contentResolver
-            val uri = contentResolver.insert(
-                MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                contentValues
-            )
-            val outputStream = contentResolver.openOutputStream(uri!!)
-            bitmap.compress(Bitmap.CompressFormat.JPEG, BITMAP_COMPRESS_QUALITY, outputStream)
-            outputStream?.close()
         } else {
             @Suppress("DEPRECATION")
             MediaStore.Images.Media.insertImage(
-                requireActivity().contentResolver,
+                contentResolver,
                 bitmap,
                 film.title.handleSingleQuote(),
                 film.description.handleSingleQuote()
@@ -224,35 +260,12 @@ class DetailsFragment : Fragment() {
         }
     }
 
-
-    private fun performAsyncLoadOfPoster(film: Film) {
-        if (!checkPermission()) {
-            requestPermission()
-            return
-        }
-        MainScope().launch {
-            fragmentDetailsBinding.progressBar.isVisible = true
-            val job = scope.async {
-                viewModel.loadWallpaper(ApiConstants.IMAGES_URL + "original" + film.poster)
-            }
-            val bitmap = job.await()
-            bitmap?.let {
-                saveToGallery(it, film)
-                Snackbar.make(
-                    fragmentDetailsBinding.root,
-                    R.string.downloaded_to_gallery,
-                    Snackbar.LENGTH_LONG
-                )
-                    .setAction(R.string.open) {
-                        val intent = Intent()
-                        intent.action = Intent.ACTION_VIEW
-                        intent.type = TYPE_OF_VIEW_INTENT
-                        intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK
-                        startActivity(intent)
-                    }
-                    .show()
-            }
-            fragmentDetailsBinding.progressBar.isVisible = false
+    private fun requestOutputStream(uri: Uri, contentResolver: ContentResolver): OutputStream? {
+        return try {
+            contentResolver.openOutputStream(uri)
+        } catch (e: FileNotFoundException) {
+            viewModel.postErrorMessage(R.string.output_stream_err_msg)
+            null
         }
     }
 
@@ -260,13 +273,12 @@ class DetailsFragment : Fragment() {
         return this.replace("'", "")
     }
 
-
     companion object {
         const val KEY_FILM = "film"
         private const val DETAILS_FRAG_IMG_SIZE = "w780"
         private const val TYPE_OF_SHARE_INTENT = "text/plain"
         private const val TYPE_OF_VIEW_INTENT = "image/*"
-        private const val BITMAP_COMPRESS_QUALITY = 100
+        private const val COMPRESS_FACTOR = 100
         private const val APP_GALLERY_RELATIVE_PATH = "Pictures/FilmFinderApp"
         private const val MEDIA_MIME_TYPE = "image/jpeg"
     }

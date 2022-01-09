@@ -23,59 +23,54 @@ class DetailsFragmentViewModel @Inject constructor() : ViewModel() {
 
     suspend fun loadWallpaper(url: String): Bitmap? {
         var bitmap: Bitmap? = null
-        return suspendCoroutine {
-            val urlFormed = createURL(url)
-            urlFormed?.apply {
-                val urlConnectionInstance = establishConnection(this)
-                urlConnectionInstance?.apply {
-                    val inputStream = requestInputStream(this)
-                    inputStream?.apply {
-                        bitmap = BitmapFactory.decodeStream(this)
-                        bitmap?: errorEvent.postValue(App.instance.getString(R.string.bitmap_err_msg))
-                    }
-                }
+        return suspendCoroutine { continuation ->
+            provideInputStream(url)?.let { inputStream ->
+                BitmapFactory.decodeStream(inputStream)?.let {
+                    bitmap = it
+                } ?: postErrorMessage(R.string.bitmap_err_msg)
             }
-            it.resume(bitmap)
+            continuation.resume(bitmap)
         }
     }
 
+    private fun provideInputStream(url: String): InputStream? {
+        val urlFormed = createURL(url) ?: return null
+        val connection = establishConnection(urlFormed) ?: return null
+        return requestInputStream(connection)
+    }
+
+
     private fun requestInputStream(urlConnectionInstance: URLConnection): InputStream? {
-        val inputStream: InputStream
-        try {
-            inputStream = urlConnectionInstance.getInputStream()
+        return try {
+            urlConnectionInstance.getInputStream()
         } catch (e: IOException) {
-            errorEvent.postValue(App.instance.getString(R.string.network_err_msg))
-            return null
+            postErrorMessage(R.string.network_err_msg)
+            null
         } catch (e: UnknownServiceException) {
-            errorEvent.postValue(App.instance.getString(R.string.unknown_service_err_msg))
-            return null
+            postErrorMessage(R.string.unknown_service_err_msg)
+            null
         }
-        return inputStream
     }
 
     private fun establishConnection(url: URL): URLConnection? {
-        val urlConnectionInstance: URLConnection
-        try {
-            urlConnectionInstance = url.openConnection()
+        return try {
+            url.openConnection()
         } catch (e: IOException) {
-            errorEvent.postValue(App.instance.getString(R.string.network_err_msg))
-            return null
+            postErrorMessage(R.string.network_err_msg)
+            null
         }
-        return urlConnectionInstance
     }
 
     private fun createURL(url: String): URL? {
-        val urlFormed: URL
-        try {
-            urlFormed = URL(url)
+        return try {
+            URL(url)
         } catch (e: MalformedURLException) {
-            errorEvent.postValue(App.instance.getString(R.string.url_err_msg))
-            return null
+            postErrorMessage(R.string.url_err_msg)
+            null
         }
-        return urlFormed
     }
-    
-    private fun postErrorMessage(msgID:Int){
+
+    fun postErrorMessage(msgID: Int) {
         errorEvent.postValue(App.instance.getString(msgID))
     }
 
