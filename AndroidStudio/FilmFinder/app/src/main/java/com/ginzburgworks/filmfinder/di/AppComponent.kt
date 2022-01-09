@@ -2,6 +2,7 @@ package com.ginzburgworks.filmfinder.di
 
 import android.content.Context
 import com.ginzburgworks.filmfinder.di.modules.*
+import com.ginzburgworks.filmfinder.view.fragments.DetailsFragment
 import com.ginzburgworks.filmfinder.view.fragments.HomeFragment
 import com.ginzburgworks.filmfinder.view.fragments.SettingsFragment
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
@@ -29,4 +30,5 @@ interface AppComponent {
     fun inject(filmListRecyclerAdapter: FilmListRecyclerAdapter)
     fun inject(homeFragment: HomeFragment)
     fun inject(settingsFragment: SettingsFragment)
+    fun inject(detailsFragment: DetailsFragment)
 }

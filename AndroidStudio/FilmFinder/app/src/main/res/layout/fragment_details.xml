@@ -82,6 +82,27 @@
             app:srcCompat="@drawable/ic_baseline_favorite_border_24"
             app:tint="@android:color/white" />
 
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/details_fab_download_wp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/action_button_margin"
+            app:borderWidth="0dp"
+            android:translationX="@dimen/download_button_translation_x"
+            android:backgroundTint="@color/colorPrimaryDark"
+            app:layout_anchor="@id/app_bar"
+            app:layout_anchorGravity="left|bottom"
+            app:srcCompat="@drawable/ic_baseline_cloud_download_24"
+            app:tint="@android:color/white"/>
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            android:visibility="invisible"
+            android:layout_width="@dimen/download_progress_bar_side"
+            android:layout_height="@dimen/download_progress_bar_side"
+            android:translationZ="@dimen/download_progress_bar_translation_z"
+            app:layout_anchor="@id/details_fab_download_wp"
+            app:layout_anchorGravity="center"/>
 
         <com.google.android.material.floatingactionbutton.FloatingActionButton
             android:id="@+id/details_fab_share"

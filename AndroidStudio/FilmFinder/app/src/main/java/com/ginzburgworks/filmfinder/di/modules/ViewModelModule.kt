@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ginzburgworks.filmfinder.App
+import com.ginzburgworks.filmfinder.viewmodels.DetailsFragmentViewModel
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
 import dagger.Binds
@@ -26,6 +27,11 @@ abstract class ViewModelModule {
     @IntoMap
     @ViewModelKey(SettingsFragmentViewModel::class)
     abstract fun bindSettingsFragmentViewModel(view: SettingsFragmentViewModel): ViewModel
+
+    @Binds
+    @IntoMap
+    @ViewModelKey(DetailsFragmentViewModel::class)
+    abstract fun bindDetailsFragmentViewModel(view: DetailsFragmentViewModel): ViewModel
 
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
