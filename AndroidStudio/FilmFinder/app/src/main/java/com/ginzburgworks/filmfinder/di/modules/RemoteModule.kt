@@ -66,12 +66,12 @@ class TmdbApiImpl @Inject constructor() : TmdbApi, Remote {
     @Inject
     lateinit var retrofitCreator: RetrofitCreator
 
-    override fun getFilms(
+    override suspend fun getFilms(
         category: String,
         apiKey: String,
         language: String,
         page: Int
-    ): Call<TmdbResultsDto> {
+    ): TmdbResultsDto {
         return retrofitCreator.retrofitImpl().create(TmdbApi::class.java)
             .getFilms(category, apiKey, language, page)
     }

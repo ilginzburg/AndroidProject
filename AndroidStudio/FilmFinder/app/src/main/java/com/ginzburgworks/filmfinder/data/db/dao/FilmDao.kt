@@ -13,11 +13,11 @@ interface FilmDao {
     fun getCachedFilms(): List<Film>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    fun insertAll(list: List<Film>)
+    suspend fun insertAll(list: List<Film>)
 
     @Query("SELECT * FROM cached_films WHERE page=:requestedPage AND category=:requestedCategory")
     fun getCachedFilmsByPageAndCategory(requestedPage: Int, requestedCategory:String): LiveData<List<Film>>
 
     @Query("DELETE FROM cached_films")
-    fun delete()
+    suspend fun delete()
 }

@@ -5,17 +5,18 @@ import android.content.SharedPreferences
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.viewModelScope
 import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.data.PageManager.Companion.FIRST_PAGE
 import com.ginzburgworks.filmfinder.data.PageManager.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.data.SingleLiveEvent
 import com.ginzburgworks.filmfinder.domain.Interactor
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
+import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
 private const val MAX_TIME_AFTER_BD_UPDATE = 600000
-private const val NETWORK_ERROR_MESSAGE = "Network connection failed..."
 private const val FIRST_TIME_PAGE_DUMMY_CATEGORY = "first_time"
 
 class HomeFragmentViewModel @Inject constructor(
@@ -48,39 +49,32 @@ class HomeFragmentViewModel @Inject constructor(
     fun requestNextPage(page: Int) {
         val isPageInDataBaseOutdated =
             isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLastUpdateTimeFromPreferences())
-        if (isPageInDataBaseOutdated)
-            interactor.deleteDB()
+        if (isPageInDataBaseOutdated) {
+            viewModelScope.launch {
+                interactor.deleteDB()
+            }
+        }
         requestNextPageFromDB(page)
     }
 
     fun requestNextPageFromNetwork() {
         showProgressBar.postValue(true)
-        interactor.getFilmsFromApi(NEXT_PAGE, object : ApiCallback {
-            override fun onSuccess() {
-                showProgressBar.postValue(false)
-            }
-
-            override fun onFailure() {
-                showProgressBar.postValue(false)
-                errorEvent.postValue(NETWORK_ERROR_MESSAGE)
-            }
-        })
+        viewModelScope.launch {
+            interactor.getFilmsFromApi(NEXT_PAGE)
+            showProgressBar.postValue(false)
+        }
     }
+
 
     private fun requestNextPageFromDB(page: Int) {
         currentPageLiveData.value = page
     }
-
 
     private fun isLastUpdateEarlierThanPredefinedMaxTime(timeBDUpdatedInMs: Long): Boolean {
         val currentTimeInMs = Calendar.getInstance().timeInMillis
         return (currentTimeInMs - timeBDUpdatedInMs) > MAX_TIME_AFTER_BD_UPDATE
     }
 
-    interface ApiCallback {
-        fun onSuccess()
-        fun onFailure()
-    }
 
     override fun onCleared() {
         super.onCleared()

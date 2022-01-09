@@ -22,7 +22,7 @@
     <string name="network_err_msg">Ошибка соединения с сервером </string>
     <string name="unknown_service_err_msg">Ошибка: неизвестный формат сервиса </string>
     <string name="bitmap_err_msg">Ошибка: не удалось сформировать Bitmap </string>
-    <string name="bitmap_compress_err_msg">Ошибка: не удалось сжать Bitmap </string>
+    <string name="bitmap_compress_err_msg">Ошибка: не удалось создать изображение </string>
     <string name="uri_err_msg">Ошибка при получении URI </string>
     <string name="output_stream_err_msg">Ошибка при открытии выходного потока </string>
 </resources>

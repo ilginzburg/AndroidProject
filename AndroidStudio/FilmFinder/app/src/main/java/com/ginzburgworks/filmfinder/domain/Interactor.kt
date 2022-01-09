@@ -7,13 +7,10 @@ import com.ginzburgworks.filmfinder.data.PageManager
 import com.ginzburgworks.filmfinder.data.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.TmdbApi
 import com.ginzburgworks.filmfinder.data.db.MainRepository
-import com.ginzburgworks.filmfinder.data.entity.TmdbResultsDto
 import com.ginzburgworks.filmfinder.utils.API
 import com.ginzburgworks.filmfinder.utils.Converter
-import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import java.util.*
 import javax.inject.Inject
 
@@ -23,34 +20,22 @@ class Interactor @Inject constructor(
     private val retrofitService: TmdbApi,
     val preferenceProvider: PreferenceProvider
 ) {
-    fun getFilmsFromApi(page: Int, callback: HomeFragmentViewModel.ApiCallback) {
+    suspend fun getFilmsFromApi(page: Int) = coroutineScope {
         val currentFilmsCategory = getFilmsCategoryFromPreferences()
-       retrofitService.getFilms(currentFilmsCategory, API.KEY, "ru-RU", page)
-            .enqueue(object : Callback<TmdbResultsDto> {
-                override fun onResponse(
-                    call: Call<TmdbResultsDto>,
-                    response: Response<TmdbResultsDto>
-                ) {
-                    if(!response.isSuccessful) {
-                        callback.onFailure()
-                        return
-                    }
-                    val pageOfFilms = Converter.convertApiListToDtoList(
-                        response.body()?.tmdbFilms,
-                        response.body()?.page,
-                        currentFilmsCategory
-                    )
-                    repo.putPageOfFilmsToDb(pageOfFilms)
-                    saveUpdateDbTime()
-                    saveTotalPagesNumber(response.body()?.totalPages)
-                    callback.onSuccess()
-                }
-
-                override fun onFailure(call: Call<TmdbResultsDto>, t: Throwable) {
-                    callback.onFailure()
-                }
-            })
+        val result = async {
+            retrofitService.getFilms(currentFilmsCategory, API.KEY, "ru-RU", page)
+        }
+        result.await().let { dto ->
+            Converter.convertApiListToDtoList(
+                dto.tmdbFilms,
+                dto.page,
+                currentFilmsCategory
+            ).let { repo.putPageOfFilmsToDb(it) }
+            saveTotalPagesNumber(dto.totalPages)
+            saveUpdateDbTime()
+        }
     }
+
 
     private fun saveUpdateDbTime() {
         val dbUpdateTime = Calendar.getInstance().timeInMillis
@@ -62,7 +47,7 @@ class Interactor @Inject constructor(
         repo.getPageOfFilmsInCategoryFromDB(page, getFilmsCategoryFromPreferences())
 
 
-    fun deleteDB() = repo.deleteDB()
+    suspend fun deleteDB() = repo.deleteDB()
 
     fun saveFilmsCategoryToPreferences(category: String) {
         preferenceProvider.saveFilmsCategory(category)
