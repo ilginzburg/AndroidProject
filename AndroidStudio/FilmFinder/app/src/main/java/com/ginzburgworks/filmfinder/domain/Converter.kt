@@ -1,16 +1,16 @@
-package com.ginzburgworks.filmfinder.utils
+package com.ginzburgworks.filmfinder.domain
 
-import com.ginzburgworks.filmfinder.data.Film
-import com.ginzburgworks.filmfinder.data.entity.TmdbFilm
+import com.ginzburgworks.filmfinder.data.local.Film
+import com.ginzburgworks.filmfinder.data.remote.entity.TmdbFilm
 
 object Converter {
-    fun convertApiListToDtoList(list: List<TmdbFilm>?, page: Int?, currentCategory: String): List<Film> {
+    fun convertTmdbFilmListToFilmList(list: List<TmdbFilm>?, page: Int?, currentCategory: String): List<Film> {
         val result = mutableListOf<Film>()
         list?.forEach {
             result.add(
                 Film(
-                    page = page?: DefaultFilm.film.page,
                     category = currentCategory,
+                    page = page?: DefaultFilm.film.page,
                     title = it.title ?: DefaultFilm.film.title,
                     poster = it.posterPath ?: DefaultFilm.film.poster,
                     description = it.overview ?: DefaultFilm.film.description,

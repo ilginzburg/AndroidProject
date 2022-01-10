@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder.data
+package com.ginzburgworks.filmfinder.data.remote
 
 object ApiConstants {
     const val BASE_URL = "https://api.themoviedb.org/"

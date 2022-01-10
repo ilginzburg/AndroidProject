@@ -1,14 +1,13 @@
 package com.ginzburgworks.filmfinder.di.modules
 
 import com.ginzburgworks.filmfinder.BuildConfig
-import com.ginzburgworks.filmfinder.data.ApiConstants
-import com.ginzburgworks.filmfinder.data.TmdbApi
-import com.ginzburgworks.filmfinder.data.entity.TmdbResultsDto
+import com.ginzburgworks.filmfinder.data.remote.ApiConstants
+import com.ginzburgworks.filmfinder.data.remote.TmdbApi
+import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
 import dagger.Binds
 import dagger.Module
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
-import retrofit2.Call
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -35,12 +34,13 @@ class OkHttpClientCreator @Inject constructor() : Remote {
 
     fun okHttpClientImpl(): OkHttpClient {
         return OkHttpClient.Builder()
+            .connectTimeout(TIMEOUT_VALUE, TimeUnit.SECONDS)
             .callTimeout(TIMEOUT_VALUE, TimeUnit.SECONDS)
             .readTimeout(TIMEOUT_VALUE, TimeUnit.SECONDS)
             .addInterceptor(HttpLoggingInterceptor().apply {
                 if (BuildConfig.DEBUG) {
                     level = HttpLoggingInterceptor.Level.BASIC
-               }
+                }
             })
             .build()
     }
@@ -71,7 +71,7 @@ class TmdbApiImpl @Inject constructor() : TmdbApi, Remote {
         apiKey: String,
         language: String,
         page: Int
-    ): TmdbResultsDto {
+    ): TmdbResultsDto? {
         return retrofitCreator.retrofitImpl().create(TmdbApi::class.java)
             .getFilms(category, apiKey, language, page)
     }

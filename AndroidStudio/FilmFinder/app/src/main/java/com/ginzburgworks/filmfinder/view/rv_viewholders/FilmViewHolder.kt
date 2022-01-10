@@ -6,10 +6,10 @@ import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.ginzburgworks.filmfinder.data.ApiConstants
-import com.ginzburgworks.filmfinder.data.Film
+import com.ginzburgworks.filmfinder.data.remote.ApiConstants
+import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
-import com.ginzburgworks.filmfinder.utils.Converter
+import com.ginzburgworks.filmfinder.domain.Converter
 
 private const val VIEW_HOLDER_IMG_SIZE = "w342"
 

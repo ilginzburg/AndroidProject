@@ -1,16 +1,14 @@
-package com.ginzburgworks.filmfinder.data.db.dao
+package com.ginzburgworks.filmfinder.data.local.db.dao
 
 import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.ginzburgworks.filmfinder.data.Film
+import com.ginzburgworks.filmfinder.data.local.Film
 
 @Dao
 interface FilmDao {
-    @Query("SELECT * FROM cached_films")
-    fun getCachedFilms(): List<Film>
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(list: List<Film>)
@@ -19,5 +17,5 @@ interface FilmDao {
     fun getCachedFilmsByPageAndCategory(requestedPage: Int, requestedCategory:String): LiveData<List<Film>>
 
     @Query("DELETE FROM cached_films")
-    suspend fun delete()
+    suspend fun deleteAll()
 }

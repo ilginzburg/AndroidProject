@@ -25,7 +25,10 @@
     <string name="bitmap_compress_err_msg">Ошибка: не удалось создать изображение </string>
     <string name="uri_err_msg">Ошибка при получении URI </string>
     <string name="output_stream_err_msg">Ошибка при открытии выходного потока </string>
+    <string name="exc_handler_msg">Отловлено исключение:  </string>
+    <string name="popular_category">popular</string>
+    <string name="top_rated_category">top_rated</string>
+    <string name="upcoming_category">upcoming</string>
+    <string name="now_playing_category">now_playing</string>
 </resources>
-
-
 

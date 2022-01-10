@@ -9,26 +9,30 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
-import com.ginzburgworks.filmfinder.data.Film
-import com.ginzburgworks.filmfinder.data.PageManager
-import com.ginzburgworks.filmfinder.data.PreferenceProvider
-import com.ginzburgworks.filmfinder.data.SearchController
+import com.ginzburgworks.filmfinder.data.local.Film
+import com.ginzburgworks.filmfinder.data.local.shared.KEY_FILMS_CATEGORY
+import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
+import com.ginzburgworks.filmfinder.domain.PagesController
+import com.ginzburgworks.filmfinder.domain.SearchController
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
+import com.ginzburgworks.filmfinder.viewmodels.CommonViewModel
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val ANIM_POSITION = 1
 private const val DECORATOR_PADDING = 8
+private const val FIRST_INDEX_IN_LIST = 0
 
 class HomeFragment : Fragment() {
 
@@ -37,9 +41,10 @@ class HomeFragment : Fragment() {
     @Inject
     lateinit var filmsAdapter: FilmListRecyclerAdapter
     private lateinit var swipeRefreshLayout: SwipeRefreshLayout
-    private lateinit var pageManager: PageManager
+    private lateinit var pagesController: PagesController
     private val searchController by lazy { initSearchView() }
-    private val viewModel by lazy {
+
+    private val homeFragmentViewModel by lazy {
         ViewModelProvider(
             this,
             viewModelFactory
@@ -49,7 +54,6 @@ class HomeFragment : Fragment() {
     @Singleton
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
-
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -82,12 +86,12 @@ class HomeFragment : Fragment() {
 
 
     private fun subscribeToFilmsListChanges() {
-        viewModel.filmsListLiveData.observe(viewLifecycleOwner) {
+        homeFragmentViewModel.filmsListLiveData.observe(viewLifecycleOwner) {
             if (it.isEmpty()) {
-                viewModel.requestNextPageFromNetwork()
+                homeFragmentViewModel.requestNextPageFromRemote()
             }
             if (it.isNotEmpty()) {
-                val pageNumAndCategoryReadFromDB = it[0].page to it[0].category
+                val pageNumAndCategoryReadFromDB = it[FIRST_INDEX_IN_LIST].page to it[FIRST_INDEX_IN_LIST].category
                 if (isPageAlreadyAddedToAdapter(pageNumAndCategoryReadFromDB)) {
                     filmsAdapter.addItems(it)
                     saveLastReadPageNumAndCategory(pageNumAndCategoryReadFromDB)
@@ -98,42 +102,41 @@ class HomeFragment : Fragment() {
 
 
     private fun isPageAlreadyAddedToAdapter(pageNumAndCategory: Pair<Int, String>): Boolean {
-        return isFirstPage() || (viewModel.lastReadPageNumAndCategory != pageNumAndCategory)
+        return isFirstPage() || (homeFragmentViewModel.lastReadPageNumAndCategory != pageNumAndCategory)
     }
 
     private fun isFirstPage(): Boolean {
-        return viewModel.lastReadPageNumAndCategory.first == 0
+        return homeFragmentViewModel.lastReadPageNumAndCategory.first == 0
     }
 
     private fun saveLastReadPageNumAndCategory(pageNumAndCategory: Pair<Int, String>) {
-        viewModel.lastReadPageNumAndCategory = pageNumAndCategory
+        homeFragmentViewModel.lastReadPageNumAndCategory = pageNumAndCategory
     }
 
     private fun subscribeToProgressBarChanges() {
         fragmentHomeBinding.progressBar.bringToFront()
-        viewModel.showProgressBar.observe(viewLifecycleOwner) {
+        homeFragmentViewModel.showProgressBar.observe(viewLifecycleOwner) {
             fragmentHomeBinding.progressBar.isVisible = it
         }
-
     }
 
     private fun subscribeToNetworkErrorMessages() {
-        viewModel.errorEvent.observe(viewLifecycleOwner) {
+        homeFragmentViewModel.errorEvent.observe(viewLifecycleOwner) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
 
     private fun initSearchView(): SearchController {
-        return SearchController(filmsAdapter, viewModel).apply {
+        return SearchController(filmsAdapter, homeFragmentViewModel).apply {
             fragmentHomeBinding.searchView.setOnClickListener {
-                filmsAdapter.saveItemsForSearch(viewModel)
+                filmsAdapter.saveItemsForSearch(homeFragmentViewModel)
                 fragmentHomeBinding.searchView.isIconified = false
             }
             fragmentHomeBinding.searchView.setOnCloseListener {
-                if (viewModel.itemsForSearch.size > 0) {
+                if (homeFragmentViewModel.itemsForSearch.size > 0) {
                     filmsAdapter.clearItems()
-                    filmsAdapter.addItems(viewModel.itemsForSearch)
-                    viewModel.itemsForSearch.clear()
+                    filmsAdapter.addItems(homeFragmentViewModel.itemsForSearch)
+                    homeFragmentViewModel.itemsForSearch.clear()
                 }
                 true
             }
@@ -147,8 +150,8 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
             addItemDecoration(decorator)
-            pageManager = PageManager(viewModel, layoutManager as LinearLayoutManager)
-            addOnScrollListener(pageManager)
+            pagesController = PagesController(homeFragmentViewModel, layoutManager as LinearLayoutManager)
+            addOnScrollListener(pagesController)
         }
         filmsAdapter.setListener(object : FilmListRecyclerAdapter.OnItemClickListener {
             override fun onClick(film: Film) {
@@ -167,18 +170,21 @@ class HomeFragment : Fragment() {
     }
 
     private fun updateAdapterBuffer() {
-        pageManager.restartPages()
+        pagesController.restartPages()
         filmsAdapter.clearItems()
     }
 
+
+
     private fun initRefreshOnChange() {
-        viewModel.onSharedPreferenceChangeListener =
+        homeFragmentViewModel.onSharedPreferenceChangeListener =
             SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                if (key == PreferenceProvider.KEY_FILMS_CATEGORY)
+                if (key == KEY_FILMS_CATEGORY)
                     updateAdapterBuffer()
             }
-        viewModel.interactor.preferenceProvider.registerListener(viewModel.onSharedPreferenceChangeListener)
+        homeFragmentViewModel.registerOnChangeListener()
     }
+
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(

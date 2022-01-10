@@ -1,61 +1,86 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:id="@+id/settings_fragment_root"
-    android:theme="@style/BackgroundSettings"
-    tools:context=".view.fragments.SettingsFragment">
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <RadioGroup
-        android:id="@+id/radio_group"
+    <data>
+        <variable
+            name="viewModel"
+            type="com.ginzburgworks.filmfinder.viewmodels.CommonViewModel" />
+
+        <variable
+            name="fragmentViewModel"
+            type="com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel" />
+
+
+    </data>
+
+    <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@null"
-        android:orientation="vertical">
+        android:layout_height="match_parent"
+        android:id="@+id/settings_fragment_root"
+        android:theme="@style/BackgroundSettings"
+        tools:context=".view.fragments.SettingsFragment">
 
-        <TextView
+        <RadioGroup
+            android:id="@+id/radio_group"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textAppearance="@style/TextAppearance.AppCompat.Title"
             android:background="@null"
-            android:textColor="@android:color/white"
-            android:layout_margin="@dimen/settings_radio_text_margin"
-            android:text="@string/radio_group_header"/>
+            android:orientation="vertical">
 
-        <RadioButton
-            android:id="@+id/radio_popular"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/settings_radio_button_margin"
-            android:layout_marginRight="@dimen/settings_radio_button_margin"
-            android:textColor="@android:color/white"
-            android:text="@string/radio_button_popular"/>
-        <RadioButton
-            android:id="@+id/radio_top_rated"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/settings_radio_button_margin"
-            android:layout_marginRight="@dimen/settings_radio_button_margin"
-            android:textColor="@android:color/white"
-            android:text="@string/radio_button_top_rated"/>
-        <RadioButton
-            android:id="@+id/radio_upcoming"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/settings_radio_button_margin"
-            android:layout_marginRight="@dimen/settings_radio_button_margin"
-            android:textColor="@android:color/white"
-            android:text="@string/radio_button_upcoming"/>
-        <RadioButton
-            android:id="@+id/radio_now_playing"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="@dimen/settings_radio_button_margin"
-            android:layout_marginRight="@dimen/settings_radio_button_margin"
-            android:textColor="@android:color/white"
-            android:text="@string/radio_button_playing"/>
-    </RadioGroup>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="@style/TextAppearance.AppCompat.Title"
+                android:background="@null"
+                android:textColor="@android:color/white"
+                android:layout_margin="@dimen/settings_radio_text_margin"
+                android:text="@string/radio_group_header" />
+
+            <RadioButton
+                android:id="@+id/popular"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_radio_button_margin"
+                android:layout_marginRight="@dimen/settings_radio_button_margin"
+                android:textColor="@android:color/white"
+                android:onClick="@{() -> fragmentViewModel.setCategory(@string/popular_category)}"
+                android:checked="@{fragmentViewModel.category.equals(@string/popular_category)}"
+                android:text="@string/radio_button_popular" />
+
+            <RadioButton
+                android:id="@+id/top_rated"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_radio_button_margin"
+                android:layout_marginRight="@dimen/settings_radio_button_margin"
+                android:textColor="@android:color/white"
+                android:onClick="@{() -> fragmentViewModel.setCategory(@string/top_rated_category)}"
+                android:checked= "@{fragmentViewModel.category.equals(@string/top_rated_category)}"
+                android:text="@string/radio_button_top_rated" />
+
+            <RadioButton
+                android:id="@+id/upcoming"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_radio_button_margin"
+                android:layout_marginRight="@dimen/settings_radio_button_margin"
+                android:textColor="@android:color/white"
+                android:onClick="@{() -> fragmentViewModel.setCategory(@string/upcoming_category)}"
+                android:checked= "@{fragmentViewModel.category.equals(@string/upcoming_category)}"
+                android:text="@string/radio_button_upcoming" />
+
+            <RadioButton
+                android:id="@+id/now_playing"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="@dimen/settings_radio_button_margin"
+                android:layout_marginRight="@dimen/settings_radio_button_margin"
+                android:textColor="@android:color/white"
+                android:onClick="@{() -> fragmentViewModel.setCategory(@string/now_playing_category)}"
+                android:checked= "@{fragmentViewModel.category.equals(@string/now_playing_category)}"
+                android:text="@string/radio_button_playing" />
+        </RadioGroup>
 
         <TextView
             android:id="@+id/appearance_title"
@@ -66,7 +91,7 @@
             android:textColor="@android:color/white"
             android:layout_below="@id/radio_group"
             android:layout_margin="@dimen/settings_radio_text_margin"
-            android:text="@string/radio_other_header"/>
+            android:text="@string/radio_other_header" />
 
         <CheckBox
             android:id="@+id/night_mode"
@@ -75,10 +100,11 @@
             android:layout_marginLeft="@dimen/settings_radio_button_margin"
             android:layout_marginRight="@dimen/settings_radio_button_margin"
             android:layout_below="@id/appearance_title"
+            android:checked="@{fragmentViewModel.nightMode.equals(true)}"
+            android:onClick="@{() -> fragmentViewModel.onNightModeClick()}"
             android:textColor="@android:color/white"
-            android:text="@string/radio_button_night"/>
+            android:text="@string/radio_button_night" />
 
 
-
-
-</RelativeLayout>
+    </RelativeLayout>
+</layout>

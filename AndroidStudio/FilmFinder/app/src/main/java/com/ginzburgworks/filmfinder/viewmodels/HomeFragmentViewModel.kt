@@ -1,46 +1,45 @@
 package com.ginzburgworks.filmfinder.viewmodels
 
-import android.app.Application
 import android.content.SharedPreferences
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.Transformations
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.ginzburgworks.filmfinder.data.Film
-import com.ginzburgworks.filmfinder.data.PageManager.Companion.FIRST_PAGE
-import com.ginzburgworks.filmfinder.data.PageManager.Companion.NEXT_PAGE
-import com.ginzburgworks.filmfinder.data.SingleLiveEvent
+import com.ginzburgworks.filmfinder.App
+import com.ginzburgworks.filmfinder.R
+import com.ginzburgworks.filmfinder.data.local.Film
+import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import com.ginzburgworks.filmfinder.domain.Interactor
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.FIRST_PAGE
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
 private const val MAX_TIME_AFTER_BD_UPDATE = 600000
-private const val FIRST_TIME_PAGE_DUMMY_CATEGORY = "first_time"
 
-class HomeFragmentViewModel @Inject constructor(
-    val interactor: Interactor,
-    application: Application
-) : AndroidViewModel(application) {
+class HomeFragmentViewModel @Inject constructor(val interactor: Interactor): ViewModel() {
 
     @Inject
     lateinit var adapter: FilmListRecyclerAdapter
     val itemsForSearch = mutableListOf<Film>()
     lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
-    var totalNumberOfPages =
-        interactor.getTotalPagesNumberFromPreferences(interactor.getFilmsCategoryFromPreferences())
+    var totalNumberOfPages = interactor.getTotalPagesNumber()
     val showProgressBar: MutableLiveData<Boolean> = MutableLiveData()
 
     private val currentPageLiveData = MutableLiveData<Int>()
     val filmsListLiveData = Transformations.switchMap(currentPageLiveData) { page ->
-        interactor.getPageOfFilmsFromDB(page)
+        interactor.getPageOfFilmsFromLocalDataSource(page)
     }
 
     val errorEvent = SingleLiveEvent<String>()
 
-    var lastReadPageNumAndCategory: Pair<Int, String> = 0 to FIRST_TIME_PAGE_DUMMY_CATEGORY
+    var lastReadPageNumAndCategory: Pair<Int, String> = 0 to ""
 
+    private val handler =
+        CoroutineExceptionHandler { _, e -> errorEvent.postValue(App.instance.getString(R.string.exc_handler_msg) + e) }
 
     init {
         requestNextPage(FIRST_PAGE)
@@ -48,25 +47,28 @@ class HomeFragmentViewModel @Inject constructor(
 
     fun requestNextPage(page: Int) {
         val isPageInDataBaseOutdated =
-            isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLastUpdateTimeFromPreferences())
+            isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLocalDataSourceUpdateTime())
         if (isPageInDataBaseOutdated) {
-            viewModelScope.launch {
-                interactor.deleteDB()
+            viewModelScope.launch(handler) {
+                launch {
+                    interactor.clearLocalDataSource()
+                }
             }
         }
-        requestNextPageFromDB(page)
+        requestNextPageFromLocal(page)
     }
 
-    fun requestNextPageFromNetwork() {
+    fun requestNextPageFromRemote() {
         showProgressBar.postValue(true)
-        viewModelScope.launch {
-            interactor.getFilmsFromApi(NEXT_PAGE)
-            showProgressBar.postValue(false)
+        viewModelScope.launch(handler) {
+            launch {
+                interactor.getPageOfFilmsFromRemoteDataSource(NEXT_PAGE)
+                showProgressBar.postValue(false)
+            }
         }
     }
 
-
-    private fun requestNextPageFromDB(page: Int) {
+    private fun requestNextPageFromLocal(page: Int) {
         currentPageLiveData.value = page
     }
 
@@ -75,11 +77,14 @@ class HomeFragmentViewModel @Inject constructor(
         return (currentTimeInMs - timeBDUpdatedInMs) > MAX_TIME_AFTER_BD_UPDATE
     }
 
+    fun registerOnChangeListener() {
+        interactor.registerPreferencesListener(onSharedPreferenceChangeListener)
+    }
 
     override fun onCleared() {
         super.onCleared()
         if (this::onSharedPreferenceChangeListener.isInitialized)
-            interactor.preferenceProvider.unRegisterListener(onSharedPreferenceChangeListener)
+            interactor.unRegisterPreferencesListener(onSharedPreferenceChangeListener)
     }
 
 }

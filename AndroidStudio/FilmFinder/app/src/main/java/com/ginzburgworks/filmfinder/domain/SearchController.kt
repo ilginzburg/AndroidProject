@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder.data
+package com.ginzburgworks.filmfinder.domain
 
 import androidx.appcompat.widget.SearchView
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter

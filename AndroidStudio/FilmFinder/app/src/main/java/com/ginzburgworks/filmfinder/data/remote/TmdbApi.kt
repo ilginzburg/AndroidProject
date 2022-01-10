@@ -1,7 +1,6 @@
-package com.ginzburgworks.filmfinder.data
+package com.ginzburgworks.filmfinder.data.remote
 
-import com.ginzburgworks.filmfinder.data.entity.TmdbResultsDto
-import retrofit2.Call
+import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
 import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
@@ -14,5 +13,5 @@ interface TmdbApi {
         @Query("api_key") apiKey: String,
         @Query("language") language: String,
         @Query("page") page: Int
-    ): TmdbResultsDto
+    ): TmdbResultsDto?
 }

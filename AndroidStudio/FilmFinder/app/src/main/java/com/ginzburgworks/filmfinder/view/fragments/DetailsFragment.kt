@@ -1,50 +1,49 @@
 package com.ginzburgworks.filmfinder.view.fragments
 
-import android.Manifest
-import android.content.ContentResolver
-import android.content.ContentValues
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.graphics.Bitmap
-import android.net.Uri
-import android.os.Build
+import android.graphics.drawable.Drawable
 import android.os.Bundle
-import android.provider.MediaStore
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.Toast
-import androidx.core.app.ActivityCompat
-import androidx.core.content.ContextCompat
+import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isVisible
+import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.bumptech.glide.Glide
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
-import com.ginzburgworks.filmfinder.data.ApiConstants
-import com.ginzburgworks.filmfinder.data.Favorites
-import com.ginzburgworks.filmfinder.data.Film
+import com.ginzburgworks.filmfinder.data.local.Favorites
+import com.ginzburgworks.filmfinder.data.local.Film
+import com.ginzburgworks.filmfinder.data.remote.ApiConstants
 import com.ginzburgworks.filmfinder.databinding.FragmentDetailsBinding
-import com.ginzburgworks.filmfinder.utils.Converter
+import com.ginzburgworks.filmfinder.domain.Converter
+import com.ginzburgworks.filmfinder.domain.GalleryController
+import com.ginzburgworks.filmfinder.domain.PermissionsHandler
 import com.ginzburgworks.filmfinder.viewmodels.DetailsFragmentViewModel
+import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.*
-import java.io.FileNotFoundException
-import java.io.OutputStream
 import javax.inject.Inject
 import javax.inject.Singleton
 
 
+const val KEY_FILM = "film"
+private const val DETAILS_FRAG_IMG_SIZE = "w780"
+private const val TYPE_OF_SHARE_INTENT = "text/plain"
+private const val TYPE_OF_VIEW_INTENT = "image/*"
+
 class DetailsFragment : Fragment() {
 
     private lateinit var fragmentDetailsBinding: FragmentDetailsBinding
+    private lateinit var galleryController: GalleryController
+    private lateinit var permissionsHandler: PermissionsHandler
     private val scope = CoroutineScope(Dispatchers.IO)
 
-    private val viewModel by lazy {
+    private val detailsFragmentViewModel by lazy {
         ViewModelProvider(
             this,
             viewModelFactory
@@ -74,54 +73,35 @@ class DetailsFragment : Fragment() {
     }
 
     private fun initComponents() {
-        val film = arguments?.get(KEY_FILM) as Film
-        initPoster(film)
-        initTitle(film)
-        initDescription(film)
-        initFavoritesButton(film)
-        initShareButton(film)
-        initDownloadButton(film)
+        bindComponents()
         subscribeToErrorMessages()
     }
 
+    private fun bindComponents() {
+        val film = arguments?.get(KEY_FILM) as Film
+        fragmentDetailsBinding.film = film
+        fragmentDetailsBinding.detailsFragment = this
+    }
+
     private fun subscribeToErrorMessages() {
-        viewModel.errorEvent.observe(viewLifecycleOwner) {
+        detailsFragmentViewModel.errorEvent.observe(viewLifecycleOwner) {
             Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
         }
     }
 
-    private fun initDownloadButton(film: Film) {
-        fragmentDetailsBinding.detailsFabDownloadWp.setOnClickListener {
-            performAsyncLoadOfPoster(film)
-        }
-    }
 
-    private fun initPoster(film: Film) {
-        loadImage(film.poster, fragmentDetailsBinding.detailsPoster)
-    }
-
-    private fun initTitle(film: Film) {
-        fragmentDetailsBinding.titleText = film.title
-    }
-
-    private fun initDescription(film: Film) {
-        fragmentDetailsBinding.descriptionText = film.description
-    }
-
-    private fun initFavoritesButton(film: Film) {
-        setFavoritesIcon(film)
-        fragmentDetailsBinding.detailsFabFavorites.setOnClickListener {
-            toggleFavorites(film)
-        }
-    }
-
-    private fun toggleFavorites(film: Film) {
+    fun toggleFavorites(film: Film ) {
         if (!film.isInFavorites)
             addToFavorites(film)
         else
             removeFromFavorites(film)
-        setFavoritesIcon(film)
+        loadIcon(
+            fragmentDetailsBinding.detailsFabFavorites,
+            fragmentDetailsBinding.detailsFabFavorites.drawable
+        )
+        fragmentDetailsBinding.invalidateAll()
     }
+
 
     private fun addToFavorites(film: Film) {
         film.isInFavorites = true
@@ -133,13 +113,8 @@ class DetailsFragment : Fragment() {
         Favorites.favoritesList.remove(film)
     }
 
-    private fun initShareButton(film: Film) {
-        fragmentDetailsBinding.detailsFabShare.setOnClickListener {
-            openShareDialog(film)
-        }
-    }
 
-    private fun openShareDialog(film: Film) {
+    fun openShareDialog(film: Film) {
         Intent(Intent.ACTION_SEND).apply {
             putExtra(
                 Intent.EXTRA_TEXT,
@@ -153,42 +128,21 @@ class DetailsFragment : Fragment() {
     private fun getIntentExtraText(film: Film): String =
         App.instance.getString(R.string.share_msg) + "  " + film.title + "\n" + film.description
 
-    private fun loadImage(posterUrl: String, posterView: ImageView) {
-        val sourceImageUrl = ApiConstants.IMAGES_URL + DETAILS_FRAG_IMG_SIZE + posterUrl
-        val defaultImage = Converter.DefaultFilm.film.poster
-        Glide.with(this)
-            .load(sourceImageUrl)
-            .centerCrop()
-            .error(defaultImage)
-            .into(posterView)
-    }
 
-    private fun setFavoritesIcon(film: Film) {
-        if (film.isInFavorites) setAddedToFavoritesIcon()
-        else removeAddedToFavoritesIcon()
-    }
-
-    private fun setAddedToFavoritesIcon() {
-        fragmentDetailsBinding.detailsFabFavorites.setImageResource(R.drawable.ic_baseline_favorite_24)
-    }
-
-    private fun removeAddedToFavoritesIcon() {
-        fragmentDetailsBinding.detailsFabFavorites.setImageResource(R.drawable.ic_baseline_favorite_border_24)
-    }
-
-
-    private fun performAsyncLoadOfPoster(film: Film) {
-        if (!checkPermission()) {
-            requestPermission()
+    fun performAsyncLoadOfPoster(film: Film) {
+        permissionsHandler = PermissionsHandler()
+        galleryController = GalleryController()
+        if (!permissionsHandler.checkPermission(requireContext())) {
+            permissionsHandler.requestPermission(requireActivity())
             return
         }
         MainScope().launch {
             fragmentDetailsBinding.progressBar.isVisible = true
             val job = scope.async {
-                viewModel.loadWallpaper(ApiConstants.IMAGES_URL + "original" + film.poster)
+                detailsFragmentViewModel.loadWallpaper(ApiConstants.IMAGES_URL + "original" + film.poster)
             }
             job.await()?.let {
-                saveToGallery(it, film)
+                galleryController.saveImageToGallery(it, film, requireActivity(), detailsFragmentViewModel)
                 initSnackBar()
             }
             fragmentDetailsBinding.progressBar.isVisible = false
@@ -211,75 +165,26 @@ class DetailsFragment : Fragment() {
     }
 
 
-    private fun checkPermission(): Boolean {
-        val result = ContextCompat.checkSelfPermission(
-            requireContext(),
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
-        )
-        return result == PackageManager.PERMISSION_GRANTED
-    }
-
-    private fun requestPermission() {
-        ActivityCompat.requestPermissions(
-            requireActivity(),
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            1
-        )
-    }
-
-    private fun saveToGallery(bitmap: Bitmap, film: Film) {
-        val contentResolver = requireActivity().contentResolver
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            ContentValues().apply {
-                put(MediaStore.Images.Media.TITLE, film.title.handleSingleQuote())
-                put(MediaStore.Images.Media.DISPLAY_NAME, film.title.handleSingleQuote())
-                put(MediaStore.Images.Media.MIME_TYPE, MEDIA_MIME_TYPE)
-                put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
-                put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
-                put(MediaStore.Images.Media.RELATIVE_PATH, APP_GALLERY_RELATIVE_PATH)
-            }.also { values ->
-                contentResolver.insert(
-                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
-                    values
-                )?.let { uri ->
-                    requestOutputStream(uri, contentResolver)?.let {
-                        if (!bitmap.compress(Bitmap.CompressFormat.JPEG, COMPRESS_FACTOR, it))
-                            viewModel.postErrorMessage(R.string.bitmap_compress_err_msg)
-                        it.close()
-                    }
-                } ?: viewModel.postErrorMessage(R.string.uri_err_msg)
-            }
-        } else {
-            @Suppress("DEPRECATION")
-            MediaStore.Images.Media.insertImage(
-                contentResolver,
-                bitmap,
-                film.title.handleSingleQuote(),
-                film.description.handleSingleQuote()
-            )
-        }
-    }
-
-    private fun requestOutputStream(uri: Uri, contentResolver: ContentResolver): OutputStream? {
-        return try {
-            contentResolver.openOutputStream(uri)
-        } catch (e: FileNotFoundException) {
-            viewModel.postErrorMessage(R.string.output_stream_err_msg)
-            null
-        }
-    }
-
-    private fun String.handleSingleQuote(): String {
-        return this.replace("'", "")
-    }
-
     companion object {
-        const val KEY_FILM = "film"
-        private const val DETAILS_FRAG_IMG_SIZE = "w780"
-        private const val TYPE_OF_SHARE_INTENT = "text/plain"
-        private const val TYPE_OF_VIEW_INTENT = "image/*"
-        private const val COMPRESS_FACTOR = 100
-        private const val APP_GALLERY_RELATIVE_PATH = "Pictures/FilmFinderApp"
-        private const val MEDIA_MIME_TYPE = "image/jpeg"
+
+        @JvmStatic
+        @BindingAdapter("profileImage")
+        fun loadImage(view: AppCompatImageView, imageUrl: String) {
+            val sourceImageUrl = ApiConstants.IMAGES_URL + "w780" + imageUrl
+            val defaultImage = Converter.DefaultFilm.film.poster
+            Glide.with(view)
+                .load(sourceImageUrl)
+                .centerCrop()
+                .error(defaultImage)
+                .into(view)
+        }
+
+        @JvmStatic
+        @BindingAdapter("srcCompat")
+        fun loadIcon(view: FloatingActionButton, icon: Drawable) {
+            view.setImageDrawable(icon)
+        }
+
     }
+
 }

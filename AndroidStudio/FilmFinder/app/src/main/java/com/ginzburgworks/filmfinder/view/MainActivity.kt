@@ -3,10 +3,20 @@ package com.ginzburgworks.filmfinder.view
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
-import com.ginzburgworks.filmfinder.data.Film
+import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.ActivityMainBinding
 import com.ginzburgworks.filmfinder.view.fragments.*
+
+
+private const val DETAILS_FRAGMENT_TAG = "details"
+private const val HOME_FRAGMENT_TAG = "home"
+private const val SETTINGS_FRAGMENT_TAG = "settings"
+private const val SELECTIONS_FRAGMENT_TAG = "selections"
+private const val WATCH_LATER_FRAGMENT_TAG = "watch_later"
+private const val FAVORITES_FRAGMENT_TAG = "favorites"
+
 
 class MainActivity : AppCompatActivity() {
 
@@ -19,11 +29,12 @@ class MainActivity : AppCompatActivity() {
         setContentView(activityMainBinding.root)
         initNavigation()
         setInitialFragment()
+
     }
 
     private fun setInitialFragment() {
         fragmentTag = HOME_FRAGMENT_TAG
-        if (nightModeSwitched)
+        if (App.instance.nightModeSwitched)
             fragmentTag = SETTINGS_FRAGMENT_TAG
         val fragment = checkFragmentExistence(fragmentTag)
         changeFragment(fragment ?: HomeFragment(), fragmentTag)
@@ -75,18 +86,10 @@ class MainActivity : AppCompatActivity() {
 
     fun launchDetailsFragment(film: Film) {
         val bundle = Bundle()
-        bundle.putParcelable(DetailsFragment.KEY_FILM, film)
+        bundle.putParcelable(KEY_FILM, film)
         val fragment = DetailsFragment()
         fragment.arguments = bundle
         changeFragment(fragment, DETAILS_FRAGMENT_TAG)
     }
 
-    companion object {
-        private const val DETAILS_FRAGMENT_TAG = "details"
-        private const val HOME_FRAGMENT_TAG = "home"
-        private const val SETTINGS_FRAGMENT_TAG = "settings"
-        private const val SELECTIONS_FRAGMENT_TAG = "selections"
-        private const val WATCH_LATER_FRAGMENT_TAG = "watch_later"
-        private const val FAVORITES_FRAGMENT_TAG = "favorites"
-    }
 }

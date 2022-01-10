@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder.data
+package com.ginzburgworks.filmfinder.data.local
 
 class Favorites {
 

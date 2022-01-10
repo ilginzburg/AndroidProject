@@ -1,84 +1,102 @@
 package com.ginzburgworks.filmfinder.domain
 
-
+import android.content.SharedPreferences
 import androidx.lifecycle.LiveData
-import com.ginzburgworks.filmfinder.data.Film
-import com.ginzburgworks.filmfinder.data.PageManager
-import com.ginzburgworks.filmfinder.data.PreferenceProvider
-import com.ginzburgworks.filmfinder.data.TmdbApi
-import com.ginzburgworks.filmfinder.data.db.MainRepository
-import com.ginzburgworks.filmfinder.utils.API
-import com.ginzburgworks.filmfinder.utils.Converter
+import com.ginzburgworks.filmfinder.data.local.Film
+import com.ginzburgworks.filmfinder.data.local.db.FilmsRepository
+import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
+import com.ginzburgworks.filmfinder.data.remote.API
+import com.ginzburgworks.filmfinder.data.remote.TmdbApi
+import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.MAX_PAGES_NUM
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.MIN_PAGES_NUM
 import kotlinx.coroutines.async
 import kotlinx.coroutines.coroutineScope
 import java.util.*
 import javax.inject.Inject
 
-
 class Interactor @Inject constructor(
-    private val repo: MainRepository,
+    private val repo: FilmsRepository,
     private val retrofitService: TmdbApi,
-    val preferenceProvider: PreferenceProvider
+    private val preferenceProvider: PreferenceProvider
+
 ) {
-    suspend fun getFilmsFromApi(page: Int) = coroutineScope {
-        val currentFilmsCategory = getFilmsCategoryFromPreferences()
+    suspend fun getPageOfFilmsFromRemoteDataSource(page: Int) = coroutineScope {
+        val currentFilmsCategory = getCurrentFilmsCategory()
         val result = async {
             retrofitService.getFilms(currentFilmsCategory, API.KEY, "ru-RU", page)
         }
-        result.await().let { dto ->
-            Converter.convertApiListToDtoList(
-                dto.tmdbFilms,
-                dto.page,
-                currentFilmsCategory
-            ).let { repo.putPageOfFilmsToDb(it) }
+        result.await()?.let { dto ->
+            convertToLocalDataStorageForm(dto, currentFilmsCategory)
+                .let { pageOfFilms -> repo.putPageOfFilms(pageOfFilms) }
             saveTotalPagesNumber(dto.totalPages)
-            saveUpdateDbTime()
+            saveLocalDataSourceUpdateTime()
         }
     }
 
-
-    private fun saveUpdateDbTime() {
-        val dbUpdateTime = Calendar.getInstance().timeInMillis
-        saveUpdateDbTimeToPreferences(dbUpdateTime)
+    private fun convertToLocalDataStorageForm(
+        tmdb: TmdbResultsDto,
+        currentFilmsCategory: String
+    ): List<Film> {
+        return Converter.convertTmdbFilmListToFilmList(
+            tmdb.tmdbFilms,
+            tmdb.page,
+            currentFilmsCategory
+        )
     }
 
 
-    fun getPageOfFilmsFromDB(page: Int): LiveData<List<Film>> =
-        repo.getPageOfFilmsInCategoryFromDB(page, getFilmsCategoryFromPreferences())
+    fun getPageOfFilmsFromLocalDataSource(page: Int): LiveData<List<Film>> =
+        repo.getPageOfFilmsInCategory(page, getCurrentFilmsCategory())
 
+    suspend fun clearLocalDataSource() = repo.deleteAll()
 
-    suspend fun deleteDB() = repo.deleteDB()
+    fun getCurrentFilmsCategory() = preferenceProvider.getFilmsCategory()
 
-    fun saveFilmsCategoryToPreferences(category: String) {
+    fun saveCurrentFilmsCategory(category: String) {
         preferenceProvider.saveFilmsCategory(category)
     }
 
-    fun getFilmsCategoryFromPreferences() = preferenceProvider.getFilmsCategory()
+    fun getTotalPagesNumber() =
+        preferenceProvider.getTotalPagesNumber(getCurrentFilmsCategory())
 
-    fun saveTotalPagesNumberToPreferences(TotalPagesNumber: Int, category: String) {
-        preferenceProvider.saveTotalPagesNumber(TotalPagesNumber, category)
+    private fun saveTotalPagesNumber(totalPagesNumber: Int) {
+        preferenceProvider.saveTotalPagesNumber(
+            checkTotalPagesNumber(totalPagesNumber),
+            getCurrentFilmsCategory()
+        )
     }
 
-    fun getTotalPagesNumberFromPreferences(category: String): Int {
-        return preferenceProvider.getTotalPagesNumber(category)
-    }
+    fun getLocalDataSourceUpdateTime() = preferenceProvider.getBDUpdateTime()
 
-    fun getLastUpdateTimeFromPreferences() = preferenceProvider.getLasBDUpdateTime()
-
-    private fun saveUpdateDbTimeToPreferences(dbUpdateTime: Long) {
+    private fun saveLocalDataSourceUpdateTime() {
+        val dbUpdateTime = Calendar.getInstance().timeInMillis
         preferenceProvider.saveUpdateDbTime(dbUpdateTime)
     }
 
-    private fun saveTotalPagesNumber(totalPagesNumber: Int?) {
-        if (totalPagesNumber ?: 0 == 0)
-            return
-        var totalPagesFromNetwork = PageManager.MAX_PAGES_NUM
-        if (totalPagesNumber!! < PageManager.MAX_PAGES_NUM)
-            totalPagesFromNetwork = totalPagesNumber
-        saveTotalPagesNumberToPreferences(
-            totalPagesFromNetwork,
-            getFilmsCategoryFromPreferences()
-        )
+    private fun checkTotalPagesNumber(num: Int): Int {
+        return when (num) {
+            !in MIN_PAGES_NUM..MAX_PAGES_NUM -> PagesController.getDefaultTotalPagesByCategory(
+                getCurrentFilmsCategory()
+            )
+            else -> num
+        }
+    }
+
+    fun registerPreferencesListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        preferenceProvider.registerListener(listener)
+    }
+
+    fun unRegisterPreferencesListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        preferenceProvider.unRegisterListener(listener)
+    }
+
+    fun getNightMode(): Int {
+        return preferenceProvider.getNightModeSetting()
+    }
+
+    fun saveNightMode(mode: Int) {
+        preferenceProvider.saveNightModeSetting(mode)
     }
 
 }

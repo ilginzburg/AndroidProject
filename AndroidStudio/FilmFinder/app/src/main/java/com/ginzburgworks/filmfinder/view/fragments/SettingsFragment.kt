@@ -9,22 +9,17 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
-import com.ginzburgworks.filmfinder.data.SettingsManager
 import com.ginzburgworks.filmfinder.databinding.FragmentSettingsBinding
 import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val ANIM_POSITION = 5
-
-
-var nightModeSwitched = false
 
 open class SettingsFragment : Fragment() {
 
     private lateinit var fragmentSettingsBinding: FragmentSettingsBinding
     private lateinit var appContext: Context
-    private val viewModel by lazy {
+    private val fragmentSettingsViewModel by lazy {
         ViewModelProvider(
             this,
             viewModelFactory
@@ -35,8 +30,6 @@ open class SettingsFragment : Fragment() {
     @Inject
     lateinit var viewModelFactory: ViewModelProvider.Factory
 
-    @Inject
-    lateinit var settingsManager: SettingsManager
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -54,65 +47,21 @@ open class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        initComponents()
-    }
 
-    private fun initComponents() {
-        initNightMode()
-        subscribeToCategoryPropertyChanges()
-        initCategoryOnCheckedChangeListener()
-    }
-
-    private fun subscribeToCategoryPropertyChanges() {
-        viewModel.categoryPropertyLiveData.observe(viewLifecycleOwner, {
-            when (it) {
-                POPULAR_CATEGORY -> checkCategoryRadioButton(R.id.radio_popular)
-                TOP_RATED_CATEGORY -> checkCategoryRadioButton(R.id.radio_top_rated)
-                UPCOMING_CATEGORY -> checkCategoryRadioButton(R.id.radio_upcoming)
-                NOW_PLAYING_CATEGORY -> checkCategoryRadioButton(R.id.radio_now_playing)
-            }
-        })
-    }
-
-    private fun checkCategoryRadioButton(buttonID: Int) {
-        fragmentSettingsBinding.radioGroup.check(buttonID)
-    }
-
-    private fun initCategoryOnCheckedChangeListener() {
-        fragmentSettingsBinding.radioGroup.setOnCheckedChangeListener { _, checkedId ->
-            when (checkedId) {
-                R.id.radio_popular -> putActualCategoryPropertyAfterChange(POPULAR_CATEGORY)
-                R.id.radio_top_rated -> putActualCategoryPropertyAfterChange(TOP_RATED_CATEGORY)
-                R.id.radio_upcoming -> putActualCategoryPropertyAfterChange(UPCOMING_CATEGORY)
-                R.id.radio_now_playing -> putActualCategoryPropertyAfterChange(NOW_PLAYING_CATEGORY)
-            }
+        fragmentSettingsBinding.apply {
+            this.fragmentViewModel = fragmentSettingsViewModel
         }
+        App.instance.nightModeSwitched = true
+        initCategoryButtonsState()
     }
 
-    private fun putActualCategoryPropertyAfterChange(category: String) {
-        viewModel.putCategoryProperty(category)
-    }
-
-    private fun initNightMode() {
-        updateNightModeCheckBox()
-        initNightModeOnCheckedChangeListener()
-    }
-
-    private fun initNightModeOnCheckedChangeListener() {
-        fragmentSettingsBinding.nightMode.setOnCheckedChangeListener { _, isChecked ->
-            nightModeSwitched = true
-            settingsManager.setSelectedNightMode(isChecked)
+    private fun initCategoryButtonsState() {
+        when (fragmentSettingsViewModel.getSavedCategory()) {
+            getString(R.string.popular_category) -> fragmentSettingsBinding.popular.performClick()
+            getString(R.string.top_rated_category) -> fragmentSettingsBinding.topRated.performClick()
+            getString(R.string.now_playing_category) -> fragmentSettingsBinding.nowPlaying.performClick()
+            getString(R.string.upcoming_category) -> fragmentSettingsBinding.upcoming.performClick()
+            else -> fragmentSettingsBinding.popular.performClick()
         }
-    }
-
-    private fun updateNightModeCheckBox() {
-        fragmentSettingsBinding.nightMode.isChecked = settingsManager.savedNightMode
-    }
-
-    companion object {
-        const val POPULAR_CATEGORY = "popular"
-        const val TOP_RATED_CATEGORY = "top_rated"
-        const val UPCOMING_CATEGORY = "upcoming"
-        const val NOW_PLAYING_CATEGORY = "now_playing"
     }
 }

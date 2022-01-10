@@ -5,7 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.lifecycle.ViewModel
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
-import com.ginzburgworks.filmfinder.data.SingleLiveEvent
+import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import java.io.IOException
 import java.io.InputStream
 import java.net.MalformedURLException
@@ -20,6 +20,7 @@ import kotlin.coroutines.suspendCoroutine
 class DetailsFragmentViewModel @Inject constructor() : ViewModel() {
 
     val errorEvent = SingleLiveEvent<String>()
+
 
     suspend fun loadWallpaper(url: String): Bitmap? {
         var bitmap: Bitmap? = null
