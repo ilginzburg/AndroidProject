@@ -3,6 +3,7 @@ package com.ginzburgworks.filmfinder.view
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.Film
 import com.ginzburgworks.filmfinder.databinding.ActivityMainBinding
@@ -23,7 +24,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setInitialFragment() {
         fragmentTag = HOME_FRAGMENT_TAG
-        if (nightModeSwitched)
+        if (App.instance.nightModeSwitched)
             fragmentTag = SETTINGS_FRAGMENT_TAG
         val fragment = checkFragmentExistence(fragmentTag)
         changeFragment(fragment ?: HomeFragment(), fragmentTag)

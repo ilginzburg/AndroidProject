@@ -5,7 +5,7 @@ import androidx.lifecycle.ViewModel
 import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
 
-private const val SAVE_DEFAULT_VALUE_FOR_OFFLINE = 0
+const val SAVE_DEFAULT_VALUE_FOR_OFFLINE = 0
 
 class SettingsFragmentViewModel @Inject constructor(private val interactor: Interactor) :
     ViewModel() {

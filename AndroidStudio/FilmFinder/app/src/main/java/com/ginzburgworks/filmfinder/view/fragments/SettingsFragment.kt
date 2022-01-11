@@ -15,10 +15,7 @@ import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
 
-private const val ANIM_POSITION = 5
 
-
-var nightModeSwitched = false
 
 open class SettingsFragment : Fragment() {
 
@@ -100,7 +97,7 @@ open class SettingsFragment : Fragment() {
 
     private fun initNightModeOnCheckedChangeListener() {
         fragmentSettingsBinding.nightMode.setOnCheckedChangeListener { _, isChecked ->
-            nightModeSwitched = true
+            App.instance.nightModeSwitched = true
             settingsManager.setSelectedNightMode(isChecked)
         }
     }

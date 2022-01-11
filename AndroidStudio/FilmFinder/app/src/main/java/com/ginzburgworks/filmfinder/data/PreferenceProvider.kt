@@ -3,6 +3,7 @@ package com.ginzburgworks.filmfinder.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
+import com.ginzburgworks.filmfinder.viewmodels.SAVE_DEFAULT_VALUE_FOR_OFFLINE
 import javax.inject.Inject
 
 
@@ -57,7 +58,7 @@ open class PreferenceProvider @Inject constructor(context: Context) {
 
     fun saveTotalPagesNumber(totalPagesNumber: Int, category: String) {
         var totalPagesNumberToSave = totalPagesNumber
-        if (totalPagesNumberToSave == 0)
+        if (totalPagesNumberToSave == SAVE_DEFAULT_VALUE_FOR_OFFLINE)
             totalPagesNumberToSave = PageManager.getDefaultTotalPagesByCategory(category)
         preference.edit().putInt(KEY_TOTAL_PAGES_NUMBER + category, totalPagesNumberToSave).apply()
     }

@@ -29,6 +29,7 @@ import javax.inject.Singleton
 
 private const val ANIM_POSITION = 1
 private const val DECORATOR_PADDING = 8
+private const val FIRST_INDEX_IN_LIST = 0
 
 class HomeFragment : Fragment() {
 
@@ -87,7 +88,7 @@ class HomeFragment : Fragment() {
                 viewModel.requestNextPageFromNetwork()
             }
             if (it.isNotEmpty()) {
-                val pageNumAndCategoryReadFromDB = it[0].page to it[0].category
+                val pageNumAndCategoryReadFromDB = it[FIRST_INDEX_IN_LIST].page to it[FIRST_INDEX_IN_LIST].category
                 if (isPageAlreadyAddedToAdapter(pageNumAndCategoryReadFromDB)) {
                     filmsAdapter.addItems(it)
                     saveLastReadPageNumAndCategory(pageNumAndCategoryReadFromDB)

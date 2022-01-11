@@ -54,9 +54,6 @@ class RatingDonutView @JvmOverloads constructor(
 
     private val animRotation = ObjectAnimator.ofFloat(this, ROTATION, ANIM_ROTATION_DEGREE)
 
-    companion object {
-        const val RATING_FACTOR: Float = 10f
-    }
 
     init {
         val a =
@@ -173,4 +170,9 @@ class RatingDonutView @JvmOverloads constructor(
         drawRating(canvas)
         drawText(canvas)
     }
+
+    companion object {
+        const val RATING_FACTOR: Float = 10f
+    }
+
 }

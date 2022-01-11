@@ -9,6 +9,7 @@ import javax.inject.Inject
 class App @Inject constructor() : Application() {
     lateinit var appComponent: AppComponent
     private lateinit var settingsManager: SettingsManager
+    var nightModeSwitched = false
 
     override fun onCreate() {
         settingsManager = SettingsManager(this)
