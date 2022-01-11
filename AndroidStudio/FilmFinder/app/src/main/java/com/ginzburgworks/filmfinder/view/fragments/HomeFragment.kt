@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
@@ -17,7 +16,6 @@ import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.data.local.shared.KEY_FILMS_CATEGORY
-import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.PagesController
 import com.ginzburgworks.filmfinder.domain.SearchController
@@ -25,7 +23,6 @@ import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
-import com.ginzburgworks.filmfinder.viewmodels.CommonViewModel
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -91,7 +88,8 @@ class HomeFragment : Fragment() {
                 homeFragmentViewModel.requestNextPageFromRemote()
             }
             if (it.isNotEmpty()) {
-                val pageNumAndCategoryReadFromDB = it[FIRST_INDEX_IN_LIST].page to it[FIRST_INDEX_IN_LIST].category
+                val pageNumAndCategoryReadFromDB =
+                    it[FIRST_INDEX_IN_LIST].page to it[FIRST_INDEX_IN_LIST].category
                 if (isPageAlreadyAddedToAdapter(pageNumAndCategoryReadFromDB)) {
                     filmsAdapter.addItems(it)
                     saveLastReadPageNumAndCategory(pageNumAndCategoryReadFromDB)
@@ -150,7 +148,8 @@ class HomeFragment : Fragment() {
             layoutManager = LinearLayoutManager(requireContext())
             val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
             addItemDecoration(decorator)
-            pagesController = PagesController(homeFragmentViewModel, layoutManager as LinearLayoutManager)
+            pagesController =
+                PagesController(homeFragmentViewModel, layoutManager as LinearLayoutManager)
             addOnScrollListener(pagesController)
         }
         filmsAdapter.setListener(object : FilmListRecyclerAdapter.OnItemClickListener {
@@ -173,7 +172,6 @@ class HomeFragment : Fragment() {
         pagesController.restartPages()
         filmsAdapter.clearItems()
     }
-
 
 
     private fun initRefreshOnChange() {

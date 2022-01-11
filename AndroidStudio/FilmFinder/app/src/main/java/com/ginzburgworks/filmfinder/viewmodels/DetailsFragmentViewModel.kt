@@ -21,7 +21,6 @@ class DetailsFragmentViewModel @Inject constructor() : ViewModel() {
 
     val errorEvent = SingleLiveEvent<String>()
 
-
     suspend fun loadWallpaper(url: String): Bitmap? {
         var bitmap: Bitmap? = null
         return suspendCoroutine { continuation ->

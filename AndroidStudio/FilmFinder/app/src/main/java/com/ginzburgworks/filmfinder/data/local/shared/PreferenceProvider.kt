@@ -57,14 +57,14 @@ open class PreferenceProvider @Inject constructor(context: Context) {
         preference.edit().putInt(KEY_NIGHT_MODE_STATE, mode).apply()
     }
 
-    fun getBDUpdateTime(): Long {
+    fun getLocalDataSourceUpdateTime(): Long {
         return preference.getLong(
             KEY_LAST_BD_UPDATE_TIME, DEFAULT_BD_UPDATE_TIME
         )
     }
 
-    fun saveUpdateDbTime(lasBDUpdateTime: Long) {
-        preference.edit().putLong(KEY_LAST_BD_UPDATE_TIME, lasBDUpdateTime).apply()
+    fun saveLocalDataSourceUpdateTime(updateTime: Long) {
+        preference.edit().putLong(KEY_LAST_BD_UPDATE_TIME, updateTime).apply()
     }
 
     fun saveTotalPagesNumber(totalPagesNumber: Int, category: String) {

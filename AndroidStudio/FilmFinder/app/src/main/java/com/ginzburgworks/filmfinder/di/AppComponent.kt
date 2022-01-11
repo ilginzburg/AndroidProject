@@ -6,7 +6,6 @@ import com.ginzburgworks.filmfinder.di.modules.*
 import com.ginzburgworks.filmfinder.view.fragments.DetailsFragment
 import com.ginzburgworks.filmfinder.view.fragments.HomeFragment
 import com.ginzburgworks.filmfinder.view.fragments.SettingsFragment
-import com.ginzburgworks.filmfinder.viewmodels.CommonViewModel
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -25,7 +24,7 @@ interface AppComponent {
 
     @Component.Factory
     interface Factory {
-        fun create(@BindsInstance  context: Context): AppComponent
+        fun create(@BindsInstance context: Context): AppComponent
     }
 
     fun inject(app: App)

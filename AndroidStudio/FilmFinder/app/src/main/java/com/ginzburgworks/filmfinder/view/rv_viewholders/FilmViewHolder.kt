@@ -40,5 +40,4 @@ class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
             .into(posterView)
     }
 
-
 }

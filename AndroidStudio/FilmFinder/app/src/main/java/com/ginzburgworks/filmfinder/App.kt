@@ -7,7 +7,6 @@ import com.ginzburgworks.filmfinder.di.DaggerAppComponent
 import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
 
-
 class App : Application() {
 
     lateinit var appComponent: AppComponent

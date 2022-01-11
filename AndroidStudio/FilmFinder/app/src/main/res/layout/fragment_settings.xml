@@ -3,14 +3,10 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <variable
-            name="viewModel"
-            type="com.ginzburgworks.filmfinder.viewmodels.CommonViewModel" />
 
         <variable
             name="fragmentViewModel"
             type="com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel" />
-
 
     </data>
 

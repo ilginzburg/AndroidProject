@@ -8,7 +8,6 @@
             name="film"
             type="com.ginzburgworks.filmfinder.data.local.Film" />
 
-
         <variable
             name="detailsFragment"
             type="com.ginzburgworks.filmfinder.view.fragments.DetailsFragment" />

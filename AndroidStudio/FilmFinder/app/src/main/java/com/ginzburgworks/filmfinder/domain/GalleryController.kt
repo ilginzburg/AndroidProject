@@ -15,6 +15,7 @@ import java.io.OutputStream
 
 
 private const val COMPRESS_FACTOR = 100
+private const val MILISEC_TO_SEC_FACTOR = 1000
 private const val APP_GALLERY_RELATIVE_PATH = "Pictures/FilmFinderApp"
 private const val MEDIA_MIME_TYPE = "image/jpeg"
 
@@ -31,7 +32,7 @@ class GalleryController {
                 put(MediaStore.Images.Media.TITLE, film.title.handleSingleQuote())
                 put(MediaStore.Images.Media.DISPLAY_NAME, film.title.handleSingleQuote())
                 put(MediaStore.Images.Media.MIME_TYPE, MEDIA_MIME_TYPE)
-                put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis() / 1000)
+                put(MediaStore.Images.Media.DATE_ADDED, System.currentTimeMillis()/MILISEC_TO_SEC_FACTOR)
                 put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis())
                 put(MediaStore.Images.Media.RELATIVE_PATH, APP_GALLERY_RELATIVE_PATH)
             }.also { values ->

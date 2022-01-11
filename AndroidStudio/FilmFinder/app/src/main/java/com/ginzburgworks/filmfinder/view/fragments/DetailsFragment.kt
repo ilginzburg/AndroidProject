@@ -90,7 +90,7 @@ class DetailsFragment : Fragment() {
     }
 
 
-    fun toggleFavorites(film: Film ) {
+    fun toggleFavorites(film: Film) {
         if (!film.isInFavorites)
             addToFavorites(film)
         else
@@ -142,7 +142,12 @@ class DetailsFragment : Fragment() {
                 detailsFragmentViewModel.loadWallpaper(ApiConstants.IMAGES_URL + "original" + film.poster)
             }
             job.await()?.let {
-                galleryController.saveImageToGallery(it, film, requireActivity(), detailsFragmentViewModel)
+                galleryController.saveImageToGallery(
+                    it,
+                    film,
+                    requireActivity(),
+                    detailsFragmentViewModel
+                )
                 initSnackBar()
             }
             fragmentDetailsBinding.progressBar.isVisible = false

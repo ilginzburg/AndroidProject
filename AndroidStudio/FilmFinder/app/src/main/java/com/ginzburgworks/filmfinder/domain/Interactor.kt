@@ -67,11 +67,11 @@ class Interactor @Inject constructor(
         )
     }
 
-    fun getLocalDataSourceUpdateTime() = preferenceProvider.getBDUpdateTime()
+    fun getLocalDataSourceUpdateTime() = preferenceProvider.getLocalDataSourceUpdateTime()
 
     private fun saveLocalDataSourceUpdateTime() {
         val dbUpdateTime = Calendar.getInstance().timeInMillis
-        preferenceProvider.saveUpdateDbTime(dbUpdateTime)
+        preferenceProvider.saveLocalDataSourceUpdateTime(dbUpdateTime)
     }
 
     private fun checkTotalPagesNumber(num: Int): Int {

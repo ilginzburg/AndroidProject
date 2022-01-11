@@ -4,7 +4,6 @@ import android.app.Application
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.ginzburgworks.filmfinder.App
-import com.ginzburgworks.filmfinder.viewmodels.CommonViewModel
 import com.ginzburgworks.filmfinder.viewmodels.DetailsFragmentViewModel
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
@@ -16,6 +15,9 @@ import javax.inject.Inject
 import javax.inject.Provider
 import javax.inject.Singleton
 import kotlin.reflect.KClass
+
+private const val UNCHECKED_CAST_WARNING_NAME= "UNCHECKED_CAST"
+private const val EXCEPTION_MESSAGE= "unknown model class "
 
 @Module
 abstract class ViewModelModule {
@@ -57,11 +59,11 @@ annotation class ViewModelKey(val value: KClass<out ViewModel>)
 class ViewModelFactory @Inject constructor(
     private val creators: Map<Class<out ViewModel>, @JvmSuppressWildcards Provider<ViewModel>>
 ) : ViewModelProvider.Factory {
-    @Suppress("UNCHECKED_CAST")
+    @Suppress(UNCHECKED_CAST_WARNING_NAME)
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         val creator = creators[modelClass] ?: creators.entries.firstOrNull {
             modelClass.isAssignableFrom(it.key)
-        }?.value ?: throw IllegalArgumentException("unknown model class $modelClass")
+        }?.value ?: throw IllegalArgumentException(EXCEPTION_MESSAGE +"$modelClass")
         return creator.get() as T
     }
 }

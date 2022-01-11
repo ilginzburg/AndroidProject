@@ -12,7 +12,6 @@ private const val ANIM_DURATION = 3500L
 private const val ANIM_ALFA_START = 0f
 private const val ANIM_ALFA_END = 1f
 
-
 class SplashScreenActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

@@ -20,7 +20,7 @@ import javax.inject.Inject
 
 private const val MAX_TIME_AFTER_BD_UPDATE = 600000
 
-class HomeFragmentViewModel @Inject constructor(val interactor: Interactor): ViewModel() {
+class HomeFragmentViewModel @Inject constructor(private val interactor: Interactor): ViewModel() {
 
     @Inject
     lateinit var adapter: FilmListRecyclerAdapter
@@ -72,9 +72,9 @@ class HomeFragmentViewModel @Inject constructor(val interactor: Interactor): Vie
         currentPageLiveData.value = page
     }
 
-    private fun isLastUpdateEarlierThanPredefinedMaxTime(timeBDUpdatedInMs: Long): Boolean {
+    private fun isLastUpdateEarlierThanPredefinedMaxTime(updateTimeInMs: Long): Boolean {
         val currentTimeInMs = Calendar.getInstance().timeInMillis
-        return (currentTimeInMs - timeBDUpdatedInMs) > MAX_TIME_AFTER_BD_UPDATE
+        return (currentTimeInMs - updateTimeInMs) > MAX_TIME_AFTER_BD_UPDATE
     }
 
     fun registerOnChangeListener() {
