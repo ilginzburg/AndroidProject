@@ -4,6 +4,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-kapt'
 
 android {
+    signingConfigs {
+        config {
+            storeFile file('D:\\Skillfactory\\AndroidStudio\\FilmFinder\\app\\sign_apk_key\\apkKey.jks')
+            keyAlias 'apkKey'
+            storePassword 'key212'
+            keyPassword 'key212'
+        }
+    }
     compileSdkVersion 31
     buildToolsVersion "30.0.3"
 
@@ -26,6 +34,8 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            debuggable true
+            signingConfig signingConfigs.config
         }
     }
 

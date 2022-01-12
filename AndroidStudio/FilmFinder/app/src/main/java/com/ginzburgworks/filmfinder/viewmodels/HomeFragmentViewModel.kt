@@ -1,19 +1,20 @@
 package com.ginzburgworks.filmfinder.viewmodels
 
 import android.content.SharedPreferences
+import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.local.Film
+import com.ginzburgworks.filmfinder.data.local.shared.KEY_FILMS_CATEGORY
 import com.ginzburgworks.filmfinder.domain.Interactor
+import com.ginzburgworks.filmfinder.domain.PagesController
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
-import kotlinx.coroutines.CoroutineExceptionHandler
-import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.launch
 import java.util.*
 import javax.inject.Inject
 
@@ -22,28 +23,46 @@ private const val MAX_TIME_AFTER_BD_UPDATE = 600000
 class HomeFragmentViewModel @Inject constructor(private val interactor: Interactor) : ViewModel() {
 
     @Inject
-    lateinit var adapter: FilmListRecyclerAdapter
-    val itemsForSearch = mutableListOf<Film>()
+    lateinit var filmsAdapter: FilmListRecyclerAdapter
     lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
+    val itemsForSearch = mutableListOf<Film>()
     var totalNumberOfPages = interactor.getTotalPagesNumber()
-    val showProgressBar = Channel<Boolean>(Channel.CONFLATED)
-    val pageOfFilmsFromRemoteDataSourceToUI = Channel<List<Film>>(Channel.CONFLATED)
-    val pageOfFilmsFromLocalDataSourceToUI = Channel<List<Film>>(Channel.CONFLATED)
+    val pageOfFilmsToUI = Channel<List<Film>>(Channel.CONFLATED)
     val errorEvent = SingleLiveEvent<String>()
-
-    private val handler =
+    private val exceptionHandler =
         CoroutineExceptionHandler { _, e -> errorEvent.postValue(App.instance.getString(R.string.exc_handler_msg) + e) }
+    private val homeFragmentViewModelContext =
+        viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
+    private val homeFragmentViewModelScope = CoroutineScope(homeFragmentViewModelContext)
+    val isLoading = ObservableBoolean()
+    var isPageRequested = false
+    val isProgressBarVisible = ObservableBoolean()
 
+
+    init {
+        subscribeForCategoryChanges()
+    }
+
+    fun requestNextPage() {
+        isPageRequested = true
+        showProgressBar()
+        requestNextPageFromDataSource()
+    }
+
+    private fun requestNextPageFromDataSource() {
+        if (isLocalDataSourceNeedToUpdate())
+            requestNextPageFromRemote()
+        else
+            requestNextPageFromLocal()
+    }
 
     private fun clearLocalDataSource() {
-        viewModelScope.launch(handler) {
-            launch {
-                interactor.clearLocalDataSource()
-            }
+        homeFragmentViewModelScope.launch {
+            interactor.clearLocalDataSource()
         }
     }
 
-    fun isLocalDataSourceNeedToUpdate(): Boolean {
+    private fun isLocalDataSourceNeedToUpdate(): Boolean {
         if (isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLocalDataSourceUpdateTime())) {
             clearLocalDataSource()
             return true
@@ -51,34 +70,28 @@ class HomeFragmentViewModel @Inject constructor(private val interactor: Interact
         return false
     }
 
-    fun requestNextPageFromRemote() {
-        viewModelScope.launch(handler) {
-            launch(Dispatchers.IO) {
-                showProgressBar.send(true)
-                interactor.getPageOfFilmsFromRemoteDataSource(NEXT_PAGE)
-                interactor.pageFromRemote.let {
-                    for(element in it) {
-                        pageOfFilmsFromRemoteDataSourceToUI.send(element)
-                        break
-                    }
-                }
-                showProgressBar.send(false)
-            }
+    private fun requestNextPageFromRemote() {
+        homeFragmentViewModelScope.launch {
+            interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE)
+            getNextPageFromDataSource()
         }
     }
 
-    fun requestNextPageFromLocal() {
-        viewModelScope.launch(handler) {
-            launch(Dispatchers.IO) {
-                showProgressBar.send(true)
-                interactor.getPageOfFilmsFromLocalDataSourceToUI(NEXT_PAGE)
-                interactor.pageFromLocal.let {
-                    for(element in it) {
-                        pageOfFilmsFromLocalDataSourceToUI.send(element)
-                        break
+    private fun requestNextPageFromLocal() {
+        homeFragmentViewModelScope.launch {
+            interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
+            getNextPageFromDataSource()
+        }
+    }
+
+    private fun getNextPageFromDataSource() {
+        homeFragmentViewModelScope.launch {
+            withContext(Dispatchers.Main) {
+                interactor.pageFromDataSourceToUI.let {
+                    for (element in it) {
+                        filmsAdapter.addItems(element)
                     }
                 }
-                showProgressBar.send(false)
             }
         }
     }
@@ -88,14 +101,53 @@ class HomeFragmentViewModel @Inject constructor(private val interactor: Interact
         return (currentTimeInMs - updateTimeInMs) > MAX_TIME_AFTER_BD_UPDATE
     }
 
-    fun registerOnChangeListener() {
-        interactor.registerPreferencesListener(onSharedPreferenceChangeListener)
+    private fun subscribeForCategoryChanges() {
+        onSharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == KEY_FILMS_CATEGORY) {
+                    refreshData()
+                }
+            }.also { registerOnChangeListener(it) }
+    }
+
+    fun refreshData() {
+        isLoading.set(true)
+        filmsAdapter.clearItems()
+        clearPageCount()
+        requestNextPage()
+        isLoading.set(false)
+    }
+
+    private fun clearPageCount() {
+        PagesController.NEXT_PAGE = PagesController.FIRST_PAGE
+    }
+
+    fun reloadOnTextChange(result: List<Film>) {
+        filmsAdapter.clearItems()
+        filmsAdapter.addItems(result)
+    }
+
+    fun reloadAfterSearch(): Boolean {
+        filmsAdapter.clearItems()
+        filmsAdapter.addItems(itemsForSearch)
+        return true
+    }
+
+    private fun showProgressBar(){
+        interactor.progressBarScope.launch {
+            for (element in interactor.progressBarState)
+                isProgressBarVisible.set(element)
+        }
+    }
+
+    private fun registerOnChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
+        interactor.registerPreferencesListener(listener)
     }
 
     override fun onCleared() {
         super.onCleared()
+        interactor.progressBarScope.cancel()
         if (this::onSharedPreferenceChangeListener.isInitialized)
             interactor.unRegisterPreferencesListener(onSharedPreferenceChangeListener)
     }
-
 }

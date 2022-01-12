@@ -8,17 +8,17 @@ import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
 import com.ginzburgworks.filmfinder.view.rv_viewholders.FilmViewHolder
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 
-
 class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
 
     private lateinit var clickListener: OnItemClickListener
 
+    private val items = mutableListOf<Film>()
+
+    private lateinit var filmItemBinding: FilmItemBinding
+
     fun setListener(listener: OnItemClickListener) {
         clickListener = listener
     }
-
-    private val items = mutableListOf<Film>()
-    private lateinit var filmItemBinding: FilmItemBinding
 
     override fun getItemCount() = items.size
 
@@ -29,10 +29,8 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
     }
 
     override fun onBindViewHolder(holder: FilmViewHolder, position: Int) {
-        holder.bind(items[position])
-        filmItemBinding.itemContainer.setOnClickListener {
-            clickListener.onClick(items[position])
-        }
+        holder.bind(items[holder.adapterPosition])
+        filmItemBinding.itemContainer.setOnClickListener { clickListener.onClick(items[holder.adapterPosition]) }
     }
 
     fun addItems(list: List<Film>) {
@@ -40,7 +38,7 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
         val itemsAdded = list.size
         items.addAll(list)
         notifyItemRangeInserted(itemCountBeforeAdding, itemsAdded)
-        notifyItemRangeChanged(0, itemCount)
+        notifyItemRangeChanged(0, itemsAdded)
     }
 
     fun clearItems() {
@@ -54,7 +52,7 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
         viewModel.itemsForSearch.addAll(items)
     }
 
-    interface OnItemClickListener {
+    fun interface OnItemClickListener {
         fun onClick(film: Film)
     }
 }

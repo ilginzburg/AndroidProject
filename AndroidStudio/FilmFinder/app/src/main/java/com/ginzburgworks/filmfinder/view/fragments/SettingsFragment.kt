@@ -17,9 +17,10 @@ import javax.inject.Singleton
 
 open class SettingsFragment : Fragment() {
 
-    private lateinit var fragmentSettingsBinding: FragmentSettingsBinding
+    private var _binding: FragmentSettingsBinding? = null
+    private val binding get() = _binding!!
     private lateinit var appContext: Context
-    private val fragmentSettingsViewModel by lazy {
+    private val viewModel by lazy {
         ViewModelProvider(
             this,
             viewModelFactory
@@ -40,17 +41,23 @@ open class SettingsFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        fragmentSettingsBinding = FragmentSettingsBinding.inflate(layoutInflater, container, false)
-        return fragmentSettingsBinding.root
+    ): View? {
+        _binding = FragmentSettingsBinding.inflate(layoutInflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        fragmentSettingsBinding.apply {
-            this.fragmentViewModel = fragmentSettingsViewModel
+        _binding.apply {
+            this?.viewModel = viewModel
         }
         App.instance.nightModeSwitched = true
     }
+
 }

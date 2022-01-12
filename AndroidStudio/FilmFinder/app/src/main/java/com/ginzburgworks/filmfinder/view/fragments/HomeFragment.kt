@@ -1,50 +1,45 @@
 package com.ginzburgworks.filmfinder.view.fragments
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
-import androidx.core.view.isVisible
+import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ginzburgworks.filmfinder.App
-import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.local.Film
-import com.ginzburgworks.filmfinder.data.local.shared.KEY_FILMS_CATEGORY
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.PagesController
-import com.ginzburgworks.filmfinder.domain.SearchController
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.ITEMS_AFTER_START
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.ITEMS_BEFORE_END
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.PAGE_SIZE
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
-import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
-import kotlinx.coroutines.launch
+import java.util.*
 import javax.inject.Inject
 import javax.inject.Singleton
 
 private const val ANIM_POSITION = 1
 private const val DECORATOR_PADDING = 8
-private const val FIRST_INDEX_IN_LIST = 0
 
 class HomeFragment : Fragment() {
 
-    private lateinit var fragmentHomeBinding: FragmentHomeBinding
+    private var _binding: FragmentHomeBinding? = null
+    private val binding get() = _binding!!
 
-    @Inject
-    lateinit var filmsAdapter: FilmListRecyclerAdapter
-    private lateinit var swipeRefreshLayout: SwipeRefreshLayout
+
     private lateinit var pagesController: PagesController
-    private val searchController by lazy { initSearchView() }
 
-    private val homeFragmentViewModel by lazy {
+    private lateinit var linearLayoutManager: LinearLayoutManager
+
+    private val viewModel by lazy {
         ViewModelProvider(
             this,
             viewModelFactory
@@ -63,142 +58,125 @@ class HomeFragment : Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        fragmentHomeBinding = FragmentHomeBinding.inflate(inflater, container, false)
-        return fragmentHomeBinding.root
+    ): View? {
+        _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        _binding?.homeFragment = this
+        _binding?.viewModel = viewModel
         initComponents()
     }
 
     private fun initComponents() {
-
         initAnimation()
         initRecycler()
         initSearchView()
-        initPullToRefresh()
-        initRefreshOnChange()
-        fragmentHomeBinding.progressBar.bringToFront()
+        binding.progressBar.bringToFront()
         subscribeToNetworkErrorMessages()
-        getPage()
-    }
-
-    private fun getPage() {
-        pagesController.isPageRequested = true
-        exposeProgressBar()
-        if (homeFragmentViewModel.isLocalDataSourceNeedToUpdate())
-            getPageFromRemote()
-        getPageFromLocal()
-    }
-
-    private fun getPageFromRemote() = viewLifecycleOwner.lifecycleScope.launch {
-        homeFragmentViewModel.requestNextPageFromRemote()
-        for (element in homeFragmentViewModel.pageOfFilmsFromRemoteDataSourceToUI) {
-            filmsAdapter.addItems(element)
-            break;
-        }
-    }
-
-    private fun getPageFromLocal() = viewLifecycleOwner.lifecycleScope.launch {
-        homeFragmentViewModel.requestNextPageFromLocal()
-        for (element in homeFragmentViewModel.pageOfFilmsFromLocalDataSourceToUI) {
-            if (element.isEmpty())
-                getPageFromRemote()
-            else
-                filmsAdapter.addItems(element)
-            break;
-        }
-    }
-
-    private fun exposeProgressBar() = viewLifecycleOwner.lifecycleScope.launch {
-        for (element in homeFragmentViewModel.showProgressBar) {
-            fragmentHomeBinding.progressBar.isVisible = element
-            if (!element)
-                break
-        }
+        viewModel.requestNextPage()
     }
 
     private fun subscribeToNetworkErrorMessages() {
-        homeFragmentViewModel.errorEvent.observe(viewLifecycleOwner) {
+        viewModel.errorEvent.observe(viewLifecycleOwner) {
             Toast.makeText(context, it, Toast.LENGTH_LONG).show()
         }
     }
 
-    private fun initSearchView(): SearchController {
-        return SearchController(filmsAdapter, homeFragmentViewModel).apply {
-            fragmentHomeBinding.searchView.setOnClickListener {
-                filmsAdapter.saveItemsForSearch(homeFragmentViewModel)
-                fragmentHomeBinding.searchView.isIconified = false
+    private fun initSearchView() {
+        binding.searchView.setOnQueryTextListener(object :
+            SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                return true
             }
-            fragmentHomeBinding.searchView.setOnCloseListener {
-                if (homeFragmentViewModel.itemsForSearch.size > 0) {
-                    filmsAdapter.clearItems()
-                    filmsAdapter.addItems(homeFragmentViewModel.itemsForSearch)
-                    homeFragmentViewModel.itemsForSearch.clear()
-                }
-                true
-            }
-            fragmentHomeBinding.searchView.setOnQueryTextListener(this)
-        }
-    }
 
-
-    private fun initRecycler() {
-        fragmentHomeBinding.mainRecycler.apply {
-            adapter = filmsAdapter
-            layoutManager = LinearLayoutManager(requireContext())
-            val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
-            addItemDecoration(decorator)
-            pagesController =
-                PagesController(homeFragmentViewModel, layoutManager as LinearLayoutManager)
-            addOnScrollListener(object : RecyclerView.OnScrollListener() {
-                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (pagesController.isNeedToRequestNextPage(dy)) {
-                        getPage()
-                        ++PagesController.NEXT_PAGE
-                    }
-                    if (pagesController.isPageOnStart())
-                        pagesController.isPageRequested = false
+            override fun onQueryTextChange(newText: String): Boolean {
+                if (newText.isEmpty()) {
+                    viewModel.reloadAfterSearch()
+                    return true
                 }
-            })
-        }
-        filmsAdapter.setListener(object : FilmListRecyclerAdapter.OnItemClickListener {
-            override fun onClick(film: Film) {
-                (requireActivity() as MainActivity).launchDetailsFragment(film)
+                val result = viewModel.itemsForSearch.filter {
+                    it.title.lowercase(Locale.getDefault())
+                        .contains(newText.lowercase(Locale.getDefault()))
+                }
+                viewModel.reloadOnTextChange(result)
+                return true
             }
         })
     }
 
-    private fun initPullToRefresh() {
-        swipeRefreshLayout =
-            activity?.findViewById(R.id.pull_to_refresh) ?: fragmentHomeBinding.pullToRefresh
-        swipeRefreshLayout.setOnRefreshListener {
-            restartPages()
-            getPage()
-            swipeRefreshLayout.isRefreshing = false
-        }
+    private fun initRecycler() {
+        binding.mainRecycler.apply {
+            adapter = viewModel.filmsAdapter
+            layoutManager = LinearLayoutManager(requireActivity() as MainActivity)
+            addDecoration(this)
+            linearLayoutManager = layoutManager as LinearLayoutManager
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (isNeedToRequestNextPage(dy))
+                        viewModel.requestNextPage()
+                }
+            })
+        }.also { viewModel.filmsAdapter.setListener { launchDetailsFragment(it) } }
     }
 
-    private fun restartPages() {
-        filmsAdapter.clearItems()
-        PagesController.NEXT_PAGE = PagesController.FIRST_PAGE
+    private fun addDecoration(recycler: RecyclerView) {
+        val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
+        recycler.addItemDecoration(decorator)
     }
 
-    private fun initRefreshOnChange() {
-        homeFragmentViewModel.onSharedPreferenceChangeListener =
-            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-                if (key == KEY_FILMS_CATEGORY)
-                    restartPages()
-            }
-        homeFragmentViewModel.registerOnChangeListener()
+    private fun launchDetailsFragment(film: Film) {
+        (requireActivity() as MainActivity).launchDetailsFragment(film)
     }
 
+    fun saveItems() {
+        viewModel.filmsAdapter.saveItemsForSearch(viewModel)
+        binding.searchView.isIconified = false
+    }
+
+    private fun bottomItemPosition() = linearLayoutManager.findLastCompletelyVisibleItemPosition()
+
+    private fun startPagePosition() = linearLayoutManager.itemCount - PAGE_SIZE + ITEMS_AFTER_START
+
+    private fun endPagePosition() = linearLayoutManager.itemCount - ITEMS_BEFORE_END
+
+    private fun isPageOnStart() = bottomItemPosition() == startPagePosition()
+
+    private fun isPageOnEnd() = bottomItemPosition() == endPagePosition()
+
+    private fun isNeedToRequestNextPage(verticalDisplacement: Int): Boolean {
+        if (isPageOnStart())
+            updateStateOnStart()
+        return isPageOnEnd() && 
+                !viewModel.isPageRequested &&
+                isScrollingDown(verticalDisplacement) &&
+                isNotLastPage()
+    }
+
+    private fun updateStateOnStart() {
+        incrementNextPageIfNeed()
+        false.also { viewModel.isPageRequested = it }
+    }
+
+    private fun isNotLastPage() = PagesController.NEXT_PAGE < viewModel.totalNumberOfPages
+
+    private fun isScrollingDown(verticalDisplacement: Int) = verticalDisplacement > 0
+
+    private fun incrementNextPageIfNeed() {
+        if (viewModel.isPageRequested)
+            ++PagesController.NEXT_PAGE
+    }
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            fragmentHomeBinding.homeFragmentRoot,
+            binding.homeFragmentRoot,
             requireActivity(),
             ANIM_POSITION
         )

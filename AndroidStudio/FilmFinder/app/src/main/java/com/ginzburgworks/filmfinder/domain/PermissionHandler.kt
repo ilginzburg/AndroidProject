@@ -7,7 +7,7 @@ import android.content.pm.PackageManager
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 
-class PermissionsHandler {
+class PermissionHandler {
 
     fun checkPermission(context: Context): Boolean {
         val result = ContextCompat.checkSelfPermission(

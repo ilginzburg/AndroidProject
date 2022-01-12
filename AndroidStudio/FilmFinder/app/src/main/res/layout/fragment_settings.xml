@@ -5,7 +5,7 @@
     <data>
 
         <variable
-            name="fragmentViewModel"
+            name="viewModel"
             type="com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel" />
 
     </data>
@@ -40,8 +40,8 @@
                 android:layout_marginLeft="@dimen/settings_radio_button_margin"
                 android:layout_marginRight="@dimen/settings_radio_button_margin"
                 android:textColor="@android:color/white"
-                android:onClick="@{() -> fragmentViewModel.setCategory(@string/popular_category)}"
-                android:checked="@{fragmentViewModel.category.equals(@string/popular_category)}"
+                android:onClick="@{() -> viewModel.setCategory(@string/popular_category)}"
+                android:checked="@{viewModel.category.equals(@string/popular_category)}"
                 android:text="@string/radio_button_popular" />
 
             <RadioButton
@@ -51,8 +51,8 @@
                 android:layout_marginLeft="@dimen/settings_radio_button_margin"
                 android:layout_marginRight="@dimen/settings_radio_button_margin"
                 android:textColor="@android:color/white"
-                android:onClick="@{() -> fragmentViewModel.setCategory(@string/top_rated_category)}"
-                android:checked= "@{fragmentViewModel.category.equals(@string/top_rated_category)}"
+                android:onClick="@{() -> viewModel.setCategory(@string/top_rated_category)}"
+                android:checked= "@{viewModel.category.equals(@string/top_rated_category)}"
                 android:text="@string/radio_button_top_rated" />
 
             <RadioButton
@@ -62,8 +62,8 @@
                 android:layout_marginLeft="@dimen/settings_radio_button_margin"
                 android:layout_marginRight="@dimen/settings_radio_button_margin"
                 android:textColor="@android:color/white"
-                android:onClick="@{() -> fragmentViewModel.setCategory(@string/upcoming_category)}"
-                android:checked= "@{fragmentViewModel.category.equals(@string/upcoming_category)}"
+                android:onClick="@{() -> viewModel.setCategory(@string/upcoming_category)}"
+                android:checked= "@{viewModel.category.equals(@string/upcoming_category)}"
                 android:text="@string/radio_button_upcoming" />
 
             <RadioButton
@@ -73,8 +73,8 @@
                 android:layout_marginLeft="@dimen/settings_radio_button_margin"
                 android:layout_marginRight="@dimen/settings_radio_button_margin"
                 android:textColor="@android:color/white"
-                android:onClick="@{() -> fragmentViewModel.setCategory(@string/now_playing_category)}"
-                android:checked= "@{fragmentViewModel.category.equals(@string/now_playing_category)}"
+                android:onClick="@{() -> viewModel.setCategory(@string/now_playing_category)}"
+                android:checked= "@{viewModel.category.equals(@string/now_playing_category)}"
                 android:text="@string/radio_button_playing" />
         </RadioGroup>
 
@@ -96,8 +96,8 @@
             android:layout_marginLeft="@dimen/settings_radio_button_margin"
             android:layout_marginRight="@dimen/settings_radio_button_margin"
             android:layout_below="@id/appearance_title"
-            android:checked="@{fragmentViewModel.nightMode.equals(true)}"
-            android:onClick="@{() -> fragmentViewModel.onNightModeClick()}"
+            android:checked="@{viewModel.nightMode.equals(true)}"
+            android:onClick="@{() -> viewModel.onNightModeClick()}"
             android:textColor="@android:color/white"
             android:text="@string/radio_button_night" />
 

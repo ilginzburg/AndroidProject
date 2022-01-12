@@ -12,14 +12,20 @@ private const val ANIM_POSITION = 4
 
 class WatchLaterFragment : Fragment() {
 
-    private lateinit var fragmentWatchLaterBinding: FragmentWatchLaterBinding
+    private var _binding: FragmentWatchLaterBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        fragmentWatchLaterBinding = FragmentWatchLaterBinding.inflate(inflater, container, false)
-        return fragmentWatchLaterBinding.root
+    ): View? {
+        _binding = FragmentWatchLaterBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -27,10 +33,11 @@ class WatchLaterFragment : Fragment() {
         initAnimation()
     }
 
-    private fun initAnimation(){
+    private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            fragmentWatchLaterBinding.watchLaterFragmentRoot,
+            binding.watchLaterFragmentRoot,
             requireActivity(),
-            ANIM_POSITION)
+            ANIM_POSITION
+        )
     }
 }

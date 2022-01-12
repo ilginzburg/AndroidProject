@@ -26,9 +26,7 @@ abstract class RemoteModule {
 
     @Binds
     abstract fun bindTmdbApi(apiImpl: TmdbApiImpl): TmdbApi
-
 }
-
 
 class OkHttpClientCreator @Inject constructor() : Remote {
 

@@ -26,5 +26,4 @@ class RepositoryModule {
     @Provides
     @Singleton
     fun provideRepository(filmDao: FilmDao) = FilmsRepository(filmDao)
-
 }

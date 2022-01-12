@@ -21,8 +21,8 @@ class SplashScreenActivity : AppCompatActivity() {
         animated_view.alpha = ANIM_ALFA_START
         animated_view.animate().setDuration(ANIM_DURATION).alpha(ANIM_ALFA_END).withEndAction {
             animatedVectorDrawable?.start()
-            val i = Intent(this, MainActivity::class.java)
-            startActivity(i)
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
             overridePendingTransition(android.R.anim.fade_in,android.R.anim.fade_out)
             finish()
         }

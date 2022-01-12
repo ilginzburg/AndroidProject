@@ -36,13 +36,11 @@ abstract class ViewModelModule {
     @ViewModelKey(DetailsFragmentViewModel::class)
     abstract fun bindDetailsFragmentViewModel(view: DetailsFragmentViewModel): ViewModel
 
-
     @Binds
     abstract fun bindViewModelFactory(factory: ViewModelFactory): ViewModelProvider.Factory
 
     @Binds
     abstract fun bindApplication(app: App):Application
-
 }
 
 @MustBeDocumented

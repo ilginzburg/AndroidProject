@@ -11,7 +11,6 @@ abstract class InteractorModule(val context: Context) {
     @Binds
     abstract fun bindInteractor(interactorImpl: InteractorImpl): InteractorImpl
     class InteractorImpl @Inject constructor()
-
 }
 
 

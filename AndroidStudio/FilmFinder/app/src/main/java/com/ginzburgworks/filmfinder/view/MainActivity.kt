@@ -9,7 +9,6 @@ import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.ActivityMainBinding
 import com.ginzburgworks.filmfinder.view.fragments.*
 
-
 private const val DETAILS_FRAGMENT_TAG = "details"
 private const val HOME_FRAGMENT_TAG = "home"
 private const val SETTINGS_FRAGMENT_TAG = "settings"
@@ -29,7 +28,6 @@ class MainActivity : AppCompatActivity() {
         setContentView(activityMainBinding.root)
         initNavigation()
         setInitialFragment()
-
     }
 
     private fun setInitialFragment() {

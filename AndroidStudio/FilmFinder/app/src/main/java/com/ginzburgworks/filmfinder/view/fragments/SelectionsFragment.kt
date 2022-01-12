@@ -12,14 +12,20 @@ private const val ANIM_POSITION = 1
 
 class SelectionsFragment : Fragment() {
 
-    private lateinit var fragmentSelectionsBinding: FragmentSelectionsBinding
+    private var _binding: FragmentSelectionsBinding? = null
+    private val binding get() = _binding!!
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        fragmentSelectionsBinding = FragmentSelectionsBinding.inflate(inflater, container, false)
-        return fragmentSelectionsBinding.root
+        _binding = FragmentSelectionsBinding.inflate(inflater, container, false)
+        return binding.root
+    }
+
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -29,7 +35,7 @@ class SelectionsFragment : Fragment() {
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            fragmentSelectionsBinding.fragmentSelectionsRoot,
+            binding.fragmentSelectionsRoot,
             requireActivity(),
             ANIM_POSITION
         )
