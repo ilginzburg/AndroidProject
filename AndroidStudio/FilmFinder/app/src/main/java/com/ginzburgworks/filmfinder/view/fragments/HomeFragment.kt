@@ -10,7 +10,9 @@ import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
@@ -24,6 +26,7 @@ import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -71,56 +74,55 @@ class HomeFragment : Fragment() {
     }
 
     private fun initComponents() {
+
         initAnimation()
         initRecycler()
         initSearchView()
         initPullToRefresh()
         initRefreshOnChange()
-        subscribeToProgressBarChanges()
-        subscribeToFilmsListChanges()
+        fragmentHomeBinding.progressBar.bringToFront()
         subscribeToNetworkErrorMessages()
+        getPage()
     }
 
+    private fun getPage() {
+        pagesController.isPageRequested = true
+        exposeProgressBar()
+        if (homeFragmentViewModel.isLocalDataSourceNeedToUpdate())
+            getPageFromRemote()
+        getPageFromLocal()
+    }
 
-    private fun subscribeToFilmsListChanges() {
-        homeFragmentViewModel.filmsListLiveData.observe(viewLifecycleOwner) {
-            if (it.isEmpty()) {
-                homeFragmentViewModel.requestNextPageFromRemote()
-            }
-            if (it.isNotEmpty()) {
-                val pageNumAndCategoryReadFromDB =
-                    it[FIRST_INDEX_IN_LIST].page to it[FIRST_INDEX_IN_LIST].category
-                if (isPageAlreadyAddedToAdapter(pageNumAndCategoryReadFromDB)) {
-                    filmsAdapter.addItems(it)
-                    saveLastReadPageNumAndCategory(pageNumAndCategoryReadFromDB)
-                }
-            }
+    private fun getPageFromRemote() = viewLifecycleOwner.lifecycleScope.launch {
+        homeFragmentViewModel.requestNextPageFromRemote()
+        for (element in homeFragmentViewModel.pageOfFilmsFromRemoteDataSourceToUI) {
+            filmsAdapter.addItems(element)
+            break;
         }
     }
 
-
-    private fun isPageAlreadyAddedToAdapter(pageNumAndCategory: Pair<Int, String>): Boolean {
-        return isFirstPage() || (homeFragmentViewModel.lastReadPageNumAndCategory != pageNumAndCategory)
+    private fun getPageFromLocal() = viewLifecycleOwner.lifecycleScope.launch {
+        homeFragmentViewModel.requestNextPageFromLocal()
+        for (element in homeFragmentViewModel.pageOfFilmsFromLocalDataSourceToUI) {
+            if (element.isEmpty())
+                getPageFromRemote()
+            else
+                filmsAdapter.addItems(element)
+            break;
+        }
     }
 
-    private fun isFirstPage(): Boolean {
-        return homeFragmentViewModel.lastReadPageNumAndCategory.first == 0
-    }
-
-    private fun saveLastReadPageNumAndCategory(pageNumAndCategory: Pair<Int, String>) {
-        homeFragmentViewModel.lastReadPageNumAndCategory = pageNumAndCategory
-    }
-
-    private fun subscribeToProgressBarChanges() {
-        fragmentHomeBinding.progressBar.bringToFront()
-        homeFragmentViewModel.showProgressBar.observe(viewLifecycleOwner) {
-            fragmentHomeBinding.progressBar.isVisible = it
+    private fun exposeProgressBar() = viewLifecycleOwner.lifecycleScope.launch {
+        for (element in homeFragmentViewModel.showProgressBar) {
+            fragmentHomeBinding.progressBar.isVisible = element
+            if (!element)
+                break
         }
     }
 
     private fun subscribeToNetworkErrorMessages() {
         homeFragmentViewModel.errorEvent.observe(viewLifecycleOwner) {
-            Toast.makeText(context, it, Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -142,6 +144,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+
     private fun initRecycler() {
         fragmentHomeBinding.mainRecycler.apply {
             adapter = filmsAdapter
@@ -150,7 +153,16 @@ class HomeFragment : Fragment() {
             addItemDecoration(decorator)
             pagesController =
                 PagesController(homeFragmentViewModel, layoutManager as LinearLayoutManager)
-            addOnScrollListener(pagesController)
+            addOnScrollListener(object : RecyclerView.OnScrollListener() {
+                override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                    if (pagesController.isNeedToRequestNextPage(dy)) {
+                        getPage()
+                        ++PagesController.NEXT_PAGE
+                    }
+                    if (pagesController.isPageOnStart())
+                        pagesController.isPageRequested = false
+                }
+            })
         }
         filmsAdapter.setListener(object : FilmListRecyclerAdapter.OnItemClickListener {
             override fun onClick(film: Film) {
@@ -163,22 +175,22 @@ class HomeFragment : Fragment() {
         swipeRefreshLayout =
             activity?.findViewById(R.id.pull_to_refresh) ?: fragmentHomeBinding.pullToRefresh
         swipeRefreshLayout.setOnRefreshListener {
-            updateAdapterBuffer()
+            restartPages()
+            getPage()
             swipeRefreshLayout.isRefreshing = false
         }
     }
 
-    private fun updateAdapterBuffer() {
-        pagesController.restartPages()
+    private fun restartPages() {
         filmsAdapter.clearItems()
+        PagesController.NEXT_PAGE = PagesController.FIRST_PAGE
     }
-
 
     private fun initRefreshOnChange() {
         homeFragmentViewModel.onSharedPreferenceChangeListener =
             SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
                 if (key == KEY_FILMS_CATEGORY)
-                    updateAdapterBuffer()
+                    restartPages()
             }
         homeFragmentViewModel.registerOnChangeListener()
     }

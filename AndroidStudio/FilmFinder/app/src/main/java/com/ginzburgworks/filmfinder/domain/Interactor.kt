@@ -1,7 +1,6 @@
 package com.ginzburgworks.filmfinder.domain
 
 import android.content.SharedPreferences
-import androidx.lifecycle.LiveData
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.data.local.db.FilmsRepository
 import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
@@ -11,6 +10,7 @@ import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.MAX_PAGES_NUM
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.MIN_PAGES_NUM
 import kotlinx.coroutines.async
+import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.coroutineScope
 import java.util.*
 import javax.inject.Inject
@@ -21,6 +21,11 @@ class Interactor @Inject constructor(
     private val preferenceProvider: PreferenceProvider
 
 ) {
+
+
+    val pageFromRemote = Channel<List<Film>>(Channel.CONFLATED)
+    val pageFromLocal = Channel<List<Film>>(Channel.CONFLATED)
+
     suspend fun getPageOfFilmsFromRemoteDataSource(page: Int) = coroutineScope {
         val currentFilmsCategory = getCurrentFilmsCategory()
         val result = async {
@@ -28,9 +33,13 @@ class Interactor @Inject constructor(
         }
         result.await()?.let { dto ->
             convertToLocalDataStorageForm(dto, currentFilmsCategory)
-                .let { pageOfFilms -> repo.putPageOfFilms(pageOfFilms) }
+                .let { pageOfFilms ->
+                    repo.putPageOfFilms(pageOfFilms)
+                    pageFromRemote.send(pageOfFilms)
+                }
             saveTotalPagesNumber(dto.totalPages)
             saveLocalDataSourceUpdateTime()
+
         }
     }
 
@@ -46,8 +55,10 @@ class Interactor @Inject constructor(
     }
 
 
-    fun getPageOfFilmsFromLocalDataSource(page: Int): LiveData<List<Film>> =
-        repo.getPageOfFilmsInCategory(page, getCurrentFilmsCategory())
+    suspend fun getPageOfFilmsFromLocalDataSourceToUI(page: Int) = coroutineScope {
+        val pageOfFilms = repo.getPageOfFilmsInCategory(page, getCurrentFilmsCategory())
+        pageFromLocal.send(pageOfFilms)
+    }
 
     suspend fun clearLocalDataSource() = repo.deleteAll()
 

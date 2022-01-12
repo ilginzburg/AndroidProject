@@ -19,22 +19,11 @@ private const val NOW_PLAYING_PAGES_DEFAULT = 83
 class PagesController(
     private val viewModel: HomeFragmentViewModel,
     private val layoutManager: LinearLayoutManager
-) : RecyclerView.OnScrollListener() {
+)  {
 
-    private var isPageRequested = false
-    private lateinit var totalNumberOfPagesInCurrentCategory:Number
+    var isPageRequested = false
 
-    override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-        totalNumberOfPagesInCurrentCategory = viewModel.totalNumberOfPages
 
-        if (isNeedToRequestNextPage(dy)) {
-            viewModel.requestNextPage(++NEXT_PAGE)
-            isPageRequested = true
-        }
-        if (isPageOnStart())
-            isPageRequested = false
-
-    }
 
     private fun bottomItemPosition() = layoutManager.findLastCompletelyVisibleItemPosition()
 
@@ -42,23 +31,17 @@ class PagesController(
 
     private fun endPagePosition() = layoutManager.itemCount - ITEMS_BEFORE_END
 
-    private fun isPageOnStart() = bottomItemPosition() == startPagePosition()
+    fun isPageOnStart() = bottomItemPosition() == startPagePosition()
 
     private fun isPageOnEnd() = bottomItemPosition() == endPagePosition()
 
-    private fun isNotLastPage() = NEXT_PAGE < totalNumberOfPagesInCurrentCategory.toInt()
+    private fun isNotLastPage() = NEXT_PAGE < viewModel.totalNumberOfPages
 
     private fun isScrollingDown(dy: Int) = dy > 0
 
-    private fun isNeedToRequestNextPage(dy: Int) =
+    fun isNeedToRequestNextPage(dy: Int) =
         isPageOnEnd() && !isPageRequested && isScrollingDown(dy) && isNotLastPage()
 
-    fun restartPages() {
-        isPageRequested = false
-        NEXT_PAGE = FIRST_PAGE
-        viewModel.requestNextPage(NEXT_PAGE)
-        isPageRequested = true
-    }
 
     companion object {
 

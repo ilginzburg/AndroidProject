@@ -52,16 +52,5 @@ open class SettingsFragment : Fragment() {
             this.fragmentViewModel = fragmentSettingsViewModel
         }
         App.instance.nightModeSwitched = true
-        initCategoryButtonsState()
-    }
-
-    private fun initCategoryButtonsState() {
-        when (fragmentSettingsViewModel.getSavedCategory()) {
-            getString(R.string.popular_category) -> fragmentSettingsBinding.popular.performClick()
-            getString(R.string.top_rated_category) -> fragmentSettingsBinding.topRated.performClick()
-            getString(R.string.now_playing_category) -> fragmentSettingsBinding.nowPlaying.performClick()
-            getString(R.string.upcoming_category) -> fragmentSettingsBinding.upcoming.performClick()
-            else -> fragmentSettingsBinding.popular.performClick()
-        }
     }
 }

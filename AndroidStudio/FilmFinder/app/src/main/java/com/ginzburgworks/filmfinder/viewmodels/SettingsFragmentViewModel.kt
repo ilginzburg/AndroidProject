@@ -26,7 +26,7 @@ class SettingsFragmentViewModel @Inject constructor(private val interactor: Inte
         _nightMode.value = getSavedNightMode()
     }
 
-    fun getSavedCategory(): String {
+    private fun getSavedCategory(): String {
         return interactor.getCurrentFilmsCategory()
     }
 
@@ -70,6 +70,5 @@ class SettingsFragmentViewModel @Inject constructor(private val interactor: Inte
             result = PreferenceProvider.NIGHT_MODE
         return result
     }
-
 
 }

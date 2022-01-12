@@ -10,7 +10,7 @@ class FilmsRepository(private val filmDao: FilmDao) {
         filmDao.insertAll(pageOfFilms)
     }
 
-    fun getPageOfFilmsInCategory(page: Int, category: String): LiveData<List<Film>> {
+    suspend fun getPageOfFilmsInCategory(page: Int, category: String): List<Film>{
         return filmDao.getCachedFilmsByPageAndCategory(page, category)
     }
 
