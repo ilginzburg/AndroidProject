@@ -23,14 +23,14 @@ import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 
 
-class DetailsFragmentViewModel @Inject constructor() : ViewModel() {
+class DetailsFragmentViewModel : ViewModel() {
 
-    val errorEvent = SingleLiveEvent<String>()
     private val exceptionHandler =
         CoroutineExceptionHandler { _, e -> errorEvent.postValue(App.instance.getString(R.string.exc_handler_msg) + e) }
     private val detailsFragmentViewModelContext =
         viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
     val detailsFragmentViewModelScope = CoroutineScope(detailsFragmentViewModelContext)
+    val errorEvent = SingleLiveEvent<String>()
 
     suspend fun loadWallpaper(url: String): Bitmap? {
         var bitmap: Bitmap? = null
@@ -49,7 +49,6 @@ class DetailsFragmentViewModel @Inject constructor() : ViewModel() {
         val connection = establishConnection(urlFormed) ?: return null
         return requestInputStream(connection)
     }
-
 
     private fun requestInputStream(urlConnectionInstance: URLConnection): InputStream? {
         return try {

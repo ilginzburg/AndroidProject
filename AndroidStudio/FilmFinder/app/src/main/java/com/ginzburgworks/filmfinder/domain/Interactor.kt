@@ -12,9 +12,8 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.util.*
-import javax.inject.Inject
 
-class Interactor @Inject constructor(
+class Interactor(
     private val repo: FilmsRepository,
     private val retrofitService: TmdbApi,
     private val preferenceProvider: PreferenceProvider

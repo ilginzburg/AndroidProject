@@ -36,9 +36,7 @@ data class Film(
     @ColumnInfo(name = POSTER_PATH_NAME) val poster: String,
     @ColumnInfo(name = DESCRIPTION_NAME) val description: String,
     @ColumnInfo(name = RATING_NAME) var rating: Double,
-    var isInFavorites: Boolean = false
-) : Parcelable
-
+    var isInFavorites: Boolean = false) : Parcelable
 
 object DefaultFilm {
     private const val default_id = ID_DEFAULT_VALUE

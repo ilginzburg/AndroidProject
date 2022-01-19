@@ -22,25 +22,21 @@ private const val MAX_TIME_AFTER_BD_UPDATE = 600000
 
 class HomeFragmentViewModel : ViewModel() {
 
-
     @Inject
     lateinit var interactor: Interactor
 
     @Inject
     lateinit var filmsAdapter: FilmListRecyclerAdapter
+
     lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
-    val itemsForSearch = mutableListOf<Film>()
-    val pageOfFilmsToUI = Channel<List<Film>>(Channel.CONFLATED)
-    val errorEvent = SingleLiveEvent<String>()
-    private val exceptionHandler =
-        CoroutineExceptionHandler { _, e -> errorEvent.postValue(App.instance.getString(R.string.exc_handler_msg) + e) }
-    private val homeFragmentViewModelContext =
-        viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
-    private val homeFragmentViewModelScope = CoroutineScope(homeFragmentViewModelContext)
     val isLoading = ObservableBoolean()
     var isPageRequested = false
     val isProgressBarVisible = ObservableBoolean()
-
+    val itemsForSearch = mutableListOf<Film>()
+    val errorEvent = SingleLiveEvent<String>()
+    private val exceptionHandler = CoroutineExceptionHandler { _, e -> errorEvent.postValue(App.instance.getString(R.string.exc_handler_msg) + e) }
+    private val homeFragmentViewModelContext = viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
+    private val homeFragmentViewModelScope = CoroutineScope(homeFragmentViewModelContext)
 
     init {
         App.instance.appComponent.injectHomeVM(this)

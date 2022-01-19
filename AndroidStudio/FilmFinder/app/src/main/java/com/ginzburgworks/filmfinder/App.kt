@@ -21,11 +21,11 @@ class App : Application() {
     override fun onCreate() {
         super.onCreate()
         instance = this
-        appComponent = DaggerAppComponent.builder()
-            .remoteModule(RemoteModule())
-            .repositoryModule(RepositoryModule())
-            .domainModule(DomainModule(this))
-            .build()
+        appComponent = DaggerAppComponent.factory().create(
+            DomainModule(this),
+            RepositoryModule(),
+            RemoteModule()
+        )
         App.instance.appComponent.injectApp(this)
         initUINightMode()
     }
