@@ -9,8 +9,10 @@ import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
 
 
-class SettingsFragmentViewModel @Inject constructor(private val interactor: Interactor) :
-    ViewModel() {
+class SettingsFragmentViewModel : ViewModel() {
+
+    @Inject
+    lateinit var interactor: Interactor
 
     private val _category = MutableLiveData<String>()
     val category: LiveData<String> = _category
@@ -18,6 +20,7 @@ class SettingsFragmentViewModel @Inject constructor(private val interactor: Inte
     val nightMode: LiveData<Boolean> = _nightMode
 
     init {
+        App.instance.appComponent.injectSettingsVM(this)
         initNightMode()
         setCategory(getSavedCategory())
     }

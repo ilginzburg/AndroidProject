@@ -13,6 +13,7 @@ import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.bumptech.glide.Glide
@@ -45,21 +46,7 @@ class DetailsFragment : Fragment() {
     private lateinit var galleryInteractor: GalleryInteractor
     private lateinit var permissionHandler: PermissionHandler
 
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            viewModelFactory
-        )[DetailsFragmentViewModel::class.java]
-    }
-
-    @Singleton
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        App.instance.appComponent.inject(this)
-    }
+    private val viewModel by activityViewModels<DetailsFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,

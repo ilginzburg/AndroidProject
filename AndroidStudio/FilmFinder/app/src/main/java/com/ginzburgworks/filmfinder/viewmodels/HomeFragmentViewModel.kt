@@ -20,13 +20,16 @@ import javax.inject.Inject
 
 private const val MAX_TIME_AFTER_BD_UPDATE = 600000
 
-class HomeFragmentViewModel @Inject constructor(private val interactor: Interactor) : ViewModel() {
+class HomeFragmentViewModel : ViewModel() {
+
+
+    @Inject
+    lateinit var interactor: Interactor
 
     @Inject
     lateinit var filmsAdapter: FilmListRecyclerAdapter
     lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     val itemsForSearch = mutableListOf<Film>()
-    var totalNumberOfPages = interactor.getTotalPagesNumber()
     val pageOfFilmsToUI = Channel<List<Film>>(Channel.CONFLATED)
     val errorEvent = SingleLiveEvent<String>()
     private val exceptionHandler =
@@ -40,8 +43,11 @@ class HomeFragmentViewModel @Inject constructor(private val interactor: Interact
 
 
     init {
+        App.instance.appComponent.injectHomeVM(this)
         subscribeForCategoryChanges()
     }
+
+    fun getTotalNumberOfPages() = interactor.getTotalPagesNumber()
 
     fun requestNextPage() {
         isPageRequested = true
@@ -133,7 +139,7 @@ class HomeFragmentViewModel @Inject constructor(private val interactor: Interact
         return true
     }
 
-    private fun showProgressBar(){
+    private fun showProgressBar() {
         interactor.progressBarScope.launch {
             for (element in interactor.progressBarState)
                 isProgressBarVisible.set(element)

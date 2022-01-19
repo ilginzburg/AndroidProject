@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -34,26 +35,9 @@ class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
 
-
-    private lateinit var pagesController: PagesController
-
     private lateinit var linearLayoutManager: LinearLayoutManager
 
-    private val viewModel by lazy {
-        ViewModelProvider(
-            this,
-            viewModelFactory
-        )[HomeFragmentViewModel::class.java]
-    }
-
-    @Singleton
-    @Inject
-    lateinit var viewModelFactory: ViewModelProvider.Factory
-
-    override fun onAttach(context: Context) {
-        super.onAttach(context)
-        App.instance.appComponent.inject(this)
-    }
+    private val viewModel by activityViewModels<HomeFragmentViewModel>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -165,7 +149,7 @@ class HomeFragment : Fragment() {
         false.also { viewModel.isPageRequested = it }
     }
 
-    private fun isNotLastPage() = PagesController.NEXT_PAGE < viewModel.totalNumberOfPages
+    private fun isNotLastPage() = PagesController.NEXT_PAGE < viewModel.getTotalNumberOfPages()
 
     private fun isScrollingDown(verticalDisplacement: Int) = verticalDisplacement > 0
 

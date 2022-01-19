@@ -6,6 +6,8 @@ import com.ginzburgworks.filmfinder.di.modules.*
 import com.ginzburgworks.filmfinder.view.fragments.DetailsFragment
 import com.ginzburgworks.filmfinder.view.fragments.HomeFragment
 import com.ginzburgworks.filmfinder.view.fragments.SettingsFragment
+import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
+import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
 import dagger.BindsInstance
 import dagger.Component
 import javax.inject.Singleton
@@ -13,22 +15,15 @@ import javax.inject.Singleton
 @Singleton
 @Component(
     modules = [
-        InteractorModule::class,
         RepositoryModule::class,
         RemoteModule::class,
-        ViewModelModule::class,
-        RecyclerModule::class
+        RecyclerModule::class,
+        DomainModule::class
     ]
 )
 interface AppComponent {
 
-    @Component.Factory
-    interface Factory {
-        fun create(@BindsInstance context: Context): AppComponent
-    }
-
-    fun inject(app: App)
-    fun inject(homeFragment: HomeFragment)
-    fun inject(settingsFragment: SettingsFragment)
-    fun inject(detailsFragment: DetailsFragment)
+    fun injectApp (app: App)
+    fun injectHomeVM(homeFragmentViewModel: HomeFragmentViewModel)
+    fun injectSettingsVM(settingsFragmentViewModel: SettingsFragmentViewModel)
 }
