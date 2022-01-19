@@ -13,13 +13,13 @@ private const val KEY_LAST_BD_UPDATE_TIME = "last_bd_update_time_key"
 private const val DEFAULT_BD_UPDATE_TIME = 0L
 private const val KEY_TOTAL_PAGES_NUMBER = "total_pages_number_key"
 private const val KEY_FIRST_LAUNCH = "first_launch"
-const val KEY_FILMS_CATEGORY = "films_category_key"
-private  val DEFAULT_CATEGORY = App.instance.getString(R.string.popular_category)
 private const val PREFERENCE_NAME = "settings"
 private const val KEY_NIGHT_MODE_STATE = "night_state_key"
+const val KEY_FILMS_CATEGORY = "films_category_key"
+private  val DEFAULT_CATEGORY = App.instance.getString(R.string.popular_category)
 
 
-open class PreferenceProvider @Inject constructor(context: Context) {
+open class PreferenceProvider (context: Context) {
     private val appContext = context.applicationContext
     private val preference = appContext.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
 
