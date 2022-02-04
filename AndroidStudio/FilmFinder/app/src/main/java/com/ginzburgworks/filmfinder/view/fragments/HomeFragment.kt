@@ -70,6 +70,7 @@ class HomeFragment : Fragment() {
         subscribeToNetworkErrorMessages()
         subscribeOnDataChanges()
         subscribeOnProgressBar()
+        viewModel.requestNextPage()
     }
 
     private fun subscribeOnDataChanges() {
@@ -130,7 +131,7 @@ class HomeFragment : Fragment() {
                         viewModel.requestNextPage()
                 }
             })
-        }.also { viewModel.filmsAdapter.setListener { launchDetailsFragment(it) } }
+        }.also { viewModel.filmsAdapter.onItemClick = { launchDetailsFragment(it) } }
     }
 
     private fun addDecoration(recycler: RecyclerView) {

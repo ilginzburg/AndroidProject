@@ -47,14 +47,14 @@ class FavoritesFragment : Fragment() {
                 addDecoration(this)
             }
         filmsAdapter.addItems(Favorites.favoritesList)
-        filmsAdapter.setListener {launchDetailsFragment(it)}
+        filmsAdapter.onItemClick = { launchDetailsFragment(it) }
     }
 
-    private fun launchDetailsFragment(film: Film){
+    private fun launchDetailsFragment(film: Film) {
         (requireActivity() as MainActivity).launchDetailsFragment(film)
     }
 
-    private fun addDecoration(recycler:RecyclerView){
+    private fun addDecoration(recycler: RecyclerView) {
         val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
         recycler.addItemDecoration(decorator)
     }

@@ -38,9 +38,9 @@ class HomeFragmentViewModel : ViewModel() {
     val showProgressBar: BehaviorSubject<Boolean>
 
     init {
+        App.instance.appComponent.injectHomeVM(this)
         showProgressBar = interactor.progressBarState
         filmsListData = interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
-        App.instance.appComponent.injectHomeVM(this)
         subscribeForCategoryChanges()
     }
 
