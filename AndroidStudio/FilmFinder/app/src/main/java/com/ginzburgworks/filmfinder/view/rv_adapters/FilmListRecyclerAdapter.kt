@@ -30,7 +30,7 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
 
     override fun onBindViewHolder(holder: FilmViewHolder, position: Int) {
         holder.bind(items[holder.adapterPosition])
-        filmItemBinding.itemContainer.setOnClickListener { clickListener.onClick(items[holder.adapterPosition]) }
+        holder.itemView.setOnClickListener { clickListener.onClick(items[holder.adapterPosition]) }
     }
 
     fun addItems(list: List<Film>) {

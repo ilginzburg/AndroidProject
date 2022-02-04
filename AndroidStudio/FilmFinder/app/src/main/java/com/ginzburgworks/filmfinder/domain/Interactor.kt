@@ -7,10 +7,13 @@ import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.remote.API
 import com.ginzburgworks.filmfinder.data.remote.TmdbApi
 import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 class Interactor(
@@ -18,33 +21,41 @@ class Interactor(
     private val retrofitService: TmdbApi,
     private val preferenceProvider: PreferenceProvider
 ) {
-    val pageFromDataSourceToUI = Channel<List<Film>>(Channel.CONFLATED)
-    val progressBarScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    var progressBarState = Channel<Boolean>(Channel.CONFLATED)
 
-    suspend fun requestPageOfFilmsFromRemoteDataSource(page: Int) = coroutineScope {
+    var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
+
+    fun requestPageOfFilmsFromRemoteDataSource(page: Int) {
         val category = preferenceProvider.getFilmsCategory()
-        progressBarScope.launch {
-            progressBarState.send(true)
-        }
-        coroutineScope {
-            val result = async {
-                retrofitService.getFilms(category, API.KEY, "ru-RU", page)
-            }
-            result.await()?.let { dto ->
-                launch {
-                    getConvertedDTO(dto, category).collect { pageOfFilms ->
-                        sendPageOfFilmsToView(pageOfFilms)
-                        repo.putPageOfFilms(pageOfFilms)
+        progressBarState.onNext(true)
+        retrofitService.getFilms(category, API.KEY, "ru-RU", page).enqueue(object :
+            Callback<TmdbResultsDto?> {
+            override fun onResponse(
+                call: Call<TmdbResultsDto?>,
+                response: Response<TmdbResultsDto?>
+            ) {
+                saveTotalPagesNumber(
+                    response.body()?.totalPages
+                        ?: PagesController.getDefaultTotalPagesByCategory((category))
+                )
+                val pageOfFilms = response.body()?.let { getConvertedDTO(it, category) }
+                Completable.fromSingle<List<Film>> {
+                    pageOfFilms?.let { it1 ->
+                        repo.putPageOfFilms(it1)
+                        saveLocalDataSourceUpdateTime()
                     }
-                    saveTotalPagesNumber(dto.totalPages)
-                    saveLocalDataSourceUpdateTime()
                 }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+                progressBarState.onNext(false)
             }
-        }
+            override fun onFailure(call: Call<TmdbResultsDto?>, t: Throwable) {
+                progressBarState.onNext(false)
+            }
+        })
     }
 
-    private suspend fun getConvertedDTO(tmdb: TmdbResultsDto, category: String) = flow {
+
+    private fun getConvertedDTO(tmdb: TmdbResultsDto, category: String): List<Film> {
         val list = tmdb.tmdbFilms.map { it ->
             (Film(
                 it.id,
@@ -56,28 +67,18 @@ class Interactor(
                 it.voteAverage
             ))
         }
-        emit(list)
+        return list
     }
 
-    private suspend fun sendPageOfFilmsToView(pageOfFilms: List<Film>) {
-        pageFromDataSourceToUI.send(pageOfFilms)
-        progressBarScope.launch {
-            progressBarState.send(false)
-        }
+    fun putPageOfFilmsToLocal(list: List<Film>) {
+        repo.putPageOfFilms(list)
     }
 
-    suspend fun requestPageOfFilmsFromLocalDataSource(page: Int) {
-        progressBarScope.launch {
-            progressBarState.send(true)
-        }
-        val pageOfFilms = repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
-        if (pageOfFilms.isEmpty())
-            requestPageOfFilmsFromRemoteDataSource(page)
-        else
-            sendPageOfFilmsToView(pageOfFilms)
-    }
+    fun requestPageOfFilmsFromLocalDataSource(page: Int): Observable<List<Film>> =
+        repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
 
-    suspend fun clearLocalDataSource() = repo.deleteAll()
+
+    fun clearLocalDataSource() = repo.deleteAll()
 
     fun getCurrentFilmsCategory() = preferenceProvider.getFilmsCategory()
 
