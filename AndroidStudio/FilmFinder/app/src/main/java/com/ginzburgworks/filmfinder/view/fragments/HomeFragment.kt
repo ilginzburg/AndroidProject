@@ -29,6 +29,7 @@ import java.util.*
 
 private const val ANIM_POSITION = 1
 private const val DECORATOR_PADDING = 8
+private const val ERROR_MSG = "ERROR: Data source not responding"
 
 class HomeFragment : Fragment() {
 
@@ -77,6 +78,7 @@ class HomeFragment : Fragment() {
         viewModel.filmsListData
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { viewModel.errorEvent.value = ERROR_MSG }
             .subscribe { list ->
                 viewModel.filmsAdapter.addItems(list)
             }.addTo(autoDisposable)
@@ -88,7 +90,7 @@ class HomeFragment : Fragment() {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe {
                 binding.progressBar.isVisible = it
-            }
+            }.addTo(autoDisposable)
     }
 
     private fun subscribeToNetworkErrorMessages() {

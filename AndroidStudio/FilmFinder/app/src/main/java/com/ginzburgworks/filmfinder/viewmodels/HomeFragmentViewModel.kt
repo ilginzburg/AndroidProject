@@ -33,7 +33,6 @@ class HomeFragmentViewModel : ViewModel() {
     val isProgressBarVisible = ObservableBoolean()
     val itemsForSearch = mutableListOf<Film>()
     val errorEvent = SingleLiveEvent<String>()
-
     val filmsListData: Observable<List<Film>>
     val showProgressBar: BehaviorSubject<Boolean>
 
@@ -44,26 +43,24 @@ class HomeFragmentViewModel : ViewModel() {
         subscribeForCategoryChanges()
     }
 
-    fun getTotalNumberOfPages() = interactor.getTotalPagesNumber()
-
     fun requestNextPage() {
         isPageRequested = true
-        // showProgressBar()
         requestNextPageFromDataSource()
     }
 
     private fun requestNextPageFromDataSource() {
         if (isLocalDataSourceNeedToUpdate())
             requestNextPageFromRemote()
-        // else
-        //   requestNextPageFromLocal()
+        else
+            requestNextPageFromLocal()
     }
 
-
     private fun requestNextPageFromRemote() {
-        Observable.just {
-            interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE)
-        }
+        interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE)
+    }
+
+    private fun requestNextPageFromLocal() {
+        interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
     }
 
     private fun clearLocalDataSource() {
@@ -80,6 +77,7 @@ class HomeFragmentViewModel : ViewModel() {
         return false
     }
 
+    fun getTotalNumberOfPages() = interactor.getTotalPagesNumber()
 
     private fun isLastUpdateEarlierThanPredefinedMaxTime(updateTimeInMs: Long): Boolean {
         val currentTimeInMs = Calendar.getInstance().timeInMillis
@@ -117,7 +115,6 @@ class HomeFragmentViewModel : ViewModel() {
         filmsAdapter.addItems(itemsForSearch)
         return true
     }
-
 
     private fun registerOnChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
         interactor.registerPreferencesListener(listener)

@@ -35,12 +35,12 @@ class Interactor(
             ) {
                 saveTotalPagesNumber(
                     response.body()?.totalPages
-                        ?: PagesController.getDefaultTotalPagesByCategory((category))
+                        ?: checkTotalPagesNumber(response.body()?.totalPages)
                 )
                 val pageOfFilms = response.body()?.let { getConvertedDTO(it, category) }
                 Completable.fromSingle<List<Film>> {
                     pageOfFilms?.let { it1 ->
-                        repo.putPageOfFilms(it1)
+                        putPageOfFilmsToLocal(it1)
                         saveLocalDataSourceUpdateTime()
                     }
                 }
@@ -48,16 +48,16 @@ class Interactor(
                     .subscribe()
                 progressBarState.onNext(false)
             }
+
             override fun onFailure(call: Call<TmdbResultsDto?>, t: Throwable) {
                 progressBarState.onNext(false)
             }
         })
     }
 
-
     private fun getConvertedDTO(tmdb: TmdbResultsDto, category: String): List<Film> {
-        val list = tmdb.tmdbFilms.map { it ->
-            (Film(
+        return (tmdb.tmdbFilms).map {
+            Film(
                 it.id,
                 tmdb.page,
                 category,
@@ -65,9 +65,8 @@ class Interactor(
                 it.posterPath,
                 it.overview,
                 it.voteAverage
-            ))
+            )
         }
-        return list
     }
 
     fun putPageOfFilmsToLocal(list: List<Film>) {
@@ -76,7 +75,6 @@ class Interactor(
 
     fun requestPageOfFilmsFromLocalDataSource(page: Int): Observable<List<Film>> =
         repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
-
 
     fun clearLocalDataSource() = repo.deleteAll()
 
@@ -96,12 +94,11 @@ class Interactor(
         )
     }
 
-    private fun checkTotalPagesNumber(num: Int): Int {
+    private fun checkTotalPagesNumber(num: Int?): Int {
+        val default = PagesController.getDefaultTotalPagesByCategory(getCurrentFilmsCategory())
         return when (num) {
-            !in PagesController.MIN_PAGES_NUM..PagesController.MAX_PAGES_NUM -> PagesController.getDefaultTotalPagesByCategory(
-                getCurrentFilmsCategory()
-            )
-            else -> num
+            !in PagesController.MIN_PAGES_NUM..PagesController.MAX_PAGES_NUM -> default
+            else -> num ?: default
         }
     }
 
