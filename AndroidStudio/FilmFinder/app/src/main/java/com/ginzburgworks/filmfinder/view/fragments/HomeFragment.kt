@@ -78,7 +78,8 @@ class HomeFragment : Fragment() {
         viewModel.filmsListData
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { viewModel.errorEvent.value = ERROR_MSG }
+            .doOnError { viewModel.errorEvent.value = ERROR_MSG
+            println(it.stackTrace)}
             .subscribe { list ->
                 viewModel.filmsAdapter.addItems(list)
             }.addTo(autoDisposable)

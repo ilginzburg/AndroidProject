@@ -1,6 +1,8 @@
 package com.ginzburgworks.filmfinder.domain
 
 import android.content.SharedPreferences
+import com.ginzburgworks.filmfinder.AutoDisposable
+import com.ginzburgworks.filmfinder.addTo
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.data.local.db.FilmsRepository
 import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
@@ -15,34 +17,36 @@ import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.*
 
+private const val SEARCH_CATEGORY_NAME = "search"
+
 class Interactor(
     private val repo: FilmsRepository,
     private val retrofitService: TmdbApi,
     private val preferenceProvider: PreferenceProvider
 ) {
-
+    private val autoDisposable = AutoDisposable()
     var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
-    lateinit var remoteResult: Single<TmdbResultsDto>
+    lateinit var tmdbResultsDto: Single<TmdbResultsDto>
 
-    fun requestPageOfFilmsFromRemoteDataSource(page: Int) {
-        val category = preferenceProvider.getFilmsCategory()
+    fun requestPageOfFilmsFromRemoteDataSource(page: Int, isOnSearch: Boolean) {
+        var category = preferenceProvider.getFilmsCategory()
+        if (isOnSearch)
+            category = SEARCH_CATEGORY_NAME
         progressBarState.onNext(true)
-        remoteResult = retrofitService.getFilms(category, API.KEY, "ru-RU", page)
+        tmdbResultsDto = retrofitService.getFilms(category, API.KEY, "ru-RU", page)
         subscribeToPageOfFilms(category)
     }
 
     private fun subscribeToPageOfFilms(category: String) {
-        remoteResult
+        tmdbResultsDto
             .observeOn(AndroidSchedulers.mainThread())
             .subscribeOn(Schedulers.io())
             .doOnError {
-                println("-------------->doOnError")
-                println("----------> !!! error: $it")
+                it.printStackTrace()
                 progressBarState.onNext(false)
             }
-            .doOnSuccess { dto ->
-                println("-------------->doOnSuccess")
-                val list = dto.tmdbFilms.map {
+            .subscribe({ dto ->
+                dto.tmdbFilms.map {
                     Film(
                         it.id,
                         dto.page,
@@ -52,16 +56,14 @@ class Interactor(
                         it.overview,
                         it.voteAverage
                     )
-                }
-                putPageOfFilmsToLocal(list)
+                }.also { putPageOfFilmsToLocal(it) }
                 saveTotalPagesNumber(dto.totalPages)
                 progressBarState.onNext(false)
-            }
-            .doOnTerminate {
-                println("-------> doOnTerminate")
+            },
+                {
+                    it.printStackTrace()
+                }).addTo(autoDisposable)
 
-            }
-            .subscribe()
     }
 
     private fun putPageOfFilmsToLocal(list: List<Film>) {
@@ -69,7 +71,12 @@ class Interactor(
             repo.putPageOfFilms(list)
         }
             .subscribeOn(Schedulers.io())
-            .subscribe()
+            .subscribe({
+                println("--------> Page of films successfully stored in local DB")
+            },
+                {
+                    it.printStackTrace()
+                }).addTo(autoDisposable)
     }
 
     fun requestPageOfFilmsFromLocalDataSource(page: Int): Observable<List<Film>> =

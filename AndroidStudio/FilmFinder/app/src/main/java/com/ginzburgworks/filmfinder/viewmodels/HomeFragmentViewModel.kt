@@ -33,13 +33,12 @@ class HomeFragmentViewModel : ViewModel() {
     val isProgressBarVisible = ObservableBoolean()
     val itemsForSearch = mutableListOf<Film>()
     val errorEvent = SingleLiveEvent<String>()
-    val filmsListData: Observable<List<Film>> by lazy {requestNextPageFromLocal()}
+    val filmsListData: Observable<List<Film>> by lazy { requestNextPageFromLocal() }
     val showProgressBar: BehaviorSubject<Boolean>
 
     init {
         App.instance.appComponent.injectHomeVM(this)
         showProgressBar = interactor.progressBarState
-       // filmsListData = interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
         subscribeForCategoryChanges()
     }
 
@@ -56,10 +55,10 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     private fun requestNextPageFromRemote() {
-        interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE)
+        interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE, false)
     }
 
-    private fun requestNextPageFromLocal() : Observable<List<Film>> {
+    private fun requestNextPageFromLocal(): Observable<List<Film>> {
         return interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
     }
 
