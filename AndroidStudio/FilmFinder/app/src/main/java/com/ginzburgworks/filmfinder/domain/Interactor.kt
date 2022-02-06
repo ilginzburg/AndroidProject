@@ -7,13 +7,12 @@ import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.remote.API
 import com.ginzburgworks.filmfinder.data.remote.TmdbApi
 import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import java.util.*
 
 class Interactor(
@@ -23,54 +22,54 @@ class Interactor(
 ) {
 
     var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
+    lateinit var remoteResult: Single<TmdbResultsDto>
 
     fun requestPageOfFilmsFromRemoteDataSource(page: Int) {
         val category = preferenceProvider.getFilmsCategory()
         progressBarState.onNext(true)
-        retrofitService.getFilms(category, API.KEY, "ru-RU", page).enqueue(object :
-            Callback<TmdbResultsDto?> {
-            override fun onResponse(
-                call: Call<TmdbResultsDto?>,
-                response: Response<TmdbResultsDto?>
-            ) {
-                saveTotalPagesNumber(
-                    response.body()?.totalPages
-                        ?: checkTotalPagesNumber(response.body()?.totalPages)
-                )
-                val pageOfFilms = response.body()?.let { getConvertedDTO(it, category) }
-                Completable.fromSingle<List<Film>> {
-                    pageOfFilms?.let { it1 ->
-                        putPageOfFilmsToLocal(it1)
-                        saveLocalDataSourceUpdateTime()
-                    }
+        remoteResult = retrofitService.getFilms(category, API.KEY, "ru-RU", page)
+        subscribeToPageOfFilms(category)
+    }
+
+    private fun subscribeToPageOfFilms(category: String) {
+        remoteResult
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribeOn(Schedulers.io())
+            .doOnError {
+                println("-------------->doOnError")
+                println("----------> !!! error: $it")
+                progressBarState.onNext(false)
+            }
+            .doOnSuccess { dto ->
+                println("-------------->doOnSuccess")
+                val list = dto.tmdbFilms.map {
+                    Film(
+                        it.id,
+                        dto.page,
+                        category,
+                        it.title,
+                        it.posterPath,
+                        it.overview,
+                        it.voteAverage
+                    )
                 }
-                    .subscribeOn(Schedulers.io())
-                    .subscribe()
+                putPageOfFilmsToLocal(list)
+                saveTotalPagesNumber(dto.totalPages)
                 progressBarState.onNext(false)
             }
+            .doOnTerminate {
+                println("-------> doOnTerminate")
 
-            override fun onFailure(call: Call<TmdbResultsDto?>, t: Throwable) {
-                progressBarState.onNext(false)
             }
-        })
+            .subscribe()
     }
 
-    private fun getConvertedDTO(tmdb: TmdbResultsDto, category: String): List<Film> {
-        return (tmdb.tmdbFilms).map {
-            Film(
-                it.id,
-                tmdb.page,
-                category,
-                it.title,
-                it.posterPath,
-                it.overview,
-                it.voteAverage
-            )
+    private fun putPageOfFilmsToLocal(list: List<Film>) {
+        Completable.fromAction {
+            repo.putPageOfFilms(list)
         }
-    }
-
-    fun putPageOfFilmsToLocal(list: List<Film>) {
-        repo.putPageOfFilms(list)
+            .subscribeOn(Schedulers.io())
+            .subscribe()
     }
 
     fun requestPageOfFilmsFromLocalDataSource(page: Int): Observable<List<Film>> =
