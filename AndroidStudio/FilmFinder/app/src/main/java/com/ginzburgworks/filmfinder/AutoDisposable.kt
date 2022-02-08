@@ -8,24 +8,27 @@ import io.reactivex.rxjava3.disposables.Disposable
 
 private const val NOT_IMPLEMENTED_ERROR_MSG = "must bind AutoDisposable to a Lifecycle first"
 
-    class AutoDisposable : LifecycleObserver {
-        lateinit var compositeDisposable: CompositeDisposable
-        fun bindTo(lifecycle: Lifecycle) {
-            lifecycle.addObserver(this)
-            compositeDisposable = CompositeDisposable()
-        }
-        fun add(disposable: Disposable) {
-            if (::compositeDisposable.isInitialized) {
-                compositeDisposable.add(disposable)
-            } else {
-                throw NotImplementedError(NOT_IMPLEMENTED_ERROR_MSG)
-            }
-        }
-        @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-        fun onDestroy() {
-            compositeDisposable.dispose()
+class AutoDisposable : LifecycleObserver {
+    lateinit var compositeDisposable: CompositeDisposable
+    fun bindTo(lifecycle: Lifecycle) {
+        lifecycle.addObserver(this)
+        compositeDisposable = CompositeDisposable()
+    }
+
+    fun add(disposable: Disposable) {
+        if (::compositeDisposable.isInitialized) {
+            compositeDisposable.add(disposable)
+        } else {
+            throw NotImplementedError(NOT_IMPLEMENTED_ERROR_MSG)
         }
     }
-    fun Disposable.addTo(autoDisposable: AutoDisposable) {
-        autoDisposable.add(this)
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
+    fun onDestroy() {
+        compositeDisposable.dispose()
     }
+}
+
+fun Disposable.addTo(autoDisposable: AutoDisposable) {
+    autoDisposable.add(this)
+}

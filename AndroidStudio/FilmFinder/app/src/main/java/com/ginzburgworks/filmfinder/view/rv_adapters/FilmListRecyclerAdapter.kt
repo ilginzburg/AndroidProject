@@ -2,7 +2,6 @@ package com.ginzburgworks.filmfinder.view.rv_adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.AdapterView
 import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
@@ -45,8 +44,8 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
     }
 
     fun saveItemsForSearch(viewModel: HomeFragmentViewModel) {
-        viewModel.itemsForSearch.clear()
-        viewModel.itemsForSearch.addAll(items)
+        viewModel.itemsSavedBeforeSearch.clear()
+        viewModel.itemsSavedBeforeSearch.addAll(items)
     }
 
 }

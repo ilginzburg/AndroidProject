@@ -7,10 +7,12 @@ import io.reactivex.rxjava3.core.Observable
 class FilmsRepository(private val filmDao: FilmDao) {
 
     fun putPageOfFilms(pageOfFilms: List<Film>) {
+        println("-----> ENTERED REPO PUT")
         filmDao.insertAll(pageOfFilms)
     }
 
     fun getPageOfFilmsInCategory(page: Int, category: String): Observable<List<Film>> {
+        println("-----> ENTERED REPO GET")
         return filmDao.getCachedFilmsByPageAndCategory(page, category)
     }
 

@@ -13,6 +13,9 @@ import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.*
 import javax.inject.Inject
@@ -30,15 +33,19 @@ class HomeFragmentViewModel : ViewModel() {
     lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     val isLoading = ObservableBoolean()
     var isPageRequested = false
+    val showProgressBar: BehaviorSubject<Boolean>
     val isProgressBarVisible = ObservableBoolean()
-    val itemsForSearch = mutableListOf<Film>()
     val errorEvent = SingleLiveEvent<String>()
     val filmsListData: Observable<List<Film>> by lazy { requestNextPageFromLocal() }
-    val showProgressBar: BehaviorSubject<Boolean>
+    val itemsSavedBeforeSearch = mutableListOf<Film>()
+    var searchQuery = ""
+    val searchResults: Single<List<Film>> by lazy { requestSearchResults() }
+    val disposables = mutableListOf<Disposable?>()
 
     init {
         App.instance.appComponent.injectHomeVM(this)
         showProgressBar = interactor.progressBarState
+        disposables.addAll(interactor.disposables)
         subscribeForCategoryChanges()
     }
 
@@ -49,13 +56,18 @@ class HomeFragmentViewModel : ViewModel() {
 
     private fun requestNextPageFromDataSource() {
         if (isLocalDataSourceNeedToUpdate())
-            requestNextPageFromRemote()
+            requestNextPageFromRemote(false, "")
         else
             requestNextPageFromLocal()
     }
 
-    private fun requestNextPageFromRemote() {
-        interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE, false)
+    fun requestSearchResults(): Single<List<Film>> {
+        requestNextPageFromRemote(true, searchQuery)
+        return interactor.requestSearchResults()
+    }
+
+    private fun requestNextPageFromRemote(isOnSearch: Boolean, searchQuery: String) {
+        interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE, isOnSearch, searchQuery)
     }
 
     private fun requestNextPageFromLocal(): Observable<List<Film>> {
@@ -66,6 +78,11 @@ class HomeFragmentViewModel : ViewModel() {
         Completable.fromAction {
             interactor.clearLocalDataSource()
         }
+            .subscribeOn(Schedulers.io())
+            .subscribe({},
+                {
+                    it.printStackTrace()
+                }).let { disposables.add(it) }
     }
 
     private fun isLocalDataSourceNeedToUpdate(): Boolean {
@@ -95,23 +112,19 @@ class HomeFragmentViewModel : ViewModel() {
     fun refreshData() {
         isLoading.set(true)
         filmsAdapter.clearItems()
+        clearLocalDataSource()
         clearPageCount()
-        requestNextPage()
+        requestNextPageFromRemote(false, "")
         isLoading.set(false)
     }
 
     private fun clearPageCount() {
-        PagesController.NEXT_PAGE = PagesController.FIRST_PAGE
+        NEXT_PAGE = PagesController.FIRST_PAGE
     }
 
-    fun reloadOnTextChange(result: List<Film>) {
+    fun reloadOnSearch(list: List<Film>): Boolean {
         filmsAdapter.clearItems()
-        filmsAdapter.addItems(result)
-    }
-
-    fun reloadAfterSearch(): Boolean {
-        filmsAdapter.clearItems()
-        filmsAdapter.addItems(itemsForSearch)
+        filmsAdapter.addItems(list)
         return true
     }
 

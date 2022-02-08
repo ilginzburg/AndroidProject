@@ -25,7 +25,6 @@ import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.schedulers.Schedulers
-import java.util.*
 
 private const val ANIM_POSITION = 1
 private const val DECORATOR_PADDING = 8
@@ -54,12 +53,14 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
+        (viewModel.disposables).forEach { it?.addTo(autoDisposable) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         _binding?.homeFragment = this
         _binding?.viewModel = viewModel
+        _binding?.list = viewModel.itemsSavedBeforeSearch
         initComponents()
     }
 
@@ -78,11 +79,14 @@ class HomeFragment : Fragment() {
         viewModel.filmsListData
             .subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
-            .doOnError { viewModel.errorEvent.value = ERROR_MSG
-            println(it.stackTrace)}
+            .doOnError {
+                viewModel.errorEvent.value = ERROR_MSG
+                println(it.stackTrace)
+            }
             .subscribe { list ->
                 viewModel.filmsAdapter.addItems(list)
             }.addTo(autoDisposable)
+
     }
 
     private fun subscribeOnProgressBar() {
@@ -101,6 +105,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initSearchView() {
+        subscribeOnSearchResults()
         binding.searchView.setOnQueryTextListener(object :
             SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -109,18 +114,23 @@ class HomeFragment : Fragment() {
 
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isEmpty()) {
-                    viewModel.reloadAfterSearch()
+                    viewModel.reloadOnSearch(viewModel.itemsSavedBeforeSearch)
                     return true
                 }
-                val result = viewModel.itemsForSearch.filter {
-                    it.title.lowercase(Locale.getDefault())
-                        .contains(newText.lowercase(Locale.getDefault()))
-                }
-                viewModel.reloadOnTextChange(result)
+                viewModel.searchQuery = newText
+                val result = viewModel.requestSearchResults()
                 return true
             }
         })
     }
+
+    private fun subscribeOnSearchResults() =
+        viewModel.searchResults
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe({ viewModel.reloadOnSearch(it) }, { it.printStackTrace() })
+            .addTo(autoDisposable)
+
 
     private fun initRecycler() {
         binding.mainRecycler.apply {

@@ -5,6 +5,7 @@
 
     <data>
         <import type="android.view.View"/>
+        <import type="com.ginzburgworks.filmfinder.data.local.Film"/>
         <variable
             name="homeFragment"
             type="com.ginzburgworks.filmfinder.view.fragments.HomeFragment" />
@@ -12,6 +13,10 @@
         <variable
             name="viewModel"
             type="com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel" />
+
+        <variable
+            name="list"
+            type="java.util.List&lt;Film>" />
 
     </data>
 
@@ -31,7 +36,7 @@
             android:onClick="@{() -> homeFragment.saveItems()}"
             app:iconifiedByDefault="true"
             app:layout_constraintTop_toTopOf="parent"
-            app:setOnCloseListener="@{() -> viewModel.reloadAfterSearch()}" />
+            app:setOnCloseListener="@{() -> viewModel.reloadOnSearch(list)}" />
 
         <ProgressBar
             android:id="@+id/progressBar"
