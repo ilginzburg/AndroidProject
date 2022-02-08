@@ -15,9 +15,9 @@ import com.ginzburgworks.filmfinder.AutoDisposable
 import com.ginzburgworks.filmfinder.addTo
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
-import com.ginzburgworks.filmfinder.domain.PagesController
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.ITEMS_AFTER_START
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.ITEMS_BEFORE_END
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.PAGE_SIZE
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
@@ -34,17 +34,11 @@ class HomeFragment : Fragment() {
 
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-
     private lateinit var linearLayoutManager: LinearLayoutManager
-
     private val viewModel by activityViewModels<HomeFragmentViewModel>()
-
     private val autoDisposable = AutoDisposable()
 
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         autoDisposable.bindTo(lifecycle)
         return binding.root
@@ -53,14 +47,16 @@ class HomeFragment : Fragment() {
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        (viewModel.disposables).forEach { it?.addTo(autoDisposable) }
+        viewModel.disposables.forEach { it?.addTo(autoDisposable) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        _binding?.homeFragment = this
-        _binding?.viewModel = viewModel
-        _binding?.list = viewModel.itemsSavedBeforeSearch
+        _binding?.let {
+            it.homeFragment = this
+            it.viewModel = viewModel
+            it.list = viewModel.itemsSavedBeforeSearch
+        }
         initComponents()
     }
 
@@ -68,69 +64,66 @@ class HomeFragment : Fragment() {
         initAnimation()
         initRecycler()
         initSearchView()
-        binding.progressBar.bringToFront()
+        initProgressBar()
+        initDataTransaction()
+    }
+
+    private fun initDataTransaction() {
         subscribeToNetworkErrorMessages()
         subscribeOnDataChanges()
-        subscribeOnProgressBar()
         viewModel.requestNextPage()
     }
 
-    private fun subscribeOnDataChanges() {
-        viewModel.filmsListData
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .doOnError {
-                viewModel.errorEvent.value = ERROR_MSG
-                println(it.stackTrace)
-            }
-            .subscribe { list ->
-                viewModel.filmsAdapter.addItems(list)
-            }.addTo(autoDisposable)
+    private fun subscribeOnDataChanges() = viewModel.filmsListData.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnError {
+        viewModel.errorEvent.value = ERROR_MSG
+        println(it.stackTrace)
+    }.subscribe { list ->
+        viewModel.filmsAdapter.addItems(list)
+    }.addTo(autoDisposable)
 
+    private fun initProgressBar() {
+        binding.progressBar.bringToFront()
+        subscribeOnProgressBar()
     }
 
-    private fun subscribeOnProgressBar() {
-        viewModel.showProgressBar
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe {
-                binding.progressBar.isVisible = it
-            }.addTo(autoDisposable)
-    }
+    private fun subscribeOnProgressBar() =
+        viewModel.showProgressBar.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe {
+            binding.progressBar.isVisible = it
+        }.addTo(autoDisposable)
 
-    private fun subscribeToNetworkErrorMessages() {
-        viewModel.errorEvent.observe(viewLifecycleOwner) {
-            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-        }
+    private fun subscribeToNetworkErrorMessages() = viewModel.errorEvent.observe(viewLifecycleOwner) {
+        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
     }
 
     private fun initSearchView() {
-        subscribeOnSearchResults()
-        binding.searchView.setOnQueryTextListener(object :
-            SearchView.OnQueryTextListener {
-            override fun onQueryTextSubmit(query: String?): Boolean {
-                return true
-            }
-
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean = true
             override fun onQueryTextChange(newText: String): Boolean {
                 if (newText.isEmpty()) {
                     viewModel.reloadOnSearch(viewModel.itemsSavedBeforeSearch)
-                    return true
                 }
-                viewModel.searchQuery = newText
-                val result = viewModel.requestSearchResults()
+                viewModel.apply {
+                    searchQuery = newText
+                    requestSearchResults()
+                }
                 return true
             }
         })
     }
 
-    private fun subscribeOnSearchResults() =
-        viewModel.searchResults
-            .subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe({ viewModel.reloadOnSearch(it) }, { it.printStackTrace() })
-            .addTo(autoDisposable)
+    fun onSearchStart() {
+        saveItems()
+        subscribeOnSearchResults()
+        binding.searchView.isIconified = false
+    }
 
+    private fun saveItems() = viewModel.filmsAdapter.saveItemsForSearch(viewModel)
+
+    private fun subscribeOnSearchResults() {
+        val searchObserver = viewModel.searchResults
+        val searchDisposable = searchObserver.subscribe { viewModel.reloadOnSearch(it) }
+        viewModel.disposables.add(searchDisposable)
+    }
 
     private fun initRecycler() {
         binding.mainRecycler.apply {
@@ -140,8 +133,7 @@ class HomeFragment : Fragment() {
             linearLayoutManager = layoutManager as LinearLayoutManager
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (isNeedToRequestNextPage(dy))
-                        viewModel.requestNextPage()
+                    if (isNeedToRequestNextPage(dy)) viewModel.requestNextPage()
                 }
             })
         }.also { viewModel.filmsAdapter.onItemClick = { launchDetailsFragment(it) } }
@@ -152,14 +144,7 @@ class HomeFragment : Fragment() {
         recycler.addItemDecoration(decorator)
     }
 
-    private fun launchDetailsFragment(film: Film) {
-        (requireActivity() as MainActivity).launchDetailsFragment(film)
-    }
-
-    fun saveItems() {
-        viewModel.filmsAdapter.saveItemsForSearch(viewModel)
-        binding.searchView.isIconified = false
-    }
+    private fun launchDetailsFragment(film: Film) = (requireActivity() as MainActivity).launchDetailsFragment(film)
 
     private fun bottomItemPosition() = linearLayoutManager.findLastCompletelyVisibleItemPosition()
 
@@ -172,12 +157,8 @@ class HomeFragment : Fragment() {
     private fun isPageOnEnd() = bottomItemPosition() == endPagePosition()
 
     private fun isNeedToRequestNextPage(verticalDisplacement: Int): Boolean {
-        if (isPageOnStart())
-            updateStateOnStart()
-        return isPageOnEnd() &&
-                !viewModel.isPageRequested &&
-                isScrollingDown(verticalDisplacement) &&
-                isNotLastPage()
+        if (isPageOnStart()) updateStateOnStart()
+        return isPageOnEnd() && !viewModel.isPageRequested && isScrollingDown(verticalDisplacement) && isNotLastPage()
     }
 
     private fun updateStateOnStart() {
@@ -185,22 +166,16 @@ class HomeFragment : Fragment() {
         false.also { viewModel.isPageRequested = it }
     }
 
-    private fun isNotLastPage() = PagesController.NEXT_PAGE < viewModel.getTotalNumberOfPages()
+    private fun isNotLastPage() = NEXT_PAGE < viewModel.getTotalNumberOfPages()
 
     private fun isScrollingDown(verticalDisplacement: Int) = verticalDisplacement > 0
 
     private fun incrementNextPageIfNeed() {
-        if (viewModel.isPageRequested)
-            ++PagesController.NEXT_PAGE
+        if (viewModel.isPageRequested) ++NEXT_PAGE
     }
 
-    private fun initAnimation() {
-        AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.homeFragmentRoot,
-            requireActivity(),
-            ANIM_POSITION
-        )
-    }
+    private fun initAnimation() = AnimationHelper.performFragmentCircularRevealAnimation(binding.homeFragmentRoot, requireActivity(), ANIM_POSITION)
+
 }
 
 
