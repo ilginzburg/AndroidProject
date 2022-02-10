@@ -11,16 +11,18 @@ import com.ginzburgworks.filmfinder.domain.PagesController
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable
+import io.reactivex.rxjava3.observables.ConnectableObservable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import io.reactivex.rxjava3.subjects.PublishSubject
 import java.util.*
 import javax.inject.Inject
 
-private const val MAX_TIME_AFTER_BD_UPDATE = 600000
+private const val MAX_TIME_AFTER_BD_UPDATE = 60000 //!!!!
 
 class HomeFragmentViewModel : ViewModel() {
 
@@ -30,17 +32,21 @@ class HomeFragmentViewModel : ViewModel() {
     @Inject
     lateinit var filmsAdapter: FilmListRecyclerAdapter
 
-    lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
+    private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     val isLoading = ObservableBoolean()
     var isPageRequested = false
     val showProgressBar: BehaviorSubject<Boolean>
     val isProgressBarVisible = ObservableBoolean()
     val errorEvent = SingleLiveEvent<String>()
-    val filmsListData: Observable<List<Film>> by lazy { requestNextPageFromLocal() }
     val searchResults: PublishSubject<List<Film>> by lazy { requestSearchResults() }
     val itemsSavedBeforeSearch = mutableListOf<Film>()
     var searchQuery = ""
     val disposables = mutableListOf<Disposable?>()
+    private val filmsListData: Observable<List<Film>> by lazy { requestPageOfFilms() }
+
+
+    val connectableObservable: ConnectableObservable<List<Film>> by lazy { getConnectableObs() }
+
 
     init {
         App.instance.appComponent.injectHomeVM(this)
@@ -49,21 +55,19 @@ class HomeFragmentViewModel : ViewModel() {
         subscribeForCategoryChanges()
     }
 
+
     fun requestNextPage() {
         isPageRequested = true
-        requestNextPageFromDataSource()
+        checkIfLocalDataSourceNeedToUpdate()
+        requestPageOfFilms()
     }
 
-    private fun requestNextPageFromDataSource() {
-        if (isLocalDataSourceNeedToUpdate()) requestNextPageFromRemote(false, "")
+    private fun requestPageOfFilms(): Observable<List<Film>> {
+        return interactor.requestPageOfFilmsFromDataSource()
     }
 
-    private fun requestNextPageFromRemote(isOnSearch: Boolean, searchQuery: String) =
-        interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE, isOnSearch, searchQuery)
-
-    private fun requestNextPageFromLocal(): Observable<List<Film>> {
-        println("--------> ENTER TO requestNextPageFromLocal")
-        return interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
+    private fun getConnectableObs(): ConnectableObservable<List<Film>> {
+        return filmsListData.observeOn(AndroidSchedulers.mainThread()).replay(1)
     }
 
     private fun clearLocalDataSource() {
@@ -74,12 +78,10 @@ class HomeFragmentViewModel : ViewModel() {
         }).let { disposables.add(it) }
     }
 
-    private fun isLocalDataSourceNeedToUpdate(): Boolean {
+    private fun checkIfLocalDataSourceNeedToUpdate() {
         if (isLastUpdateEarlierThanPredefinedMaxTime(interactor.getLocalDataSourceUpdateTime())) {
             clearLocalDataSource()
-            return true
         }
-        return false
     }
 
     private fun isLastUpdateEarlierThanPredefinedMaxTime(updateTimeInMs: Long): Boolean {
@@ -88,11 +90,12 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     private fun subscribeForCategoryChanges() {
-        onSharedPreferenceChangeListener = SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
-            if (key == KEY_FILMS_CATEGORY) {
-                refreshData()
-            }
-        }.also { registerOnChangeListener(it) }
+        onSharedPreferenceChangeListener =
+            SharedPreferences.OnSharedPreferenceChangeListener { _, key ->
+                if (key == KEY_FILMS_CATEGORY) {
+                    refreshData()
+                }
+            }.also { registerOnChangeListener(it) }
     }
 
     fun refreshData() {
@@ -100,7 +103,7 @@ class HomeFragmentViewModel : ViewModel() {
         filmsAdapter.clearItems()
         clearLocalDataSource()
         clearPageCount()
-        requestNextPageFromRemote(false, "")
+        requestNextPage()
         isLoading.set(false)
     }
 
@@ -109,8 +112,12 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     fun requestSearchResults(): PublishSubject<List<Film>> {
-        requestNextPageFromRemote(true, searchQuery)
+        requestNextPageOfSearchResults(searchQuery)
         return interactor.searchResultsToUi
+    }
+
+    private fun requestNextPageOfSearchResults(searchQuery: String) {
+        interactor.getSearchResults(searchQuery)
     }
 
     fun reloadOnSearch(list: List<Film>): Boolean = filmsAdapter.run {
@@ -126,6 +133,8 @@ class HomeFragmentViewModel : ViewModel() {
 
     override fun onCleared() {
         super.onCleared()
-        if (this::onSharedPreferenceChangeListener.isInitialized) interactor.unRegisterPreferencesListener(onSharedPreferenceChangeListener)
+        if (this::onSharedPreferenceChangeListener.isInitialized) interactor.unRegisterPreferencesListener(
+            onSharedPreferenceChangeListener
+        )
     }
 }

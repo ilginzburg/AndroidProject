@@ -8,11 +8,8 @@ import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.remote.API
 import com.ginzburgworks.filmfinder.data.remote.TmdbApi
 import com.ginzburgworks.filmfinder.data.remote.TmdbApiSearch
-import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
-import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
-import io.reactivex.rxjava3.core.Completable
+import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import io.reactivex.rxjava3.core.Observable
-import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
@@ -21,69 +18,80 @@ import java.util.*
 
 private const val SEARCH_CATEGORY_NAME = "search"
 
-class Interactor(private val repo: FilmsRepository,
+class Interactor(
+    private val repo: FilmsRepository,
     private val retrofitService: TmdbApi,
     private val retrofitServiceSearch: TmdbApiSearch,
-    private val preferenceProvider: PreferenceProvider) {
+    private val preferenceProvider: PreferenceProvider
+) {
 
     var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
-    private lateinit var tmdbResultsDto: Single<TmdbResultsDto>
-    private val searchResults = mutableListOf<Film>()
     val disposables = mutableListOf<Disposable?>()
-    val searchResultsToUi = sendSearchResultsToUi()
+    val searchResultsToUi: PublishSubject<List<Film>> by lazy { createSearchResultsToUi() }
+    val filmsListData: Observable<List<Film>> by lazy { requestPageOfFilmsFromDataSource() }
 
-    fun requestPageOfFilmsFromRemoteDataSource(page: Int, isOnSearch: Boolean, searchQuery: String) {
-        var category = preferenceProvider.getFilmsCategory()
+
+    fun requestPageOfFilmsFromDataSource(): Observable<List<Film>> {
         progressBarState.onNext(true)
-        if (isOnSearch) {
-            category = SEARCH_CATEGORY_NAME
-            tmdbResultsDto = retrofitServiceSearch.getSearchResult(API.KEY, "ru-RU", page, searchQuery, false)
-        } else tmdbResultsDto = retrofitService.getFilms(category, API.KEY, "ru-RU", page)
-        subscribeToPageOfFilms(category, isOnSearch)
+        val category = preferenceProvider.getFilmsCategory()
+        return repo.getPageOfFilmsInCategory(NEXT_PAGE, category).filter { it.isNotEmpty() }
+            .switchIfEmpty(getFromRemote(category).also { it ->
+                it.observeOn(Schedulers.io())
+                it.subscribeOn(Schedulers.io())
+                it.subscribe({
+                    repo.putPageOfFilms(it)
+                    progressBarState.onNext(false)
+                }, {
+                    it.printStackTrace()
+                })
+            })
     }
 
 
-    private fun subscribeToPageOfFilms(category: String, isOnSearch: Boolean) {
-        tmdbResultsDto.observeOn(AndroidSchedulers.mainThread()).subscribeOn(Schedulers.io()).doOnError {
-            it.printStackTrace()
-            progressBarState.onNext(false)
-        }.subscribe({ dto ->
-            (dto.tmdbFilms).map {
-                Film(it.id ?: DefaultFilm.film.id,
-                    dto.page,
-                    category,
-                    it.title ?: DefaultFilm.film.title,
-                    it.posterPath ?: DefaultFilm.film.poster,
-                    it.overview ?: DefaultFilm.film.description,
-                    it.voteAverage ?: DefaultFilm.film.rating)
-            }.also {
-                if (!isOnSearch) {
-                    putPageOfFilmsToLocal(it)
-                    saveTotalPagesNumber(dto.totalPages)
+    private fun getFromRemote(category: String): Observable<List<Film>> {
+        return retrofitService.getFilms(category, API.KEY, "ru-RU", NEXT_PAGE)
+            .observeOn(Schedulers.io()).subscribeOn(Schedulers.io())
+            .map { (page, tmdbFilms, totalPages) ->
+                (tmdbFilms).map {
+                    Film(
+                        it.id ?: DefaultFilm.film.id,
+                        page,
+                        category,
+                        it.title ?: DefaultFilm.film.title,
+                        it.posterPath ?: DefaultFilm.film.poster,
+                        it.overview ?: DefaultFilm.film.description,
+                        it.voteAverage ?: DefaultFilm.film.rating
+                    )
+                }.also {
+                    saveTotalPagesNumber(totalPages)
                     saveLocalDataSourceUpdateTime()
-                } else {
-                    searchResults.apply {
-                        clear()
-                        addAll(it)
-                        searchResultsToUi.onNext(this)
-                    }
                 }
-            }
-            progressBarState.onNext(false)
-        }, {
-            it.printStackTrace()
-        }).let { disposables.add(it) }
+            }.toObservable()
     }
 
 
-    private fun putPageOfFilmsToLocal(list: List<Film>) = Completable.fromAction {
-        repo.putPageOfFilms(list)
-    }.subscribeOn(Schedulers.io()).subscribe({ }, Throwable::printStackTrace).let { disposables.add(it) }
+    fun getSearchResults(searchQuery: String) {
+        retrofitServiceSearch.getSearchResult(API.KEY, "ru-RU", NEXT_PAGE, searchQuery, false)
+            .observeOn(Schedulers.io()).subscribeOn(Schedulers.io())
+            .map { (page, tmdbFilms, totalPages) ->
+                (tmdbFilms).map {
+                    Film(
+                        it.id ?: DefaultFilm.film.id,
+                        page,
+                        SEARCH_CATEGORY_NAME,
+                        it.title ?: DefaultFilm.film.title,
+                        it.posterPath ?: DefaultFilm.film.poster,
+                        it.overview ?: DefaultFilm.film.description,
+                        it.voteAverage ?: DefaultFilm.film.rating
+                    )
+                }.also {
+                    saveTotalPagesNumber(totalPages)
+                }
+            }.apply { searchResultsToUi }
+    }
 
-    private fun sendSearchResultsToUi(): PublishSubject<List<Film>> = PublishSubject.create()
 
-    fun requestPageOfFilmsFromLocalDataSource(page: Int): Observable<List<Film>> =
-        repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
+    private fun createSearchResultsToUi(): PublishSubject<List<Film>> = PublishSubject.create()
 
     fun clearLocalDataSource() = repo.deleteAll()
 
@@ -94,7 +102,9 @@ class Interactor(private val repo: FilmsRepository,
     fun getTotalPagesNumber() = preferenceProvider.getTotalPagesNumber(getCurrentFilmsCategory())
 
     private fun saveTotalPagesNumber(totalPagesNumber: Int) =
-        preferenceProvider.saveTotalPagesNumber(checkTotalPagesNumber(totalPagesNumber), getCurrentFilmsCategory())
+        preferenceProvider.saveTotalPagesNumber(
+            checkTotalPagesNumber(totalPagesNumber), getCurrentFilmsCategory()
+        )
 
     private fun checkTotalPagesNumber(num: Int?): Int {
         val default = PagesController.getDefaultTotalPagesByCategory(getCurrentFilmsCategory())
@@ -115,9 +125,11 @@ class Interactor(private val repo: FilmsRepository,
         preferenceProvider.saveLocalDataSourceUpdateTime(dbUpdateTime)
     }
 
-    fun registerPreferencesListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) = preferenceProvider.registerListener(listener)
+    fun registerPreferencesListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
+        preferenceProvider.registerListener(listener)
 
-    fun unRegisterPreferencesListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) = preferenceProvider.unRegisterListener(listener)
+    fun unRegisterPreferencesListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =
+        preferenceProvider.unRegisterListener(listener)
 
 }
 

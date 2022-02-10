@@ -38,16 +38,22 @@ class HomeFragment : Fragment() {
     private val viewModel by activityViewModels<HomeFragmentViewModel>()
     private val autoDisposable = AutoDisposable()
 
-    override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View? {
+    override fun onCreateView(
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         autoDisposable.bindTo(lifecycle)
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        viewModel.disposables.forEach { it?.addTo(autoDisposable) }
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
         _binding = null
-        viewModel.disposables.forEach { it?.addTo(autoDisposable) }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -65,36 +71,52 @@ class HomeFragment : Fragment() {
         initRecycler()
         initSearchView()
         initProgressBar()
+    }
+
+    override fun onStart() {
+        super.onStart()
         initDataTransaction()
     }
 
     private fun initDataTransaction() {
         subscribeToNetworkErrorMessages()
         subscribeOnDataChanges()
-        viewModel.requestNextPage()
     }
 
-    private fun subscribeOnDataChanges() = viewModel.filmsListData.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).doOnError {
-        viewModel.errorEvent.value = ERROR_MSG
-        println(it.stackTrace)
-    }.subscribe { list ->
-        viewModel.filmsAdapter.addItems(list)
-    }.addTo(autoDisposable)
+    private fun subscribeOnDataChanges() {
+        viewModel.connectableObservable.connect()
+        viewModel.connectableObservable.subscribe({ list ->
+            if (list.isNotEmpty()) {
+                viewModel.filmsAdapter.addItems(list)
+            } else if (list.isEmpty()) {
+                viewModel.requestNextPage()
+            }
+        }, {
+            viewModel.errorEvent.value = ERROR_MSG
+            it.printStackTrace()
+        }).addTo(autoDisposable)
+
+    }
 
     private fun initProgressBar() {
         binding.progressBar.bringToFront()
         subscribeOnProgressBar()
     }
 
-    private fun subscribeOnProgressBar() =
-        viewModel.showProgressBar.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribe {
+    private fun subscribeOnProgressBar() = viewModel.showProgressBar.subscribeOn(Schedulers.io())
+        .observeOn(AndroidSchedulers.mainThread()).subscribe({
             binding.progressBar.isVisible = it
-        }.addTo(autoDisposable)
+        }, {
+            it.printStackTrace()
+        }).addTo(autoDisposable)
 
-    private fun subscribeToNetworkErrorMessages() = viewModel.errorEvent.observe(viewLifecycleOwner) {
-        Toast.makeText(context, it, Toast.LENGTH_LONG).show()
-    }
 
+    private fun subscribeToNetworkErrorMessages() =
+        viewModel.errorEvent.observe(viewLifecycleOwner) {
+            Toast.makeText(context, it, Toast.LENGTH_LONG).show()
+        }
+
+    
     private fun initSearchView() {
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean = true
@@ -144,7 +166,8 @@ class HomeFragment : Fragment() {
         recycler.addItemDecoration(decorator)
     }
 
-    private fun launchDetailsFragment(film: Film) = (requireActivity() as MainActivity).launchDetailsFragment(film)
+    private fun launchDetailsFragment(film: Film) =
+        (requireActivity() as MainActivity).launchDetailsFragment(film)
 
     private fun bottomItemPosition() = linearLayoutManager.findLastCompletelyVisibleItemPosition()
 
@@ -174,7 +197,9 @@ class HomeFragment : Fragment() {
         if (viewModel.isPageRequested) ++NEXT_PAGE
     }
 
-    private fun initAnimation() = AnimationHelper.performFragmentCircularRevealAnimation(binding.homeFragmentRoot, requireActivity(), ANIM_POSITION)
+    private fun initAnimation() = AnimationHelper.performFragmentCircularRevealAnimation(
+        binding.homeFragmentRoot, requireActivity(), ANIM_POSITION
+    )
 
 }
 

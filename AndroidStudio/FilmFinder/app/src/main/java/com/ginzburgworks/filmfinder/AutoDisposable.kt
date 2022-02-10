@@ -1,14 +1,16 @@
 package com.ginzburgworks.filmfinder
 
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import androidx.lifecycle.LifecycleOwner
 import io.reactivex.rxjava3.disposables.CompositeDisposable
 import io.reactivex.rxjava3.disposables.Disposable
 
 private const val NOT_IMPLEMENTED_ERROR_MSG = "must bind AutoDisposable to a Lifecycle first"
 
-class AutoDisposable : LifecycleObserver {
+class AutoDisposable : LifecycleObserver, LifecycleEventObserver {
+
     lateinit var compositeDisposable: CompositeDisposable
     fun bindTo(lifecycle: Lifecycle) {
         lifecycle.addObserver(this)
@@ -23,9 +25,12 @@ class AutoDisposable : LifecycleObserver {
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_DESTROY)
-    fun onDestroy() {
-        compositeDisposable.dispose()
+    override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
+        if (event == Lifecycle.Event.ON_STOP)
+        {
+            compositeDisposable.dispose()
+            println("-----> onStateChanged: ON_STOP:")
+        }
     }
 }
 
