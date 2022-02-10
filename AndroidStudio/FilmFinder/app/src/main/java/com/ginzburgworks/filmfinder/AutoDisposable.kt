@@ -26,10 +26,8 @@ class AutoDisposable : LifecycleObserver, LifecycleEventObserver {
     }
 
     override fun onStateChanged(source: LifecycleOwner, event: Lifecycle.Event) {
-        if (event == Lifecycle.Event.ON_STOP)
-        {
+        if (event == Lifecycle.Event.ON_STOP) {
             compositeDisposable.dispose()
-            println("-----> onStateChanged: ON_STOP:")
         }
     }
 }

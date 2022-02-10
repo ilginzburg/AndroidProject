@@ -9,20 +9,24 @@ import retrofit2.http.Query
 interface TmdbApi {
 
     @GET("3/movie/{category}")
-    fun getFilms(@Path("category") category: String,
+    fun getFilms(
+        @Path("category") category: String,
         @Query("api_key") apiKey: String,
         @Query("language") language: String,
-        @Query("page") page: Int): Single<TmdbResultsDto>
+        @Query("page") page: Int
+    ): Single<TmdbResultsDto>
 }
 
 interface TmdbApiSearch {
 
     @GET("3/search/movie")
-    fun getSearchResult(@Query("api_key") apiKey: String,
+    fun getSearchResult(
+        @Query("api_key") apiKey: String,
         @Query("language") language: String,
         @Query("page") page: Int,
         @Query("query") searchQuery: String,
-        @Query("include_adult") adult: Boolean): Single<TmdbResultsDto>
+        @Query("include_adult") adult: Boolean
+    ): Single<TmdbResultsDto>
 }
 
 
