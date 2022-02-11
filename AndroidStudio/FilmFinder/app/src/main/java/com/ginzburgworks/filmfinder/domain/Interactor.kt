@@ -8,14 +8,14 @@ import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.remote.API
 import com.ginzburgworks.filmfinder.data.remote.TmdbApi
 import com.ginzburgworks.filmfinder.data.remote.TmdbApiSearch
+import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
 import io.reactivex.rxjava3.schedulers.Schedulers
 import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.*
-
-private const val SEARCH_CATEGORY_NAME = "search"
 
 class Interactor(
     private val repo: FilmsRepository,
@@ -26,7 +26,6 @@ class Interactor(
 
     var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val disposables = mutableListOf<Disposable?>()
-
 
     fun requestPageOfFilmsFromDataSource(): Observable<List<Film>> {
         progressBarState.onNext(true)
@@ -44,34 +43,23 @@ class Interactor(
             })
     }
 
-
     private fun getFromRemote(category: String): Observable<List<Film>> =
-        retrofitService.getFilms(category, API.KEY, "ru-RU", NEXT_PAGE).observeOn(Schedulers.io())
-            .subscribeOn(Schedulers.io()).map { (page, tmdbFilms, totalPages) ->
-                (tmdbFilms).map {
-                    Film(
-                        it.id ?: DefaultFilm.film.id,
-                        page,
-                        category,
-                        it.title ?: DefaultFilm.film.title,
-                        it.posterPath ?: DefaultFilm.film.poster,
-                        it.overview ?: DefaultFilm.film.description,
-                        it.voteAverage ?: DefaultFilm.film.rating
-                    )
-                }.also {
-                    saveTotalPagesNumber(totalPages)
-                    saveLocalDataSourceUpdateTime()
-                }
-            }.toObservable()
-
-
-    fun getSearchResults(searchQuery: String): Observable<List<Film>> {
-        println("------> ENTER getSearchResults")
-        val searchResultsDto = retrofitServiceSearch.getSearchResult(
-            API.KEY, "ru-RU", NEXT_PAGE, searchQuery, false
+        convertSingleApiToObservableDtoList(
+            retrofitService.getFilms(
+                category, API.KEY, "ru-RU", NEXT_PAGE
+            ).observeOn(Schedulers.io())
         )
-        println("------> ENTER gwwww2222")
-        return searchResultsDto.observeOn(Schedulers.io()).subscribeOn(Schedulers.io())
+
+
+    fun getSearchResults(searchQuery: String): Observable<List<Film>> =
+        convertSingleApiToObservableDtoList(
+            retrofitServiceSearch.getSearchResult(
+                API.KEY, "ru-RU", NEXT_PAGE, searchQuery, false
+            )
+        )
+
+    private fun convertSingleApiToObservableDtoList(apiList: Single<TmdbResultsDto>): Observable<List<Film>> {
+        return apiList.observeOn(Schedulers.io()).subscribeOn(Schedulers.io())
             .map { (page, tmdbFilms, totalPages) ->
                 (tmdbFilms).map {
                     Film(
