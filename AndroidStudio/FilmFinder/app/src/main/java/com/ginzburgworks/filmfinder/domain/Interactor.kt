@@ -27,29 +27,30 @@ class Interactor(
     var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val disposables = mutableListOf<Disposable?>()
 
-    fun requestPageOfFilmsFromDataSource(): Observable<List<Film>> {
-        progressBarState.onNext(true)
+    fun getFilms(): Observable<List<Film>> =
+        repo.getFilmsInCategory(preferenceProvider.getFilmsCategory())
+
+    fun putNewPageOfFilmsToLocalDataSource() {
         val category = preferenceProvider.getFilmsCategory()
-        return repo.getPageOfFilmsInCategory(NEXT_PAGE, category).filter { it.isNotEmpty() }
-            .switchIfEmpty(getFromRemote(category).also { it ->
-                it.observeOn(Schedulers.io())
-                it.subscribeOn(Schedulers.io())
-                it.subscribe({
-                    repo.putPageOfFilms(it)
-                    progressBarState.onNext(false)
-                }, {
-                    it.printStackTrace()
-                })
+        progressBarState.onNext(true)
+        getPageOfFilmsFromRemote(category).subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
+            .subscribe({
+                repo.putPageOfFilms(it)
+                progressBarState.onNext(false)
+            }, {
+                it.printStackTrace()
+                progressBarState.onNext(false)
             })
     }
 
-    private fun getFromRemote(category: String): Observable<List<Film>> =
-        convertSingleApiToObservableDtoList(
+
+    private fun getPageOfFilmsFromRemote(category: String): Observable<List<Film>> {
+        return convertSingleApiToObservableDtoList(
             retrofitService.getFilms(
                 category, API.KEY, "ru-RU", NEXT_PAGE
-            ).observeOn(Schedulers.io())
+            )
         )
-
+    }
 
     fun getSearchResults(searchQuery: String): Observable<List<Film>> =
         convertSingleApiToObservableDtoList(
@@ -59,7 +60,7 @@ class Interactor(
         )
 
     private fun convertSingleApiToObservableDtoList(apiList: Single<TmdbResultsDto>): Observable<List<Film>> {
-        return apiList.observeOn(Schedulers.io()).subscribeOn(Schedulers.io())
+        return apiList.subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
             .map { (page, tmdbFilms, totalPages) ->
                 (tmdbFilms).map {
                     Film(

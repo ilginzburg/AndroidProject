@@ -10,9 +10,8 @@ class FilmsRepository(private val filmDao: FilmDao) {
         filmDao.insertAll(pageOfFilms)
     }
 
-
-    fun getPageOfFilmsInCategory(page: Int, category: String): Observable<List<Film>> {
-        return filmDao.getCachedFilmsByPageAndCategory(page, category)
+    fun getFilmsInCategory(category: String): Observable<List<Film>> {
+        return filmDao.getCachedFilmsByCategory(category)
     }
 
     fun deleteAll() = filmDao.deleteAll()

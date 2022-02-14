@@ -2,7 +2,6 @@ package com.ginzburgworks.filmfinder.viewmodels
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ginzburgworks.filmfinder.App
@@ -11,14 +10,12 @@ import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope.coroutineContext
 import java.io.IOException
 import java.io.InputStream
 import java.net.MalformedURLException
 import java.net.URL
 import java.net.URLConnection
 import java.net.UnknownServiceException
-import javax.inject.Inject
 import kotlin.coroutines.resume
 import kotlin.coroutines.suspendCoroutine
 

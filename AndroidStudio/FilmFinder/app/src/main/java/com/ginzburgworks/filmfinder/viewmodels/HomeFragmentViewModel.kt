@@ -19,7 +19,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.*
 import javax.inject.Inject
 
-private const val MAX_TIME_AFTER_BD_UPDATE = 60000 //!!!!
+private const val MAX_TIME_AFTER_BD_UPDATE = 600000
 
 class HomeFragmentViewModel : ViewModel() {
 
@@ -37,6 +37,8 @@ class HomeFragmentViewModel : ViewModel() {
     val errorEvent = SingleLiveEvent<String>()
     val itemsSavedBeforeSearch = mutableListOf<Film>()
     val disposables = mutableListOf<Disposable?>()
+    var firstTimeLaunch = true
+    var lastFirstVisiblePosition = 0
 
     init {
         App.instance.appComponent.injectHomeVM(this)
@@ -45,15 +47,18 @@ class HomeFragmentViewModel : ViewModel() {
         subscribeForCategoryChanges()
     }
 
-    fun requestNextPage(): Observable<List<Film>> {
-        return requestPageOfFilms().also {
-            checkIfLocalDataSourceNeedToUpdate()
-            isPageRequested = true
-        }
+    fun requestNextPage() {
+        isPageRequested = true
+        checkIfLocalDataSourceNeedToUpdate()
+        requestPageOfFilms()
     }
 
-    private fun requestPageOfFilms(): Observable<List<Film>> =
-        interactor.requestPageOfFilmsFromDataSource()
+    private fun requestPageOfFilms() = interactor.putNewPageOfFilmsToLocalDataSource()
+
+    fun getUpdatedFilms(): Observable<List<Film>> {
+        checkIfLocalDataSourceNeedToUpdate()
+        return interactor.getFilms()
+    }
 
     private fun clearLocalDataSource() = Completable.fromAction {
         interactor.clearLocalDataSource()
@@ -75,13 +80,13 @@ class HomeFragmentViewModel : ViewModel() {
             registerOnChangeListener(it)
         }
 
-
     fun refreshData() {
         isLoading.set(true)
         filmsAdapter.clearItems()
         clearLocalDataSource()
         clearPageCount()
         requestNextPage()
+        firstTimeLaunch = true
         isLoading.set(false)
     }
 
@@ -90,10 +95,9 @@ class HomeFragmentViewModel : ViewModel() {
     fun requestSearchResults(searchQuery: String): Observable<List<Film>> =
         interactor.getSearchResults(searchQuery)
 
-    fun reloadOnSearch(list: List<Film>): Boolean = filmsAdapter.run {
+    fun reloadAdapterItems(list: List<Film>) = filmsAdapter.run {
         clearItems()
         addItems(list)
-        false
     }
 
     fun getTotalNumberOfPages() = interactor.getTotalPagesNumber()

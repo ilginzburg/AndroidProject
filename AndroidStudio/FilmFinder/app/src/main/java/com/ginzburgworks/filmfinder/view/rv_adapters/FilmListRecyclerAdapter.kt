@@ -14,7 +14,7 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
 
     private lateinit var filmItemBinding: FilmItemBinding
 
-    var onItemClick : ((Film) -> Unit)? = null
+    var onItemClick: ((Film) -> Unit)? = null
 
     override fun getItemCount() = items.size
 

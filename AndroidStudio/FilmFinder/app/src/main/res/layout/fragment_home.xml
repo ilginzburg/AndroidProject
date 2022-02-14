@@ -36,7 +36,7 @@
             android:onClick="@{() -> homeFragment.onSearchStart()}"
             app:iconifiedByDefault="true"
             app:layout_constraintTop_toTopOf="parent"
-            app:setOnCloseListener="@{() -> viewModel.reloadOnSearch(list)}" />
+            app:setOnCloseListener="@{() -> homeFragment.onSearchEnd(list)}" />
 
         <ProgressBar
             android:id="@+id/progressBar"

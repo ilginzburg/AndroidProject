@@ -53,9 +53,15 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onPause() {
+        super.onPause()
+        saveViewPosition()
+    }
+
     override fun onResume() {
         super.onResume()
         viewModel.disposables.forEach { it?.addTo(autoDisposable) }
+        restoreViewPosition()
     }
 
     override fun onDestroyView() {
@@ -78,10 +84,6 @@ class HomeFragment : Fragment() {
         initRecycler()
         initSearchView()
         initProgressBar()
-    }
-
-    override fun onStart() {
-        super.onStart()
         initDataTransaction()
     }
 
@@ -91,9 +93,13 @@ class HomeFragment : Fragment() {
     }
 
     private fun subscribeOnDataChanges() = with(viewModel) {
-        requestNextPage().observeOn(AndroidSchedulers.mainThread()).filter { it.isNotEmpty() }
-            .switchIfEmpty(requestNextPage()).subscribe({
-                filmsAdapter.addItems(it)
+        getUpdatedFilms().subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+            .subscribe({
+                if (it.isEmpty()) requestNextPage()
+                else {
+                    if (firstTimeLaunch) filmsAdapter.addItems(it).also { firstTimeLaunch = false }
+                    else filmsAdapter.addItems(it.takeLast(PAGE_SIZE))
+                }
             }, {
                 errorEvent.value = ERROR_MSG
                 it.printStackTrace()
@@ -127,8 +133,9 @@ class HomeFragment : Fragment() {
             }
 
             override fun onQueryTextChange(newText: String): Boolean {
-                if (newText.isEmpty()) viewModel.reloadOnSearch(viewModel.itemsSavedBeforeSearch)
-                else subscriber.onNext(newText)
+                if (newText.isEmpty()) {
+                    onSearchEnd(viewModel.itemsSavedBeforeSearch)
+                } else subscriber.onNext(newText)
                 return false
             }
         })
@@ -140,12 +147,19 @@ class HomeFragment : Fragment() {
         viewModel.requestSearchResults(it)
     }.subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread()).subscribeBy(onError = {
         Toast.makeText(requireContext(), SEARCH_ERROR_MSG, Toast.LENGTH_SHORT).show()
-    }, onNext = { viewModel.reloadOnSearch(it) }).addTo(autoDisposable)
+    }, onNext = { viewModel.reloadAdapterItems(it) }).addTo(autoDisposable)
 
 
     fun onSearchStart() {
         saveItems()
         binding.searchView.isIconified = false
+        saveViewPosition()
+    }
+
+    fun onSearchEnd(list: List<Film>): Boolean {
+        viewModel.reloadAdapterItems(list)
+        restoreViewPosition()
+        return false
     }
 
     private fun saveItems() = viewModel.filmsAdapter.saveItemsForSearch(viewModel)
@@ -201,6 +215,15 @@ class HomeFragment : Fragment() {
     private fun initAnimation() = AnimationHelper.performFragmentCircularRevealAnimation(
         binding.homeFragmentRoot, requireActivity(), ANIM_POSITION
     )
+
+    private fun saveViewPosition() {
+        viewModel.lastFirstVisiblePosition =
+            linearLayoutManager.findFirstCompletelyVisibleItemPosition()
+    }
+
+    private fun restoreViewPosition() {
+        linearLayoutManager.scrollToPosition(viewModel.lastFirstVisiblePosition)
+    }
 
 }
 
