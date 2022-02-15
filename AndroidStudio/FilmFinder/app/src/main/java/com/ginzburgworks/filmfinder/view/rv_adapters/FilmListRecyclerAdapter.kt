@@ -54,6 +54,7 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
     }
 
     fun interface OnItemClickListener {
+
         fun onClick(film: Film)
     }
 }

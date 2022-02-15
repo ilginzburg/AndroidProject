@@ -11,17 +11,14 @@ class PermissionHandler {
 
     fun checkPermission(context: Context): Boolean {
         val result = ContextCompat.checkSelfPermission(
-            context,
-            Manifest.permission.WRITE_EXTERNAL_STORAGE
+            context, Manifest.permission.WRITE_EXTERNAL_STORAGE
         )
         return result == PackageManager.PERMISSION_GRANTED
     }
 
-     fun requestPermission(activity:Activity) {
+    fun requestPermission(activity: Activity) {
         ActivityCompat.requestPermissions(
-            activity,
-            arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE),
-            1
+            activity, arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE), 1
         )
     }
 }

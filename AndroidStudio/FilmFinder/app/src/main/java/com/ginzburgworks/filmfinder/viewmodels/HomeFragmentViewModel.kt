@@ -2,7 +2,6 @@ package com.ginzburgworks.filmfinder.viewmodels
 
 import android.content.SharedPreferences
 import androidx.databinding.ObservableBoolean
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.ginzburgworks.filmfinder.App
@@ -28,7 +27,7 @@ class HomeFragmentViewModel : ViewModel() {
     @Inject
     lateinit var filmsAdapter: FilmListRecyclerAdapter
 
-    lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
+    private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     val isLoading = ObservableBoolean()
     var isPageRequested = false
     val isProgressBarVisible = ObservableBoolean()
@@ -40,8 +39,10 @@ class HomeFragmentViewModel : ViewModel() {
         viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
     private val homeFragmentViewModelScope = CoroutineScope(homeFragmentViewModelContext)
 
-    private val currentPageLiveData = MutableLiveData<Int>()
-
+    init {
+        App.instance.appComponent.injectHomeVM(this)
+        subscribeForCategoryChanges()
+    }
 
     fun getTotalNumberOfPages() = interactor.getTotalPagesNumber()
 
@@ -119,7 +120,7 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     private fun clearPageCount() {
-        PagesController.NEXT_PAGE = PagesController.FIRST_PAGE
+        NEXT_PAGE = PagesController.FIRST_PAGE
     }
 
     fun reloadOnTextChange(result: List<Film>) {

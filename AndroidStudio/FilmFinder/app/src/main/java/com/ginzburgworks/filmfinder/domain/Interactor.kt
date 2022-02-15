@@ -9,6 +9,7 @@ import com.ginzburgworks.filmfinder.data.remote.TmdbApi
 import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.util.*
 
@@ -27,29 +28,26 @@ class Interactor(
         progressBarScope.launch {
             progressBarState.send(true)
         }
-        coroutineScope {
-            val result = async {
-                retrofitService.getFilms(category, API.KEY, "ru-RU", page)
-            }
-            result.await()?.let { dto ->
-                launch {
-                    getConvertedDTO(dto, category).collect { pageOfFilms ->
-                        sendPageOfFilmsToView(pageOfFilms)
-                        repo.putPageOfFilms(pageOfFilms)
-                    }
-                    saveTotalPagesNumber(dto.totalPages)
-                    saveLocalDataSourceUpdateTime()
-
+        val result = async {
+            retrofitService.getFilms(category, API.KEY, "ru-RU", page)
+        }
+        result.await()?.let { dto ->
+            launch {
+                getConvertedDTO(dto, category).collect { pageOfFilms ->
+                    sendPageOfFilmsToView(pageOfFilms)
+                    repo.putPageOfFilms(pageOfFilms)
                 }
+                saveTotalPagesNumber(dto.totalPages)
+                saveLocalDataSourceUpdateTime()
             }
         }
     }
 
     private suspend fun getConvertedDTO(tmdb: TmdbResultsDto, category: String) = flow {
         val list = tmdb.tmdbFilms.map {
-            (Film(
+            Film(
                 it.id, tmdb.page, category, it.title, it.posterPath, it.overview, it.voteAverage
-            ))
+            )
         }
         emit(list)
     }

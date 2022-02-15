@@ -8,7 +8,6 @@ import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
 
-const val SAVE_DEFAULT_VALUE_FOR_OFFLINE = 0
 
 class SettingsFragmentViewModel : ViewModel() {
 
@@ -63,15 +62,13 @@ class SettingsFragmentViewModel : ViewModel() {
 
     private fun nightModeToBoolean(mode: Int): Boolean {
         var result = true
-        if (mode == PreferenceProvider.DAY_MODE)
-            result = false
+        if (mode == PreferenceProvider.DAY_MODE) result = false
         return result
     }
 
     private fun nightModeToInt(mode: Boolean): Int {
         var result = PreferenceProvider.DAY_MODE
-        if (mode)
-            result = PreferenceProvider.NIGHT_MODE
+        if (mode) result = PreferenceProvider.NIGHT_MODE
         return result
     }
 

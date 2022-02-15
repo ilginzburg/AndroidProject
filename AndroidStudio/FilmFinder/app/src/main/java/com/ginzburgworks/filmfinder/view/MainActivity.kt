@@ -32,8 +32,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun setInitialFragment() {
         fragmentTag = HOME_FRAGMENT_TAG
-        if (App.instance.nightModeSwitched)
-            fragmentTag = SETTINGS_FRAGMENT_TAG
+        if (App.instance.nightModeSwitched) fragmentTag = SETTINGS_FRAGMENT_TAG
         val fragment = checkFragmentExistence(fragmentTag)
         changeFragment(fragment ?: HomeFragment(), fragmentTag)
     }
@@ -72,11 +71,8 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun changeFragment(fragment: Fragment, tag: String) {
-        supportFragmentManager
-            .beginTransaction()
-            .replace(R.id.fragment_placeholder, fragment, tag)
-            .addToBackStack(null)
-            .commit()
+        supportFragmentManager.beginTransaction().replace(R.id.fragment_placeholder, fragment, tag)
+            .addToBackStack(null).commit()
     }
 
     private fun checkFragmentExistence(tag: String): Fragment? =

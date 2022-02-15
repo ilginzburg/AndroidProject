@@ -16,9 +16,8 @@ class WatchLaterFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentWatchLaterBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -35,9 +34,7 @@ class WatchLaterFragment : Fragment() {
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.watchLaterFragmentRoot,
-            requireActivity(),
-            ANIM_POSITION
+            binding.watchLaterFragmentRoot, requireActivity(), ANIM_POSITION
         )
     }
 }

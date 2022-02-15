@@ -2,7 +2,7 @@ package com.ginzburgworks.filmfinder.data.db
 
 import androidx.lifecycle.LiveData
 import com.ginzburgworks.filmfinder.data.Film
-import com.ginzburgworks.filmfinder.data.db.dao.FilmDao
+import com.ginzburgworks.filmfinder.data.local.db.dao.FilmDao
 import java.util.concurrent.Executors
 
 class MainRepository(private val filmDao: FilmDao) {
