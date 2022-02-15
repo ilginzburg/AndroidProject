@@ -6,7 +6,29 @@
     <string name="menu_selections_title">Подборки</string>
     <string name="menu_settings_title">Настройки</string>
     <string name="menu_home_title_text">Главная</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
-    <!-- TODO: Remove or change this placeholder text -->
+    <string name="radio_button_popular">Популярные</string>
+    <string name="radio_button_top_rated">Топ</string>
+    <string name="radio_button_upcoming">Скоро</string>
+    <string name="radio_button_playing">В кинотеатрах</string>
+    <string name="radio_group_header">Подборка на главном экране:</string>
+    <string name="radio_other_header">Вид:</string>
+    <string name="radio_button_night">Ночной режим</string>
+    <string name="permission_storage">Нет разрешения. Пожалуйста, предоставьте разрешение</string>
+    <string name="downloaded_to_gallery">"Сохранено в галерею"</string>
+    <string name="open">В галерею</string>
+    <string name="share_msg">Посмотрите этот фильм: </string>
+    <string name="share_title">Поделиться: </string>
+    <string name="url_err_msg">Ошибка при обработке строки URL </string>
+    <string name="network_err_msg">Ошибка соединения с сервером </string>
+    <string name="unknown_service_err_msg">Ошибка: неизвестный формат сервиса </string>
+    <string name="bitmap_err_msg">Ошибка: не удалось сформировать Bitmap </string>
+    <string name="bitmap_compress_err_msg">Ошибка: не удалось создать изображение </string>
+    <string name="uri_err_msg">Ошибка при получении URI </string>
+    <string name="output_stream_err_msg">Ошибка при открытии выходного потока </string>
+    <string name="exc_handler_msg">Отловлено исключение: </string>
+    <string name="popular_category">popular</string>
+    <string name="top_rated_category">top_rated</string>
+    <string name="upcoming_category">upcoming</string>
+    <string name="now_playing_category">now_playing</string>
 </resources>
+

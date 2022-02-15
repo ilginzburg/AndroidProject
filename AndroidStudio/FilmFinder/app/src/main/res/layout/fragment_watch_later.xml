@@ -5,8 +5,6 @@
     android:layout_height="match_parent"
     android:id="@+id/watch_later_fragment_root"
     tools:visibility="visible"
-    android:background="@drawable/background_watch_later"
-    tools:context=".WatchLaterFragment">
-
-
+    android:theme="@style/BackgroundWatchLater"
+    tools:context="view.fragments.WatchLaterFragment">
 </FrameLayout>

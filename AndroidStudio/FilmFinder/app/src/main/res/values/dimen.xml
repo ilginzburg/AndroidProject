@@ -7,10 +7,10 @@
     <dimen name="item_width">150dp</dimen>
     <dimen name="item_title_padding">8dp</dimen>
     <dimen name="item_desc_padding">8dp</dimen>
-    <dimen name="app_bar_height">200dp</dimen>
-    <dimen name="collapsing_bar_min_height">60dp</dimen>
+    <dimen name="app_bar_height">500dp</dimen>
+    <dimen name="collapsing_bar_min_height">0dp</dimen>
     <dimen name="action_button_margin">16dp</dimen>
-    <dimen name="scroll_view_margin">8dp</dimen>
+    <dimen name="scroll_view_margin">20dp</dimen>
     <dimen name="search_view_margin">8dp</dimen>
     <dimen name="recycler_view_margin">8dp</dimen>
     <dimen name="recycler_view_padding">5dp</dimen>
@@ -21,7 +21,7 @@
     <dimen name="fragment_placeholder_height">0dp</dimen>
     <dimen name="rating_view_side">50dp</dimen>
     <dimen name="rating_translationZ">11dp</dimen>
-    <dimen name="card_view_margin">10dp</dimen>
+    <dimen name="card_view_margin">1dp</dimen>
     <dimen name="card_view_elevation">1dp</dimen>
     <dimen name="card_view_corner_radius">10dp</dimen>
     <dimen name="poster_width">150dp</dimen>
@@ -30,4 +30,13 @@
     <dimen name="description_width">0dp</dimen>
     <dimen name="description_height">0dp</dimen>
     <dimen name="description_padding">8dp</dimen>
+    <dimen name="description_top_padding">10dp</dimen>
+    <dimen name="description_font_size">26sp</dimen>
+    <dimen name="recycler_layout_bias">1.0</dimen>
+    <dimen name="settings_radio_text_margin">8dp</dimen>
+    <dimen name="settings_radio_button_margin">16dp</dimen>
+    <dimen name="progress_bar_scaling_factor">0.5</dimen>
+    <dimen name="download_button_translation_x">72dp</dimen>
+    <dimen name="download_progress_bar_side">50dp</dimen>
+    <dimen name="download_progress_bar_translation_z">10dp</dimen>
 </resources>
