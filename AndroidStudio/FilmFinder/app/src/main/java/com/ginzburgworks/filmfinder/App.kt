@@ -16,6 +16,7 @@ class App : Application() {
 
     @Inject
     lateinit var interactor: Interactor
+
     var nightModeSwitched = false
 
     override fun onCreate() {

@@ -1,6 +1,5 @@
 package com.ginzburgworks.filmfinder.data.local.db.dao
 
-import androidx.lifecycle.LiveData
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
@@ -15,8 +14,7 @@ interface FilmDao {
 
     @Query("SELECT * FROM cached_films WHERE page=:requestedPage AND category=:requestedCategory")
     suspend fun getCachedFilmsByPageAndCategory(
-        requestedPage: Int,
-        requestedCategory: String
+        requestedPage: Int, requestedCategory: String
     ): List<Film>
 
     @Query("DELETE FROM cached_films")

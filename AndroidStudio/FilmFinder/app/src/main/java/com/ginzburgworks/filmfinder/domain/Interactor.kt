@@ -9,7 +9,6 @@ import com.ginzburgworks.filmfinder.data.remote.TmdbApi
 import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import java.util.*
 
@@ -18,6 +17,7 @@ class Interactor(
     private val retrofitService: TmdbApi,
     private val preferenceProvider: PreferenceProvider
 ) {
+
     val pageFromDataSourceToUI = Channel<List<Film>>(Channel.CONFLATED)
     val progressBarScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     var progressBarState = Channel<Boolean>(Channel.CONFLATED)
@@ -39,21 +39,16 @@ class Interactor(
                     }
                     saveTotalPagesNumber(dto.totalPages)
                     saveLocalDataSourceUpdateTime()
+
                 }
             }
         }
     }
 
     private suspend fun getConvertedDTO(tmdb: TmdbResultsDto, category: String) = flow {
-        val list = tmdb.tmdbFilms.map { it ->
+        val list = tmdb.tmdbFilms.map {
             (Film(
-                it.id,
-                tmdb.page,
-                category,
-                it.title,
-                it.posterPath,
-                it.overview,
-                it.voteAverage
+                it.id, tmdb.page, category, it.title, it.posterPath, it.overview, it.voteAverage
             ))
         }
         emit(list)
@@ -71,10 +66,8 @@ class Interactor(
             progressBarState.send(true)
         }
         val pageOfFilms = repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
-        if (pageOfFilms.isEmpty())
-            requestPageOfFilmsFromRemoteDataSource(page)
-        else
-            sendPageOfFilmsToView(pageOfFilms)
+        if (pageOfFilms.isEmpty()) requestPageOfFilmsFromRemoteDataSource(page)
+        else sendPageOfFilmsToView(pageOfFilms)
     }
 
     suspend fun clearLocalDataSource() = repo.deleteAll()
@@ -85,13 +78,11 @@ class Interactor(
         preferenceProvider.saveFilmsCategory(category)
     }
 
-    fun getTotalPagesNumber() =
-        preferenceProvider.getTotalPagesNumber(getCurrentFilmsCategory())
+    fun getTotalPagesNumber() = preferenceProvider.getTotalPagesNumber(getCurrentFilmsCategory())
 
     private fun saveTotalPagesNumber(totalPagesNumber: Int) {
         preferenceProvider.saveTotalPagesNumber(
-            checkTotalPagesNumber(totalPagesNumber),
-            getCurrentFilmsCategory()
+            checkTotalPagesNumber(totalPagesNumber), getCurrentFilmsCategory()
         )
     }
 

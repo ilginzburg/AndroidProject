@@ -8,6 +8,7 @@ import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
 
+const val SAVE_DEFAULT_VALUE_FOR_OFFLINE = 0
 
 class SettingsFragmentViewModel : ViewModel() {
 
