@@ -12,12 +12,7 @@ import javax.inject.Singleton
 
 @Singleton
 @Component(
-    modules = [
-        RepositoryModule::class,
-        RemoteModule::class,
-        RecyclerModule::class,
-        DomainModule::class
-    ]
+    modules = [RepositoryModule::class, RemoteModule::class, RecyclerModule::class, DomainModule::class]
 )
 interface AppComponent {
 

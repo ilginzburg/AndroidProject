@@ -25,9 +25,8 @@ class FavoritesFragment : Fragment() {
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -39,31 +38,28 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun initRecycler() {
-        binding.favoritesRecycler
-            .apply {
-                filmsAdapter = FilmListRecyclerAdapter()
-                adapter = filmsAdapter
-                layoutManager = LinearLayoutManager(requireContext())
-                addDecoration(this)
-            }
+        binding.favoritesRecycler.apply {
+            filmsAdapter = FilmListRecyclerAdapter()
+            adapter = filmsAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            addDecoration(this)
+        }
         filmsAdapter.addItems(Favorites.favoritesList)
-        filmsAdapter.setListener {launchDetailsFragment(it)}
+        filmsAdapter.setListener { launchDetailsFragment(it) }
     }
 
-    private fun launchDetailsFragment(film: Film){
+    private fun launchDetailsFragment(film: Film) {
         (requireActivity() as MainActivity).launchDetailsFragment(film)
     }
 
-    private fun addDecoration(recycler:RecyclerView){
+    private fun addDecoration(recycler: RecyclerView) {
         val decorator = TopSpacingItemDecoration(DECORATOR_PADDING)
         recycler.addItemDecoration(decorator)
     }
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.favoritesFragmentRoot,
-            requireActivity(),
-            ANIM_POSITION
+            binding.favoritesFragmentRoot, requireActivity(), ANIM_POSITION
         )
     }
 }

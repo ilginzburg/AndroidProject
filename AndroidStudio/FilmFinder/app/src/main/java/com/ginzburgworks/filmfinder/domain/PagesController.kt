@@ -1,17 +1,14 @@
 package com.ginzburgworks.filmfinder.domain
 
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
-import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 
 private const val POPULAR_PAGES_DEFAULT = 500
 private const val TOP_RATED_PAGES_DEFAULT = 474
 private const val UPCOMING_PAGES_DEFAULT = 41
 private const val NOW_PLAYING_PAGES_DEFAULT = 83
 
-class PagesController() {
+class PagesController {
 
     companion object {
         const val MAX_PAGES_NUM = 500

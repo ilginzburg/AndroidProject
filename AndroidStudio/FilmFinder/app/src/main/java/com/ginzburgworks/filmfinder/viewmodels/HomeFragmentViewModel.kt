@@ -14,7 +14,6 @@ import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
 import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
 import java.util.*
 import javax.inject.Inject
 
@@ -28,14 +27,16 @@ class HomeFragmentViewModel : ViewModel() {
     @Inject
     lateinit var filmsAdapter: FilmListRecyclerAdapter
 
-    lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
+    private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     val isLoading = ObservableBoolean()
     var isPageRequested = false
     val isProgressBarVisible = ObservableBoolean()
     val itemsForSearch = mutableListOf<Film>()
     val errorEvent = SingleLiveEvent<String>()
-    private val exceptionHandler = CoroutineExceptionHandler { _, e -> errorEvent.postValue(App.instance.getString(R.string.exc_handler_msg) + e) }
-    private val homeFragmentViewModelContext = viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
+    private val exceptionHandler =
+        CoroutineExceptionHandler { _, e -> errorEvent.postValue(App.instance.getString(R.string.exc_handler_msg) + e) }
+    private val homeFragmentViewModelContext =
+        viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
     private val homeFragmentViewModelScope = CoroutineScope(homeFragmentViewModelContext)
 
     init {
@@ -52,10 +53,8 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     private fun requestNextPageFromDataSource() {
-        if (isLocalDataSourceNeedToUpdate())
-            requestNextPageFromRemote()
-        else
-            requestNextPageFromLocal()
+        if (isLocalDataSourceNeedToUpdate()) requestNextPageFromRemote()
+        else requestNextPageFromLocal()
     }
 
     private fun clearLocalDataSource() {
@@ -121,7 +120,7 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     private fun clearPageCount() {
-        PagesController.NEXT_PAGE = PagesController.FIRST_PAGE
+        NEXT_PAGE = PagesController.FIRST_PAGE
     }
 
     fun reloadOnTextChange(result: List<Film>) {
@@ -137,8 +136,7 @@ class HomeFragmentViewModel : ViewModel() {
 
     private fun showProgressBar() {
         interactor.progressBarScope.launch {
-            for (element in interactor.progressBarState)
-                isProgressBarVisible.set(element)
+            for (element in interactor.progressBarState) isProgressBarVisible.set(element)
         }
     }
 
@@ -149,7 +147,8 @@ class HomeFragmentViewModel : ViewModel() {
     override fun onCleared() {
         super.onCleared()
         interactor.progressBarScope.cancel()
-        if (this::onSharedPreferenceChangeListener.isInitialized)
-            interactor.unRegisterPreferencesListener(onSharedPreferenceChangeListener)
+        if (this::onSharedPreferenceChangeListener.isInitialized) interactor.unRegisterPreferencesListener(
+            onSharedPreferenceChangeListener
+        )
     }
 }

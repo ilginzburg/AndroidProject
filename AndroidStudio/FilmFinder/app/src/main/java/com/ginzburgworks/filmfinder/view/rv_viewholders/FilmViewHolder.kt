@@ -33,11 +33,7 @@ class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     private fun loadImage(posterView: ImageView, itemView: View, posterUrl: String) {
         val sourceImageUrl = ApiConstants.IMAGES_URL + VIEW_HOLDER_IMG_SIZE + posterUrl
         val defaultImage = DefaultFilm.film.poster
-        Glide.with(itemView)
-            .load(sourceImageUrl)
-            .centerCrop()
-            .error(defaultImage)
-            .into(posterView)
+        Glide.with(itemView).load(sourceImageUrl).centerCrop().error(defaultImage).into(posterView)
     }
 
 }

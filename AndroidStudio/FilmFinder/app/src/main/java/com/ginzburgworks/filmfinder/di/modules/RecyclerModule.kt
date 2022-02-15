@@ -7,7 +7,6 @@ import javax.inject.Singleton
 
 @Module
 class RecyclerModule {
-
     @Provides
     @Singleton
     fun provideRecycler() = FilmListRecyclerAdapter()

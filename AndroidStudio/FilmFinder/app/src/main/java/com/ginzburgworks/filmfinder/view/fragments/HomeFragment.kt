@@ -1,6 +1,5 @@
 package com.ginzburgworks.filmfinder.view.fragments
 
-import android.content.Context
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -9,10 +8,8 @@ import android.widget.Toast
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.PagesController
@@ -24,8 +21,6 @@ import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import java.util.*
-import javax.inject.Inject
-import javax.inject.Singleton
 
 private const val ANIM_POSITION = 1
 private const val DECORATOR_PADDING = 8
@@ -40,8 +35,7 @@ class HomeFragment : Fragment() {
     private val viewModel by activityViewModels<HomeFragmentViewModel>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         return binding.root
@@ -75,8 +69,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initSearchView() {
-        binding.searchView.setOnQueryTextListener(object :
-            SearchView.OnQueryTextListener {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
@@ -104,8 +97,7 @@ class HomeFragment : Fragment() {
             linearLayoutManager = layoutManager as LinearLayoutManager
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (isNeedToRequestNextPage(dy))
-                        viewModel.requestNextPage()
+                    if (isNeedToRequestNextPage(dy)) viewModel.requestNextPage()
                 }
             })
         }.also { viewModel.filmsAdapter.setListener { launchDetailsFragment(it) } }
@@ -136,12 +128,8 @@ class HomeFragment : Fragment() {
     private fun isPageOnEnd() = bottomItemPosition() == endPagePosition()
 
     private fun isNeedToRequestNextPage(verticalDisplacement: Int): Boolean {
-        if (isPageOnStart())
-            updateStateOnStart()
-        return isPageOnEnd() && 
-                !viewModel.isPageRequested &&
-                isScrollingDown(verticalDisplacement) &&
-                isNotLastPage()
+        if (isPageOnStart()) updateStateOnStart()
+        return isPageOnEnd() && !viewModel.isPageRequested && isScrollingDown(verticalDisplacement) && isNotLastPage()
     }
 
     private fun updateStateOnStart() {
@@ -154,15 +142,12 @@ class HomeFragment : Fragment() {
     private fun isScrollingDown(verticalDisplacement: Int) = verticalDisplacement > 0
 
     private fun incrementNextPageIfNeed() {
-        if (viewModel.isPageRequested)
-            ++PagesController.NEXT_PAGE
+        if (viewModel.isPageRequested) ++PagesController.NEXT_PAGE
     }
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.homeFragmentRoot,
-            requireActivity(),
-            ANIM_POSITION
+            binding.homeFragmentRoot, requireActivity(), ANIM_POSITION
         )
     }
 }

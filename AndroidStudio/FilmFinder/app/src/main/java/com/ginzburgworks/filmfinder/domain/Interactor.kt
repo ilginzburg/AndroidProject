@@ -18,6 +18,7 @@ class Interactor(
     private val retrofitService: TmdbApi,
     private val preferenceProvider: PreferenceProvider
 ) {
+
     val pageFromDataSourceToUI = Channel<List<Film>>(Channel.CONFLATED)
     val progressBarScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
     var progressBarState = Channel<Boolean>(Channel.CONFLATED)
@@ -27,34 +28,26 @@ class Interactor(
         progressBarScope.launch {
             progressBarState.send(true)
         }
-        coroutineScope {
-            val result = async {
-                retrofitService.getFilms(category, API.KEY, "ru-RU", page)
-            }
-            result.await()?.let { dto ->
-                launch {
-                    getConvertedDTO(dto, category).collect { pageOfFilms ->
-                        sendPageOfFilmsToView(pageOfFilms)
-                        repo.putPageOfFilms(pageOfFilms)
-                    }
-                    saveTotalPagesNumber(dto.totalPages)
-                    saveLocalDataSourceUpdateTime()
+        val result = async {
+            retrofitService.getFilms(category, API.KEY, "ru-RU", page)
+        }
+        result.await()?.let { dto ->
+            launch {
+                getConvertedDTO(dto, category).collect { pageOfFilms ->
+                    sendPageOfFilmsToView(pageOfFilms)
+                    repo.putPageOfFilms(pageOfFilms)
                 }
+                saveTotalPagesNumber(dto.totalPages)
+                saveLocalDataSourceUpdateTime()
             }
         }
     }
 
     private suspend fun getConvertedDTO(tmdb: TmdbResultsDto, category: String) = flow {
-        val list = tmdb.tmdbFilms.map { it ->
-            (Film(
-                it.id,
-                tmdb.page,
-                category,
-                it.title,
-                it.posterPath,
-                it.overview,
-                it.voteAverage
-            ))
+        val list = tmdb.tmdbFilms.map {
+            Film(
+                it.id, tmdb.page, category, it.title, it.posterPath, it.overview, it.voteAverage
+            )
         }
         emit(list)
     }
@@ -71,10 +64,8 @@ class Interactor(
             progressBarState.send(true)
         }
         val pageOfFilms = repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
-        if (pageOfFilms.isEmpty())
-            requestPageOfFilmsFromRemoteDataSource(page)
-        else
-            sendPageOfFilmsToView(pageOfFilms)
+        if (pageOfFilms.isEmpty()) requestPageOfFilmsFromRemoteDataSource(page)
+        else sendPageOfFilmsToView(pageOfFilms)
     }
 
     suspend fun clearLocalDataSource() = repo.deleteAll()
@@ -85,13 +76,11 @@ class Interactor(
         preferenceProvider.saveFilmsCategory(category)
     }
 
-    fun getTotalPagesNumber() =
-        preferenceProvider.getTotalPagesNumber(getCurrentFilmsCategory())
+    fun getTotalPagesNumber() = preferenceProvider.getTotalPagesNumber(getCurrentFilmsCategory())
 
     private fun saveTotalPagesNumber(totalPagesNumber: Int) {
         preferenceProvider.saveTotalPagesNumber(
-            checkTotalPagesNumber(totalPagesNumber),
-            getCurrentFilmsCategory()
+            checkTotalPagesNumber(totalPagesNumber), getCurrentFilmsCategory()
         )
     }
 
