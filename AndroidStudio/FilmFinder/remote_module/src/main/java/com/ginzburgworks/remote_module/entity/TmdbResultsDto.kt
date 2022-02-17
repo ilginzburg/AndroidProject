@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder.data.remote.entity
+package com.ginzburgworks.remote_module.entity
 
 import com.google.gson.annotations.SerializedName
 

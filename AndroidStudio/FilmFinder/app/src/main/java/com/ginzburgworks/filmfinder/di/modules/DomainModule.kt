@@ -3,9 +3,8 @@ package com.ginzburgworks.filmfinder.di.modules
 import android.content.Context
 import com.ginzburgworks.filmfinder.data.local.db.FilmsRepository
 import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
-import com.ginzburgworks.filmfinder.data.remote.TmdbApi
-import com.ginzburgworks.filmfinder.data.remote.TmdbApiSearch
 import com.ginzburgworks.filmfinder.domain.Interactor
+import com.ginzburgworks.remote_module.TmdbApi
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
@@ -23,14 +22,8 @@ class DomainModule(val context: Context) {
     @Singleton
     @Provides
     fun provideInteractor(
-        repository: FilmsRepository,
-        tmdbApiSearch: TmdbApiSearch,
-        tmdbApi: TmdbApi,
-        preferenceProvider: PreferenceProvider
+        repository: FilmsRepository, tmdbApi: TmdbApi, preferenceProvider: PreferenceProvider
     ) = Interactor(
-        repo = repository,
-        retrofitService = tmdbApi,
-        retrofitServiceSearch = tmdbApiSearch,
-        preferenceProvider = preferenceProvider
+        repo = repository, retrofitService = tmdbApi, preferenceProvider = preferenceProvider
     )
 }

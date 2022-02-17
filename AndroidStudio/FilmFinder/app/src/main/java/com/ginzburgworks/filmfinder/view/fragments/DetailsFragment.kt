@@ -19,7 +19,7 @@ import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.local.DefaultFilm
 import com.ginzburgworks.filmfinder.data.local.Favorites
 import com.ginzburgworks.filmfinder.data.local.Film
-import com.ginzburgworks.filmfinder.data.remote.ApiConstants
+import com.ginzburgworks.remote_module.entity.ApiConstants
 import com.ginzburgworks.filmfinder.databinding.FragmentDetailsBinding
 import com.ginzburgworks.filmfinder.domain.GalleryInteractor
 import com.ginzburgworks.filmfinder.domain.PermissionHandler
@@ -121,7 +121,7 @@ class DetailsFragment : Fragment() {
         viewModel.viewModelScope.launch {
             binding.progressBar.isVisible = true
             val job = viewModel.detailsFragmentViewModelScope.async {
-                viewModel.loadWallpaper(ApiConstants.IMAGES_URL + "original" + film.poster)
+                viewModel.loadWallpaper(com.ginzburgworks.remote_module.entity.ApiConstants.IMAGES_URL + "original" + film.poster)
             }
             job.await()?.let {
                 galleryInteractor.saveImageToGallery(
@@ -158,7 +158,7 @@ class DetailsFragment : Fragment() {
         @JvmStatic
         @BindingAdapter(PROFILE_IMG_PROPERTY)
         fun loadImage(view: AppCompatImageView, imageUrl: String) {
-            val sourceImageUrl = ApiConstants.IMAGES_URL + DETAILS_FRAG_IMG_SIZE + imageUrl
+            val sourceImageUrl = com.ginzburgworks.remote_module.entity.ApiConstants.IMAGES_URL + DETAILS_FRAG_IMG_SIZE + imageUrl
             val defaultImage = DefaultFilm.film.poster
             Glide.with(view)
                 .load(sourceImageUrl)

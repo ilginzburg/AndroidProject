@@ -6,10 +6,8 @@ import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.data.local.db.FilmsRepository
 import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.remote.API
-import com.ginzburgworks.filmfinder.data.remote.TmdbApi
-import com.ginzburgworks.filmfinder.data.remote.TmdbApiSearch
-import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
+import com.ginzburgworks.remote_module.TmdbApi
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
 import io.reactivex.rxjava3.disposables.Disposable
@@ -20,7 +18,6 @@ import java.util.*
 class Interactor(
     private val repo: FilmsRepository,
     private val retrofitService: TmdbApi,
-    private val retrofitServiceSearch: TmdbApiSearch,
     private val preferenceProvider: PreferenceProvider
 ) {
 
@@ -54,12 +51,12 @@ class Interactor(
 
     fun getSearchResults(searchQuery: String): Observable<List<Film>> =
         convertSingleApiToObservableDtoList(
-            retrofitServiceSearch.getSearchResult(
+            retrofitService.getSearchResult(
                 API.KEY, "ru-RU", NEXT_PAGE, searchQuery, false
             )
         )
 
-    private fun convertSingleApiToObservableDtoList(apiList: Single<TmdbResultsDto>): Observable<List<Film>> {
+    private fun convertSingleApiToObservableDtoList(apiList: Single<com.ginzburgworks.remote_module.entity.TmdbResultsDto>): Observable<List<Film>> {
         return apiList.subscribeOn(Schedulers.io()).observeOn(Schedulers.io())
             .map { (page, tmdbFilms, totalPages) ->
                 (tmdbFilms).map {

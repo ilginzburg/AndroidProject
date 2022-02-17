@@ -1,6 +1,6 @@
-package com.ginzburgworks.filmfinder.data.remote
+package com.ginzburgworks.remote_module
 
-import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
+import com.ginzburgworks.remote_module.entity.TmdbResultsDto
 import io.reactivex.rxjava3.core.Single
 import retrofit2.http.GET
 import retrofit2.http.Path
@@ -15,9 +15,6 @@ interface TmdbApi {
         @Query("language") language: String,
         @Query("page") page: Int
     ): Single<TmdbResultsDto>
-}
-
-interface TmdbApiSearch {
 
     @GET("3/search/movie")
     fun getSearchResult(
@@ -28,5 +25,7 @@ interface TmdbApiSearch {
         @Query("include_adult") adult: Boolean
     ): Single<TmdbResultsDto>
 }
+
+
 
 
