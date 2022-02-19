@@ -15,9 +15,6 @@ interface TmdbApi {
         @Query("language") language: String,
         @Query("page") page: Int
     ): Single<TmdbResultsDto>
-}
-
-interface TmdbApiSearch {
 
     @GET("3/search/movie")
     fun getSearchResult(

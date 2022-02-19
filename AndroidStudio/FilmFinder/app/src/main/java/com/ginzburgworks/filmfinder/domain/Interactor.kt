@@ -7,7 +7,6 @@ import com.ginzburgworks.filmfinder.data.local.db.FilmsRepository
 import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.remote.API
 import com.ginzburgworks.filmfinder.data.remote.TmdbApi
-import com.ginzburgworks.filmfinder.data.remote.TmdbApiSearch
 import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import io.reactivex.rxjava3.core.Observable
@@ -20,7 +19,6 @@ import java.util.*
 class Interactor(
     private val repo: FilmsRepository,
     private val retrofitService: TmdbApi,
-    private val retrofitServiceSearch: TmdbApiSearch,
     private val preferenceProvider: PreferenceProvider
 ) {
 
@@ -54,7 +52,7 @@ class Interactor(
 
     fun getSearchResults(searchQuery: String): Observable<List<Film>> =
         convertSingleApiToObservableDtoList(
-            retrofitServiceSearch.getSearchResult(
+            retrofitService.getSearchResult(
                 API.KEY, "ru-RU", NEXT_PAGE, searchQuery, false
             )
         )

@@ -16,12 +16,9 @@ private const val DATA_BASE_NAME = "film_db"
 class RepositoryModule {
     @Singleton
     @Provides
-    fun provideFilmDao(context: Context) =
-        Room.databaseBuilder(
-            context,
-            FilmsLocalDataSource::class.java,
-            DATA_BASE_NAME
-        ).build().filmDao()
+    fun provideFilmDao(context: Context) = Room.databaseBuilder(
+        context, FilmsLocalDataSource::class.java, DATA_BASE_NAME
+    ).build().filmDao()
 
     @Provides
     @Singleton

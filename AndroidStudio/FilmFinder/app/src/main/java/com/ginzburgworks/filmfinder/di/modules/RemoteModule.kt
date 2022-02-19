@@ -3,7 +3,6 @@ package com.ginzburgworks.filmfinder.di.modules
 import com.ginzburgworks.filmfinder.BuildConfig
 import com.ginzburgworks.filmfinder.data.remote.ApiConstants
 import com.ginzburgworks.filmfinder.data.remote.TmdbApi
-import com.ginzburgworks.filmfinder.data.remote.TmdbApiSearch
 import dagger.Module
 import dagger.Provides
 import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
@@ -41,8 +40,4 @@ class RemoteModule {
     @Singleton
     fun provideTmdbApi(retrofit: Retrofit): TmdbApi = retrofit.create(TmdbApi::class.java)
 
-    @Provides
-    @Singleton
-    fun provideTmdbApiSearch(retrofit: Retrofit): TmdbApiSearch =
-        retrofit.create(TmdbApiSearch::class.java)
 }
