@@ -5,8 +5,8 @@ import androidx.appcompat.app.AppCompatDelegate
 import com.ginzburgworks.filmfinder.di.AppComponent
 import com.ginzburgworks.filmfinder.di.DaggerAppComponent
 import com.ginzburgworks.filmfinder.di.modules.DomainModule
-import com.ginzburgworks.filmfinder.di.modules.RepositoryModule
 import com.ginzburgworks.filmfinder.domain.Interactor
+import com.ginzburgworks.local_module.RepositoryModule
 import com.ginzburgworks.remote_module.DaggerRemoteComponent
 import javax.inject.Inject
 
@@ -22,8 +22,10 @@ class App : Application() {
         super.onCreate()
         instance = this
         val remoteProvider = DaggerRemoteComponent.create()
-        appComponent = DaggerAppComponent.builder().remoteProvider(remoteProvider)
-            .repositoryModule(RepositoryModule()).domainModule(DomainModule(this)).build()
+
+        appComponent = DaggerAppComponent.builder().remoteProvider(remoteProvider).repositoryModule(
+            RepositoryModule(this)
+        ).domainModule(DomainModule()).build()
         instance.appComponent.injectApp(this)
         initUINightMode()
     }

@@ -1,11 +1,11 @@
-package com.ginzburgworks.filmfinder.data.local
+package com.ginzburgworks.local_module
 
 import android.os.Parcelable
 import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import kotlinx.android.parcel.Parcelize
+import kotlinx.parcelize.Parcelize
 
 private const val PAGE_NAME = "page"
 private const val CATEGORY_NAME = "category"
@@ -36,7 +36,8 @@ data class Film(
     @ColumnInfo(name = POSTER_PATH_NAME) val poster: String,
     @ColumnInfo(name = DESCRIPTION_NAME) val description: String,
     @ColumnInfo(name = RATING_NAME) var rating: Double,
-    var isInFavorites: Boolean = false) : Parcelable
+    var isInFavorites: Boolean = IS_IN_FAVORITES_INITIAL_VALUE
+) : Parcelable
 
 object DefaultFilm {
     private const val default_id = ID_DEFAULT_VALUE

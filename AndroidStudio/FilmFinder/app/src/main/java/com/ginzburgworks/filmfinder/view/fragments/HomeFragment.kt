@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.ginzburgworks.filmfinder.AutoDisposable
 import com.ginzburgworks.filmfinder.addTo
-import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.ITEMS_AFTER_START
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.ITEMS_BEFORE_END
@@ -23,6 +22,7 @@ import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
+import com.ginzburgworks.local_module.Film
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.ObservableOnSubscribe

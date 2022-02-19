@@ -4,13 +4,13 @@ import android.content.SharedPreferences
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.ViewModel
 import com.ginzburgworks.filmfinder.App
-import com.ginzburgworks.filmfinder.data.local.Film
-import com.ginzburgworks.filmfinder.data.local.shared.KEY_FILMS_CATEGORY
+import com.ginzburgworks.filmfinder.data.shared.KEY_FILMS_CATEGORY
 import com.ginzburgworks.filmfinder.domain.Interactor
 import com.ginzburgworks.filmfinder.domain.PagesController
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
+import com.ginzburgworks.local_module.Film
 import io.reactivex.rxjava3.core.Completable
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.disposables.Disposable

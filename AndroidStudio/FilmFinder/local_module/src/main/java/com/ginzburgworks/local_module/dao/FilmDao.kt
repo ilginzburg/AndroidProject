@@ -1,10 +1,10 @@
-package com.ginzburgworks.filmfinder.data.local.db.dao
+package com.ginzburgworks.local_module.dao
 
 import androidx.room.Dao
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import com.ginzburgworks.filmfinder.data.local.Film
+import com.ginzburgworks.local_module.Film
 import io.reactivex.rxjava3.core.Observable
 
 @Dao

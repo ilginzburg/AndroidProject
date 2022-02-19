@@ -1,4 +1,4 @@
-package com.ginzburgworks.filmfinder.data.local.shared
+package com.ginzburgworks.filmfinder.data.shared
 
 import android.content.Context
 import android.content.SharedPreferences
@@ -6,7 +6,6 @@ import androidx.core.content.edit
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.domain.PagesController
-import javax.inject.Inject
 
 private const val DEFAULT_MODE = PreferenceProvider.NIGHT_MODE
 private const val KEY_LAST_BD_UPDATE_TIME = "last_bd_update_time_key"
@@ -16,11 +15,11 @@ private const val KEY_FIRST_LAUNCH = "first_launch"
 private const val PREFERENCE_NAME = "settings"
 private const val KEY_NIGHT_MODE_STATE = "night_state_key"
 const val KEY_FILMS_CATEGORY = "films_category_key"
-private  val DEFAULT_CATEGORY = App.instance.getString(R.string.popular_category)
+private val DEFAULT_CATEGORY = App.instance.getString(R.string.popular_category)
 
 
-open class PreferenceProvider (context: Context) {
-    private val appContext = context.applicationContext
+open class PreferenceProvider() {
+    private val appContext = App.instance.applicationContext
     private val preference = appContext.getSharedPreferences(PREFERENCE_NAME, Context.MODE_PRIVATE)
 
     init {
@@ -48,8 +47,7 @@ open class PreferenceProvider (context: Context) {
 
     fun getNightModeSetting(): Int {
         return preference.getInt(
-            KEY_NIGHT_MODE_STATE,
-            DEFAULT_MODE
+            KEY_NIGHT_MODE_STATE, DEFAULT_MODE
         )
     }
 

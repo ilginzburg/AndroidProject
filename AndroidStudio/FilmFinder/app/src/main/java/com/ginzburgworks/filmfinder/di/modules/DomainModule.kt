@@ -1,28 +1,24 @@
 package com.ginzburgworks.filmfinder.di.modules
 
-import android.content.Context
-import com.ginzburgworks.filmfinder.data.local.db.FilmsRepository
-import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
+import com.ginzburgworks.filmfinder.data.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.domain.Interactor
+import com.ginzburgworks.local_module.LocalRepository
 import com.ginzburgworks.remote_module.TmdbApi
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class DomainModule(val context: Context) {
-
-    @Provides
-    fun provideContext() = context
+class DomainModule {
 
     @Singleton
     @Provides
-    fun providePreferences(context: Context) = PreferenceProvider(context)
+    fun providePreferences() = PreferenceProvider()
 
     @Singleton
     @Provides
     fun provideInteractor(
-        repository: FilmsRepository, tmdbApi: TmdbApi, preferenceProvider: PreferenceProvider
+        repository: LocalRepository, tmdbApi: TmdbApi, preferenceProvider: PreferenceProvider
     ) = Interactor(
         repo = repository, retrofitService = tmdbApi, preferenceProvider = preferenceProvider
     )

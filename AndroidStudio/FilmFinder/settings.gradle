@@ -1,3 +1,4 @@
 rootProject.name = "FilmFinder"
 include ':app'
 include ':remote_module'
+include ':local_module'

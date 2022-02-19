@@ -4,7 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ginzburgworks.filmfinder.App
-import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
+import com.ginzburgworks.filmfinder.data.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
 

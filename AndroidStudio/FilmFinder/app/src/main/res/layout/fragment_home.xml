@@ -5,7 +5,7 @@
 
     <data>
         <import type="android.view.View"/>
-        <import type="com.ginzburgworks.filmfinder.data.local.Film"/>
+        <import type="com.ginzburgworks.local_module.Film"/>
         <variable
             name="homeFragment"
             type="com.ginzburgworks.filmfinder.view.fragments.HomeFragment" />

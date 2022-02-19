@@ -11,7 +11,7 @@ private const val NOT_IMPLEMENTED_ERROR_MSG = "must bind AutoDisposable to a Lif
 
 class AutoDisposable : LifecycleObserver, LifecycleEventObserver {
 
-    lateinit var compositeDisposable: CompositeDisposable
+    private lateinit var compositeDisposable: CompositeDisposable
     fun bindTo(lifecycle: Lifecycle) {
         lifecycle.addObserver(this)
         compositeDisposable = CompositeDisposable()

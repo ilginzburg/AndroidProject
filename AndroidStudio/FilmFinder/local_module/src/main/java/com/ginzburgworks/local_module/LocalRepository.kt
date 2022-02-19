@@ -1,10 +1,9 @@
-package com.ginzburgworks.filmfinder.data.local.db
+package com.ginzburgworks.local_module
 
-import com.ginzburgworks.filmfinder.data.local.Film
-import com.ginzburgworks.filmfinder.data.local.db.dao.FilmDao
+import com.ginzburgworks.local_module.dao.FilmDao
 import io.reactivex.rxjava3.core.Observable
 
-class FilmsRepository(private val filmDao: FilmDao) {
+class LocalRepository(private val filmDao: FilmDao) {
 
     fun putPageOfFilms(pageOfFilms: List<Film>) {
         filmDao.insertAll(pageOfFilms)

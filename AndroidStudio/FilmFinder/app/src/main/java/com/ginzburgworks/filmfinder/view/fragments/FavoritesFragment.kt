@@ -7,13 +7,13 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.ginzburgworks.filmfinder.data.local.Favorites
-import com.ginzburgworks.filmfinder.data.local.Film
+import com.ginzburgworks.filmfinder.data.Favorites
 import com.ginzburgworks.filmfinder.databinding.FragmentFavoritesBinding
 import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
+import com.ginzburgworks.local_module.Film
 
 private const val DECORATOR_PADDING = 8
 private const val ANIM_POSITION = 4
@@ -25,8 +25,7 @@ class FavoritesFragment : Fragment() {
     private lateinit var filmsAdapter: FilmListRecyclerAdapter
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentFavoritesBinding.inflate(inflater, container, false)
         return binding.root
@@ -39,13 +38,12 @@ class FavoritesFragment : Fragment() {
     }
 
     private fun initRecycler() {
-        binding.favoritesRecycler
-            .apply {
-                filmsAdapter = FilmListRecyclerAdapter()
-                adapter = filmsAdapter
-                layoutManager = LinearLayoutManager(requireContext())
-                addDecoration(this)
-            }
+        binding.favoritesRecycler.apply {
+            filmsAdapter = FilmListRecyclerAdapter()
+            adapter = filmsAdapter
+            layoutManager = LinearLayoutManager(requireContext())
+            addDecoration(this)
+        }
         filmsAdapter.addItems(Favorites.favoritesList)
         filmsAdapter.onItemClick = { launchDetailsFragment(it) }
     }
@@ -61,9 +59,7 @@ class FavoritesFragment : Fragment() {
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.favoritesFragmentRoot,
-            requireActivity(),
-            ANIM_POSITION
+            binding.favoritesFragmentRoot, requireActivity(), ANIM_POSITION
         )
     }
 }

@@ -5,9 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
-import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.ActivityMainBinding
 import com.ginzburgworks.filmfinder.view.fragments.*
+import com.ginzburgworks.local_module.Film
 
 private const val DETAILS_FRAGMENT_TAG = "details"
 private const val HOME_FRAGMENT_TAG = "home"

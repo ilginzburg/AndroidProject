@@ -1,12 +1,12 @@
 package com.ginzburgworks.filmfinder.domain
 
 import android.content.SharedPreferences
-import com.ginzburgworks.filmfinder.data.local.DefaultFilm
-import com.ginzburgworks.filmfinder.data.local.Film
-import com.ginzburgworks.filmfinder.data.local.db.FilmsRepository
-import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
-import com.ginzburgworks.filmfinder.data.remote.API
+import com.ginzburgworks.filmfinder.data.API
+import com.ginzburgworks.filmfinder.data.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
+import com.ginzburgworks.local_module.DefaultFilm
+import com.ginzburgworks.local_module.Film
+import com.ginzburgworks.local_module.LocalRepository
 import com.ginzburgworks.remote_module.TmdbApi
 import io.reactivex.rxjava3.core.Observable
 import io.reactivex.rxjava3.core.Single
@@ -16,7 +16,7 @@ import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.*
 
 class Interactor(
-    private val repo: FilmsRepository,
+    private val repo: LocalRepository,
     private val retrofitService: TmdbApi,
     private val preferenceProvider: PreferenceProvider
 ) {

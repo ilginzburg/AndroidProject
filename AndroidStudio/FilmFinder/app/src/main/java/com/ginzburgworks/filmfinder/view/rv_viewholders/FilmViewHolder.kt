@@ -6,10 +6,9 @@ import android.widget.ImageView
 import androidx.databinding.DataBindingUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.ginzburgworks.filmfinder.data.local.DefaultFilm
-import com.ginzburgworks.filmfinder.data.local.Film
-import com.ginzburgworks.remote_module.entity.ApiConstants
 import com.ginzburgworks.filmfinder.databinding.FilmItemBinding
+import com.ginzburgworks.local_module.DefaultFilm
+import com.ginzburgworks.local_module.Film
 
 private const val VIEW_HOLDER_IMG_SIZE = "w342"
 
@@ -31,13 +30,10 @@ class FilmViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
     }
 
     private fun loadImage(posterView: ImageView, itemView: View, posterUrl: String) {
-        val sourceImageUrl = com.ginzburgworks.remote_module.entity.ApiConstants.IMAGES_URL + VIEW_HOLDER_IMG_SIZE + posterUrl
+        val sourceImageUrl =
+            com.ginzburgworks.remote_module.entity.ApiConstants.IMAGES_URL + VIEW_HOLDER_IMG_SIZE + posterUrl
         val defaultImage = DefaultFilm.film.poster
-        Glide.with(itemView)
-            .load(sourceImageUrl)
-            .centerCrop()
-            .error(defaultImage)
-            .into(posterView)
+        Glide.with(itemView).load(sourceImageUrl).centerCrop().error(defaultImage).into(posterView)
     }
 
 }
