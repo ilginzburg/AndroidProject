@@ -21,7 +21,6 @@ class Interactor(
     private val retrofitService: TmdbApi,
     private val preferenceProvider: PreferenceProvider
 ) {
-
     var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
     val disposables = mutableListOf<Disposable?>()
 
@@ -40,7 +39,6 @@ class Interactor(
                 progressBarState.onNext(false)
             })
     }
-
 
     private fun getPageOfFilmsFromRemote(category: String): Observable<List<Film>> {
         return convertSingleApiToObservableDtoList(
@@ -76,7 +74,6 @@ class Interactor(
                 }
             }.toObservable()
     }
-
 
     fun clearLocalDataSource() = repo.deleteAll()
 

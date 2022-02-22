@@ -52,7 +52,6 @@ class HomeFragmentViewModel : ViewModel() {
         checkIfLocalDataSourceNeedToUpdate()
         requestPageOfFilms()
     }
-
     private fun requestPageOfFilms() = interactor.putNewPageOfFilmsToLocalDataSource()
 
     fun getUpdatedFilms(): Observable<List<Film>> {

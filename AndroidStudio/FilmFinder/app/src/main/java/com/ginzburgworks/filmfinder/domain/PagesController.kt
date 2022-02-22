@@ -8,7 +8,7 @@ private const val TOP_RATED_PAGES_DEFAULT = 474
 private const val UPCOMING_PAGES_DEFAULT = 41
 private const val NOW_PLAYING_PAGES_DEFAULT = 83
 
-class PagesController() {
+class PagesController {
 
     companion object {
 

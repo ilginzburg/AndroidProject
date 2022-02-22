@@ -18,32 +18,18 @@ private const val VOTE_AVERAGE_SERIALIZED_NAME = "vote_average"
 private const val VOTE_COUNT_SERIALIZED_NAME = "vote_count"
 
 data class TmdbFilm(
-    @SerializedName(ADULT_SERIALIZED_NAME)
-    val adult: Boolean,
-    @SerializedName(BACKDROP_PATH_SERIALIZED_NAME)
-    val backdropPath: String,
-    @SerializedName(GENRE_IDS_SERIALIZED_NAME)
-    val genreIds: List<Int>,
-    @SerializedName(ID_SERIALIZED_NAME)
-    val id: Int,
-    @SerializedName(ORIGINAL_LANGUAGE_SERIALIZED_NAME)
-    val originalLanguage: String,
-    @SerializedName(ORIGINAL_TITLE_SERIALIZED_NAME)
-    val originalTitle: String,
-    @SerializedName(OVERVIEW_SERIALIZED_NAME)
-    val overview: String,
-    @SerializedName(POPULARITY_SERIALIZED_NAME)
-    val popularity: Double,
-    @SerializedName(POSTER_PATH_SERIALIZED_NAME)
-    val posterPath: String,
-    @SerializedName(RELEASE_DATE_SERIALIZED_NAME)
-    val releaseDate: String,
-    @SerializedName(TITLE_SERIALIZED_NAME)
-    val title: String,
-    @SerializedName(VIDEO_SERIALIZED_NAME)
-    val video: Boolean,
-    @SerializedName(VOTE_AVERAGE_SERIALIZED_NAME)
-    val voteAverage: Double,
-    @SerializedName(VOTE_COUNT_SERIALIZED_NAME)
-    val voteCount: Int
+    @SerializedName(ADULT_SERIALIZED_NAME) val adult: Boolean,
+    @SerializedName(BACKDROP_PATH_SERIALIZED_NAME) val backdropPath: String,
+    @SerializedName(GENRE_IDS_SERIALIZED_NAME) val genreIds: List<Int>,
+    @SerializedName(ID_SERIALIZED_NAME) val id: Int,
+    @SerializedName(ORIGINAL_LANGUAGE_SERIALIZED_NAME) val originalLanguage: String,
+    @SerializedName(ORIGINAL_TITLE_SERIALIZED_NAME) val originalTitle: String,
+    @SerializedName(OVERVIEW_SERIALIZED_NAME) val overview: String,
+    @SerializedName(POPULARITY_SERIALIZED_NAME) val popularity: Double,
+    @SerializedName(POSTER_PATH_SERIALIZED_NAME) val posterPath: String,
+    @SerializedName(RELEASE_DATE_SERIALIZED_NAME) val releaseDate: String,
+    @SerializedName(TITLE_SERIALIZED_NAME) val title: String,
+    @SerializedName(VIDEO_SERIALIZED_NAME) val video: Boolean,
+    @SerializedName(VOTE_AVERAGE_SERIALIZED_NAME) val voteAverage: Double,
+    @SerializedName(VOTE_COUNT_SERIALIZED_NAME) val voteCount: Int
 )

@@ -16,9 +16,8 @@ class SelectionsFragment : Fragment() {
     private val binding get() = _binding!!
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentSelectionsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -35,9 +34,7 @@ class SelectionsFragment : Fragment() {
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.fragmentSelectionsRoot,
-            requireActivity(),
-            ANIM_POSITION
+            binding.fragmentSelectionsRoot, requireActivity(), ANIM_POSITION
         )
     }
 }

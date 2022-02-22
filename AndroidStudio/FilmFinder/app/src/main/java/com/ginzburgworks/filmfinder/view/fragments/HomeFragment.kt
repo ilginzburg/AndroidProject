@@ -124,7 +124,6 @@ class HomeFragment : Fragment() {
             Toast.makeText(context, it, Toast.LENGTH_LONG).show()
         }
 
-
     private fun initSearchView() = Observable.create(ObservableOnSubscribe<String> { subscriber ->
         binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
@@ -223,6 +222,7 @@ class HomeFragment : Fragment() {
 
     private fun restoreViewPosition() {
         linearLayoutManager.scrollToPosition(viewModel.lastFirstVisiblePosition)
+
     }
 
 }
