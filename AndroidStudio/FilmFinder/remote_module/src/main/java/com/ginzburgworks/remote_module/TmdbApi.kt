@@ -6,23 +6,30 @@ import retrofit2.http.GET
 import retrofit2.http.Path
 import retrofit2.http.Query
 
+private const val CATEGORY_VAL = "category"
+private const val API_KEY_VAL = "api_key"
+private const val LANGUAGE_VAL = "language"
+private const val PAGE_VAL = "page"
+private const val QUERY_VAL = "query"
+private const val INCLUDE_ADULT_VAL = "include_adult"
+
 interface TmdbApi {
 
     @GET("3/movie/{category}")
     fun getFilms(
-        @Path("category") category: String,
-        @Query("api_key") apiKey: String,
-        @Query("language") language: String,
-        @Query("page") page: Int
+        @Path(CATEGORY_VAL) category: String,
+        @Query(API_KEY_VAL) apiKey: String,
+        @Query(LANGUAGE_VAL) language: String,
+        @Query(PAGE_VAL) page: Int
     ): Single<TmdbResultsDto>
 
     @GET("3/search/movie")
     fun getSearchResult(
-        @Query("api_key") apiKey: String,
-        @Query("language") language: String,
-        @Query("page") page: Int,
-        @Query("query") searchQuery: String,
-        @Query("include_adult") adult: Boolean
+        @Query(API_KEY_VAL) apiKey: String,
+        @Query(LANGUAGE_VAL) language: String,
+        @Query(PAGE_VAL) page: Int,
+        @Query(QUERY_VAL) searchQuery: String,
+        @Query(INCLUDE_ADULT_VAL) adult: Boolean
     ): Single<TmdbResultsDto>
 }
 
