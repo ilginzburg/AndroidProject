@@ -11,6 +11,7 @@ import javax.inject.Singleton
 
 @Module
 class DomainModule(val context: Context) {
+
     @Provides
     fun provideContext() = context
 

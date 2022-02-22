@@ -10,15 +10,11 @@ import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 
 class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
 
-    private lateinit var clickListener: OnItemClickListener
-
     private val items = mutableListOf<Film>()
 
     private lateinit var filmItemBinding: FilmItemBinding
 
-    fun setListener(listener: OnItemClickListener) {
-        clickListener = listener
-    }
+    var onItemClick: ((Film) -> Unit)? = null
 
     override fun getItemCount() = items.size
 
@@ -30,7 +26,7 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
 
     override fun onBindViewHolder(holder: FilmViewHolder, position: Int) {
         holder.bind(items[holder.adapterPosition])
-        filmItemBinding.itemContainer.setOnClickListener { clickListener.onClick(items[holder.adapterPosition]) }
+        holder.itemView.setOnClickListener { onItemClick?.invoke(items[holder.adapterPosition]) }
     }
 
     fun addItems(list: List<Film>) {
@@ -48,12 +44,8 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
     }
 
     fun saveItemsForSearch(viewModel: HomeFragmentViewModel) {
-        viewModel.itemsForSearch.clear()
-        viewModel.itemsForSearch.addAll(items)
+        viewModel.itemsSavedBeforeSearch.clear()
+        viewModel.itemsSavedBeforeSearch.addAll(items)
     }
 
-    fun interface OnItemClickListener {
-
-        fun onClick(film: Film)
-    }
 }

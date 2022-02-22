@@ -5,6 +5,7 @@ import com.ginzburgworks.filmfinder.data.remote.ApiConstants
 import com.ginzburgworks.filmfinder.data.remote.TmdbApi
 import dagger.Module
 import dagger.Provides
+import hu.akarnokd.rxjava3.retrofit.RxJava3CallAdapterFactory
 import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
@@ -16,6 +17,7 @@ private const val TIMEOUT_VALUE = 30L
 
 @Module
 class RemoteModule {
+
     @Provides
     @Singleton
     fun provideOkHttpClient(): OkHttpClient =
@@ -31,9 +33,11 @@ class RemoteModule {
     @Singleton
     fun provideRetrofit(okHttpClient: OkHttpClient): Retrofit =
         Retrofit.Builder().baseUrl(ApiConstants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create()).client(okHttpClient).build()
+            .addConverterFactory(GsonConverterFactory.create())
+            .addCallAdapterFactory(RxJava3CallAdapterFactory.create()).client(okHttpClient).build()
 
     @Provides
     @Singleton
     fun provideTmdbApi(retrofit: Retrofit): TmdbApi = retrofit.create(TmdbApi::class.java)
+
 }

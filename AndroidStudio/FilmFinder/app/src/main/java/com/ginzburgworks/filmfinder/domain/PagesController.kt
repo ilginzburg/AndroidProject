@@ -11,6 +11,7 @@ private const val NOW_PLAYING_PAGES_DEFAULT = 83
 class PagesController {
 
     companion object {
+
         const val MAX_PAGES_NUM = 500
         const val MIN_PAGES_NUM = 10
         const val FIRST_PAGE = 1

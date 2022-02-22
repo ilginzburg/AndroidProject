@@ -2,19 +2,17 @@ package com.ginzburgworks.filmfinder.data.local.db
 
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.data.local.db.dao.FilmDao
+import io.reactivex.rxjava3.core.Observable
 
 class FilmsRepository(private val filmDao: FilmDao) {
 
-    suspend fun putPageOfFilms(pageOfFilms: List<Film>) {
+    fun putPageOfFilms(pageOfFilms: List<Film>) {
         filmDao.insertAll(pageOfFilms)
     }
 
-    suspend fun getPageOfFilmsInCategory(page: Int, category: String): List<Film> {
-        return filmDao.getCachedFilmsByPageAndCategory(page, category)
+    fun getFilmsInCategory(category: String): Observable<List<Film>> {
+        return filmDao.getCachedFilmsByCategory(category)
     }
 
-    suspend fun deleteAll() {
-        filmDao.deleteAll()
-    }
-
+    fun deleteAll() = filmDao.deleteAll()
 }
