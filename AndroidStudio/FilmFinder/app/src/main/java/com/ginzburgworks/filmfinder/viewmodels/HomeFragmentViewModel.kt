@@ -27,7 +27,7 @@ class HomeFragmentViewModel : ViewModel() {
     @Inject
     lateinit var filmsAdapter: FilmListRecyclerAdapter
 
-    lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
+    private lateinit var onSharedPreferenceChangeListener: SharedPreferences.OnSharedPreferenceChangeListener
     val isLoading = ObservableBoolean()
     var isPageRequested = false
     val isProgressBarVisible = ObservableBoolean()
@@ -49,10 +49,8 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     private fun requestNextPageFromDataSource() {
-        if (isLocalDataSourceNeedToUpdate())
-            requestNextPageFromRemote()
-        else
-            requestNextPageFromLocal()
+        if (isLocalDataSourceNeedToUpdate()) requestNextPageFromRemote()
+        else requestNextPageFromLocal()
     }
 
     private fun requestNextPageFromRemote() {
@@ -102,7 +100,7 @@ class HomeFragmentViewModel : ViewModel() {
     }
 
     private fun clearPageCount() {
-        PagesController.NEXT_PAGE = PagesController.FIRST_PAGE
+        NEXT_PAGE = PagesController.FIRST_PAGE
     }
 
     fun reloadOnTextChange(result: List<Film>) {

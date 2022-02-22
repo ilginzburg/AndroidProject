@@ -33,8 +33,7 @@ private const val STROKE_DEFAULT = 10f
 private const val SCALE_SIZE = 60f
 
 class RatingDonutView @JvmOverloads constructor(
-    context: Context,
-    attributeSet: AttributeSet? = null
+    context: Context, attributeSet: AttributeSet? = null
 ) : View(context, attributeSet) {
 
     private val oval = RectF()
@@ -63,7 +62,8 @@ class RatingDonutView @JvmOverloads constructor(
             progress = a.getInt(R.styleable.RatingDonutView_progress, progress)
             lowColor = getRatingColor(a, R.styleable.RatingDonutView_low_color, lowColor)
             midLowColor = getRatingColor(a, R.styleable.RatingDonutView_mid_low_color, midLowColor)
-            midHighColor = getRatingColor(a, R.styleable.RatingDonutView_mid_high_color, midHighColor)
+            midHighColor =
+                getRatingColor(a, R.styleable.RatingDonutView_mid_high_color, midHighColor)
             highColor = getRatingColor(a, R.styleable.RatingDonutView_high_color, highColor)
         } finally {
             a.recycle()
@@ -131,11 +131,10 @@ class RatingDonutView @JvmOverloads constructor(
         setMeasuredDimension(minSide, minSide)
     }
 
-    private fun chooseDimension(mode: Int, size: Int) =
-        when (mode) {
-            MeasureSpec.AT_MOST, MeasureSpec.EXACTLY -> size
-            else -> DEFAULT_SIZE
-        }
+    private fun chooseDimension(mode: Int, size: Int) = when (mode) {
+        MeasureSpec.AT_MOST, MeasureSpec.EXACTLY -> size
+        else -> DEFAULT_SIZE
+    }
 
     private fun drawRating(canvas: Canvas) {
         val scale = radius * RADIUS_FACTOR

@@ -48,5 +48,4 @@ class FilmListRecyclerAdapter : RecyclerView.Adapter<FilmViewHolder>() {
         viewModel.itemsForSearch.clear()
         viewModel.itemsForSearch.addAll(items)
     }
-
 }

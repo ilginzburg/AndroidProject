@@ -46,9 +46,8 @@ class DetailsFragment : Fragment() {
     private val viewModel by activityViewModels<DetailsFragmentViewModel>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View? {
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentDetailsBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -76,13 +75,10 @@ class DetailsFragment : Fragment() {
     }
 
     fun toggleFavorites(film: Film) {
-        if (!film.isInFavorites)
-            addToFavorites(film)
-        else
-            removeFromFavorites(film)
+        if (!film.isInFavorites) addToFavorites(film)
+        else removeFromFavorites(film)
         loadIcon(
-            binding.detailsFabFavorites,
-            binding.detailsFabFavorites.drawable
+            binding.detailsFabFavorites, binding.detailsFabFavorites.drawable
         )
         binding.invalidateAll()
     }
@@ -100,8 +96,7 @@ class DetailsFragment : Fragment() {
     fun openShareDialog(film: Film) {
         Intent(Intent.ACTION_SEND).apply {
             putExtra(
-                Intent.EXTRA_TEXT,
-                getIntentExtraText(film)
+                Intent.EXTRA_TEXT, getIntentExtraText(film)
             )
             type = TYPE_OF_SHARE_INTENT
             startActivity(Intent.createChooser(this, App.instance.getString(R.string.share_title)))
@@ -125,10 +120,7 @@ class DetailsFragment : Fragment() {
             }
             job.await()?.let {
                 galleryInteractor.saveImageToGallery(
-                    it,
-                    film,
-                    requireActivity(),
-                    viewModel
+                    it, film, requireActivity(), viewModel
                 )
                 initSnackBar()
             }
@@ -138,19 +130,15 @@ class DetailsFragment : Fragment() {
 
     private fun initSnackBar() {
         Snackbar.make(
-            binding.root,
-            R.string.downloaded_to_gallery,
-            Snackbar.LENGTH_LONG
+            binding.root, R.string.downloaded_to_gallery, Snackbar.LENGTH_LONG
         ).setAction(R.string.open) {
             Intent(Intent.ACTION_VIEW).apply {
                 type = TYPE_OF_VIEW_INTENT
                 flags = Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(this)
             }
-        }
-            .show()
+        }.show()
     }
-
 
 
     companion object {
@@ -160,11 +148,7 @@ class DetailsFragment : Fragment() {
         fun loadImage(view: AppCompatImageView, imageUrl: String) {
             val sourceImageUrl = ApiConstants.IMAGES_URL + DETAILS_FRAG_IMG_SIZE + imageUrl
             val defaultImage = DefaultFilm.film.poster
-            Glide.with(view)
-                .load(sourceImageUrl)
-                .centerCrop()
-                .error(defaultImage)
-                .into(view)
+            Glide.with(view).load(sourceImageUrl).centerCrop().error(defaultImage).into(view)
         }
 
         @JvmStatic

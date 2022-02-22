@@ -23,7 +23,9 @@ object AnimationHelper {
                         val x: Int = step
                         val y: Int = rootView.y.roundToInt() + rootView.height
                         val endRadius = hypot(rootView.width.toDouble(), rootView.height.toDouble())
-                        ViewAnimationUtils.createCircularReveal(rootView, x, y, START_RADIUS, endRadius.toFloat()).apply {
+                        ViewAnimationUtils.createCircularReveal(
+                            rootView, x, y, START_RADIUS, endRadius.toFloat()
+                        ).apply {
                             duration = DURATION
                             interpolator = AccelerateDecelerateInterpolator()
                             start()

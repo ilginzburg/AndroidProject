@@ -43,8 +43,7 @@ class HomeFragment : Fragment() {
     private val autoDisposable = AutoDisposable()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
         autoDisposable.bindTo(lifecycle)
@@ -100,8 +99,7 @@ class HomeFragment : Fragment() {
     }
 
     private fun initSearchView() {
-        binding.searchView.setOnQueryTextListener(object :
-            SearchView.OnQueryTextListener {
+        binding.searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 return true
             }
@@ -129,8 +127,7 @@ class HomeFragment : Fragment() {
             linearLayoutManager = layoutManager as LinearLayoutManager
             addOnScrollListener(object : RecyclerView.OnScrollListener() {
                 override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                    if (isNeedToRequestNextPage(dy))
-                        viewModel.requestNextPage()
+                    if (isNeedToRequestNextPage(dy)) viewModel.requestNextPage()
                 }
             })
         }.also { viewModel.filmsAdapter.onItemClick = { launchDetailsFragment(it) } }
@@ -179,15 +176,12 @@ class HomeFragment : Fragment() {
     private fun isScrollingDown(verticalDisplacement: Int) = verticalDisplacement > 0
 
     private fun incrementNextPageIfNeed() {
-        if (viewModel.isPageRequested)
-            ++PagesController.NEXT_PAGE
+        if (viewModel.isPageRequested) ++PagesController.NEXT_PAGE
     }
 
     private fun initAnimation() {
         AnimationHelper.performFragmentCircularRevealAnimation(
-            binding.homeFragmentRoot,
-            requireActivity(),
-            ANIM_POSITION
+            binding.homeFragmentRoot, requireActivity(), ANIM_POSITION
         )
     }
 }

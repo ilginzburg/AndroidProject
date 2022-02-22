@@ -26,6 +26,7 @@ class Interactor(
 
     fun requestPageOfFilmsFromRemoteDataSource(page: Int) {
         val category = preferenceProvider.getFilmsCategory()
+
         progressBarState.onNext(true)
         retrofitService.getFilms(category, API.KEY, "ru-RU", page).enqueue(object :
             Callback<TmdbResultsDto?> {
@@ -47,14 +48,20 @@ class Interactor(
                     .subscribeOn(Schedulers.io())
                     .subscribe()
                 progressBarState.onNext(false)
-            }
-
-            override fun onFailure(call: Call<TmdbResultsDto?>, t: Throwable) {
-                progressBarState.onNext(false)
-            }
-        })
-    }
-
+        progressBarScope.launch {
+            progressBarState.send(true)
+        }
+        val result = async {
+            retrofitService.getFilms(category, API.KEY, "ru-RU", page)
+        }
+        result.await()?.let { dto ->
+            launch {
+                getConvertedDTO(dto, category).collect { pageOfFilms ->
+                    sendPageOfFilmsToView(pageOfFilms)
+                    repo.putPageOfFilms(pageOfFilms)
+                }
+                saveTotalPagesNumber(dto.totalPages)
+                saveLocalDataSourceUpdateTime()
     private fun getConvertedDTO(tmdb: TmdbResultsDto, category: String): List<Film> {
         return (tmdb.tmdbFilms).map {
             Film(
@@ -65,16 +72,22 @@ class Interactor(
                 it.posterPath,
                 it.overview,
                 it.voteAverage
-            )
-        }
-    }
+    private suspend fun getConvertedDTO(tmdb: TmdbResultsDto, category: String) = flow {
+        val list = tmdb.tmdbFilms.map {
+            Film(
+                it.id, tmdb.page, category, it.title, it.posterPath, it.overview, it.voteAverage
 
-    fun putPageOfFilmsToLocal(list: List<Film>) {
-        repo.putPageOfFilms(list)
-    }
 
     fun requestPageOfFilmsFromLocalDataSource(page: Int): Observable<List<Film>> =
         repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
+    suspend fun requestPageOfFilmsFromLocalDataSource(page: Int) {
+        progressBarScope.launch {
+            progressBarState.send(true)
+        }
+        val pageOfFilms = repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
+        if (pageOfFilms.isEmpty()) requestPageOfFilmsFromRemoteDataSource(page)
+        else sendPageOfFilmsToView(pageOfFilms)
+    }
 
     fun clearLocalDataSource() = repo.deleteAll()
 
@@ -84,13 +97,11 @@ class Interactor(
         preferenceProvider.saveFilmsCategory(category)
     }
 
-    fun getTotalPagesNumber() =
-        preferenceProvider.getTotalPagesNumber(getCurrentFilmsCategory())
+    fun getTotalPagesNumber() = preferenceProvider.getTotalPagesNumber(getCurrentFilmsCategory())
 
     private fun saveTotalPagesNumber(totalPagesNumber: Int) {
         preferenceProvider.saveTotalPagesNumber(
-            checkTotalPagesNumber(totalPagesNumber),
-            getCurrentFilmsCategory()
+            checkTotalPagesNumber(totalPagesNumber), getCurrentFilmsCategory()
         )
     }
 

@@ -1,6 +1,5 @@
 package com.ginzburgworks.filmfinder.data.local.db
 
-import androidx.lifecycle.LiveData
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.data.local.db.dao.FilmDao
 import io.reactivex.rxjava3.core.Observable

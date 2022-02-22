@@ -8,12 +8,8 @@ private const val TOTAL_PAGES_SERIALIZED_NAME = "total_pages"
 private const val TOTAL_RESULTS_SERIALIZED_NAME = "total_results"
 
 data class TmdbResultsDto(
-    @SerializedName(PAGE_SERIALIZED_NAME)
-    val page: Int,
-    @SerializedName(RESULTS_SERIALIZED_NAME)
-    val tmdbFilms: List<TmdbFilm>,
-    @SerializedName(TOTAL_PAGES_SERIALIZED_NAME)
-    val totalPages: Int,
-    @SerializedName(TOTAL_RESULTS_SERIALIZED_NAME)
-    val totalResults: Int
+    @SerializedName(PAGE_SERIALIZED_NAME) val page: Int,
+    @SerializedName(RESULTS_SERIALIZED_NAME) val tmdbFilms: List<TmdbFilm>,
+    @SerializedName(TOTAL_PAGES_SERIALIZED_NAME) val totalPages: Int,
+    @SerializedName(TOTAL_RESULTS_SERIALIZED_NAME) val totalResults: Int
 )

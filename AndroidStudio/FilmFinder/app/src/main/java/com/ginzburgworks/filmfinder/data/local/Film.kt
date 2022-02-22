@@ -21,7 +21,6 @@ private const val TITLE_DEFAULT_VALUE = "defaultTitle"
 private const val POSTER_DEFAULT_VALUE = "R.drawable.tv_default"
 private const val DESCRIPTION_DEFAULT_VALUE = "descriptionDefault"
 private const val RATING_DEFAULT_VALUE = 2.2
-private const val IS_IN_FAVORITES_INITIAL_VALUE = false
 
 @Parcelize
 @Entity(

@@ -22,11 +22,9 @@ class App : Application() {
         super.onCreate()
         instance = this
         appComponent = DaggerAppComponent.factory().create(
-            DomainModule(this),
-            RepositoryModule(),
-            RemoteModule()
+            DomainModule(this), RepositoryModule(), RemoteModule()
         )
-        App.instance.appComponent.injectApp(this)
+        instance.appComponent.injectApp(this)
         initUINightMode()
     }
 
@@ -39,6 +37,7 @@ class App : Application() {
     }
 
     companion object {
+
         lateinit var instance: App
             private set
     }
