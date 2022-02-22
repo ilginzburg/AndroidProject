@@ -7,10 +7,13 @@ import com.ginzburgworks.filmfinder.data.local.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.data.remote.API
 import com.ginzburgworks.filmfinder.data.remote.TmdbApi
 import com.ginzburgworks.filmfinder.data.remote.entity.TmdbResultsDto
-import kotlinx.coroutines.*
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.flow
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.schedulers.Schedulers
+import io.reactivex.rxjava3.subjects.BehaviorSubject
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 import java.util.*
 
 class Interactor(
@@ -19,12 +22,32 @@ class Interactor(
     private val preferenceProvider: PreferenceProvider
 ) {
 
-    val pageFromDataSourceToUI = Channel<List<Film>>(Channel.CONFLATED)
-    val progressBarScope: CoroutineScope = CoroutineScope(Dispatchers.IO)
-    var progressBarState = Channel<Boolean>(Channel.CONFLATED)
+    var progressBarState: BehaviorSubject<Boolean> = BehaviorSubject.create()
 
-    suspend fun requestPageOfFilmsFromRemoteDataSource(page: Int) = coroutineScope {
+    fun requestPageOfFilmsFromRemoteDataSource(page: Int) {
         val category = preferenceProvider.getFilmsCategory()
+
+        progressBarState.onNext(true)
+        retrofitService.getFilms(category, API.KEY, "ru-RU", page).enqueue(object :
+            Callback<TmdbResultsDto?> {
+            override fun onResponse(
+                call: Call<TmdbResultsDto?>,
+                response: Response<TmdbResultsDto?>
+            ) {
+                saveTotalPagesNumber(
+                    response.body()?.totalPages
+                        ?: checkTotalPagesNumber(response.body()?.totalPages)
+                )
+                val pageOfFilms = response.body()?.let { getConvertedDTO(it, category) }
+                Completable.fromSingle<List<Film>> {
+                    pageOfFilms?.let { it1 ->
+                        putPageOfFilmsToLocal(it1)
+                        saveLocalDataSourceUpdateTime()
+                    }
+                }
+                    .subscribeOn(Schedulers.io())
+                    .subscribe()
+                progressBarState.onNext(false)
         progressBarScope.launch {
             progressBarState.send(true)
         }
@@ -39,26 +62,24 @@ class Interactor(
                 }
                 saveTotalPagesNumber(dto.totalPages)
                 saveLocalDataSourceUpdateTime()
-            }
-        }
-    }
-
+    private fun getConvertedDTO(tmdb: TmdbResultsDto, category: String): List<Film> {
+        return (tmdb.tmdbFilms).map {
+            Film(
+                it.id,
+                tmdb.page,
+                category,
+                it.title,
+                it.posterPath,
+                it.overview,
+                it.voteAverage
     private suspend fun getConvertedDTO(tmdb: TmdbResultsDto, category: String) = flow {
         val list = tmdb.tmdbFilms.map {
             Film(
                 it.id, tmdb.page, category, it.title, it.posterPath, it.overview, it.voteAverage
-            )
-        }
-        emit(list)
-    }
 
-    private suspend fun sendPageOfFilmsToView(pageOfFilms: List<Film>) {
-        pageFromDataSourceToUI.send(pageOfFilms)
-        progressBarScope.launch {
-            progressBarState.send(false)
-        }
-    }
 
+    fun requestPageOfFilmsFromLocalDataSource(page: Int): Observable<List<Film>> =
+        repo.getPageOfFilmsInCategory(page, preferenceProvider.getFilmsCategory())
     suspend fun requestPageOfFilmsFromLocalDataSource(page: Int) {
         progressBarScope.launch {
             progressBarState.send(true)
@@ -68,7 +89,7 @@ class Interactor(
         else sendPageOfFilmsToView(pageOfFilms)
     }
 
-    suspend fun clearLocalDataSource() = repo.deleteAll()
+    fun clearLocalDataSource() = repo.deleteAll()
 
     fun getCurrentFilmsCategory() = preferenceProvider.getFilmsCategory()
 
@@ -84,12 +105,11 @@ class Interactor(
         )
     }
 
-    private fun checkTotalPagesNumber(num: Int): Int {
+    private fun checkTotalPagesNumber(num: Int?): Int {
+        val default = PagesController.getDefaultTotalPagesByCategory(getCurrentFilmsCategory())
         return when (num) {
-            !in PagesController.MIN_PAGES_NUM..PagesController.MAX_PAGES_NUM -> PagesController.getDefaultTotalPagesByCategory(
-                getCurrentFilmsCategory()
-            )
-            else -> num
+            !in PagesController.MIN_PAGES_NUM..PagesController.MAX_PAGES_NUM -> default
+            else -> num ?: default
         }
     }
 

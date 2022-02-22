@@ -45,7 +45,7 @@ class FavoritesFragment : Fragment() {
             addDecoration(this)
         }
         filmsAdapter.addItems(Favorites.favoritesList)
-        filmsAdapter.setListener { launchDetailsFragment(it) }
+        filmsAdapter.onItemClick = { launchDetailsFragment(it) }
     }
 
     private fun launchDetailsFragment(film: Film) {

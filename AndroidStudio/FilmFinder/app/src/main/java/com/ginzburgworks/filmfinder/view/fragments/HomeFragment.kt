@@ -6,10 +6,13 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.appcompat.widget.SearchView
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.ginzburgworks.filmfinder.AutoDisposable
+import com.ginzburgworks.filmfinder.addTo
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.databinding.FragmentHomeBinding
 import com.ginzburgworks.filmfinder.domain.PagesController
@@ -20,10 +23,13 @@ import com.ginzburgworks.filmfinder.utils.AnimationHelper
 import com.ginzburgworks.filmfinder.utils.TopSpacingItemDecoration
 import com.ginzburgworks.filmfinder.view.MainActivity
 import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
+import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
+import io.reactivex.rxjava3.schedulers.Schedulers
 import java.util.*
 
 private const val ANIM_POSITION = 1
 private const val DECORATOR_PADDING = 8
+private const val ERROR_MSG = "ERROR: Data source not responding"
 
 class HomeFragment : Fragment() {
 
@@ -34,10 +40,13 @@ class HomeFragment : Fragment() {
 
     private val viewModel by activityViewModels<HomeFragmentViewModel>()
 
+    private val autoDisposable = AutoDisposable()
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
+        autoDisposable.bindTo(lifecycle)
         return binding.root
     }
 
@@ -59,7 +68,28 @@ class HomeFragment : Fragment() {
         initSearchView()
         binding.progressBar.bringToFront()
         subscribeToNetworkErrorMessages()
+        subscribeOnDataChanges()
+        subscribeOnProgressBar()
         viewModel.requestNextPage()
+    }
+
+    private fun subscribeOnDataChanges() {
+        viewModel.filmsListData
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .doOnError { viewModel.errorEvent.value = ERROR_MSG }
+            .subscribe { list ->
+                viewModel.filmsAdapter.addItems(list)
+            }.addTo(autoDisposable)
+    }
+
+    private fun subscribeOnProgressBar() {
+        viewModel.showProgressBar
+            .subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe {
+                binding.progressBar.isVisible = it
+            }.addTo(autoDisposable)
     }
 
     private fun subscribeToNetworkErrorMessages() {
@@ -100,7 +130,7 @@ class HomeFragment : Fragment() {
                     if (isNeedToRequestNextPage(dy)) viewModel.requestNextPage()
                 }
             })
-        }.also { viewModel.filmsAdapter.setListener { launchDetailsFragment(it) } }
+        }.also { viewModel.filmsAdapter.onItemClick = { launchDetailsFragment(it) } }
     }
 
     private fun addDecoration(recycler: RecyclerView) {
@@ -128,8 +158,12 @@ class HomeFragment : Fragment() {
     private fun isPageOnEnd() = bottomItemPosition() == endPagePosition()
 
     private fun isNeedToRequestNextPage(verticalDisplacement: Int): Boolean {
-        if (isPageOnStart()) updateStateOnStart()
-        return isPageOnEnd() && !viewModel.isPageRequested && isScrollingDown(verticalDisplacement) && isNotLastPage()
+        if (isPageOnStart())
+            updateStateOnStart()
+        return isPageOnEnd() &&
+                !viewModel.isPageRequested &&
+                isScrollingDown(verticalDisplacement) &&
+                isNotLastPage()
     }
 
     private fun updateStateOnStart() {

@@ -3,9 +3,7 @@ package com.ginzburgworks.filmfinder.viewmodels
 import android.content.SharedPreferences
 import androidx.databinding.ObservableBoolean
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.ginzburgworks.filmfinder.App
-import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.data.local.Film
 import com.ginzburgworks.filmfinder.data.local.shared.KEY_FILMS_CATEGORY
 import com.ginzburgworks.filmfinder.domain.Interactor
@@ -13,7 +11,9 @@ import com.ginzburgworks.filmfinder.domain.PagesController
 import com.ginzburgworks.filmfinder.domain.PagesController.Companion.NEXT_PAGE
 import com.ginzburgworks.filmfinder.domain.SingleLiveEvent
 import com.ginzburgworks.filmfinder.view.rv_adapters.FilmListRecyclerAdapter
-import kotlinx.coroutines.*
+import io.reactivex.rxjava3.core.Completable
+import io.reactivex.rxjava3.core.Observable
+import io.reactivex.rxjava3.subjects.BehaviorSubject
 import java.util.*
 import javax.inject.Inject
 
@@ -33,22 +33,18 @@ class HomeFragmentViewModel : ViewModel() {
     val isProgressBarVisible = ObservableBoolean()
     val itemsForSearch = mutableListOf<Film>()
     val errorEvent = SingleLiveEvent<String>()
-    private val exceptionHandler =
-        CoroutineExceptionHandler { _, e -> errorEvent.postValue(App.instance.getString(R.string.exc_handler_msg) + e) }
-    private val homeFragmentViewModelContext =
-        viewModelScope.coroutineContext.plus(exceptionHandler + Dispatchers.IO)
-    private val homeFragmentViewModelScope = CoroutineScope(homeFragmentViewModelContext)
+    val filmsListData: Observable<List<Film>>
+    val showProgressBar: BehaviorSubject<Boolean>
 
     init {
         App.instance.appComponent.injectHomeVM(this)
+        showProgressBar = interactor.progressBarState
+        filmsListData = interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
         subscribeForCategoryChanges()
     }
 
-    fun getTotalNumberOfPages() = interactor.getTotalPagesNumber()
-
     fun requestNextPage() {
         isPageRequested = true
-        showProgressBar()
         requestNextPageFromDataSource()
     }
 
@@ -57,8 +53,16 @@ class HomeFragmentViewModel : ViewModel() {
         else requestNextPageFromLocal()
     }
 
+    private fun requestNextPageFromRemote() {
+        interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE)
+    }
+
+    private fun requestNextPageFromLocal() {
+        interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
+    }
+
     private fun clearLocalDataSource() {
-        homeFragmentViewModelScope.launch {
+        Completable.fromAction {
             interactor.clearLocalDataSource()
         }
     }
@@ -71,31 +75,7 @@ class HomeFragmentViewModel : ViewModel() {
         return false
     }
 
-    private fun requestNextPageFromRemote() {
-        homeFragmentViewModelScope.launch {
-            interactor.requestPageOfFilmsFromRemoteDataSource(NEXT_PAGE)
-            getNextPageFromDataSource()
-        }
-    }
-
-    private fun requestNextPageFromLocal() {
-        homeFragmentViewModelScope.launch {
-            interactor.requestPageOfFilmsFromLocalDataSource(NEXT_PAGE)
-            getNextPageFromDataSource()
-        }
-    }
-
-    private fun getNextPageFromDataSource() {
-        homeFragmentViewModelScope.launch {
-            withContext(Dispatchers.Main) {
-                interactor.pageFromDataSourceToUI.let {
-                    for (element in it) {
-                        filmsAdapter.addItems(element)
-                    }
-                }
-            }
-        }
-    }
+    fun getTotalNumberOfPages() = interactor.getTotalPagesNumber()
 
     private fun isLastUpdateEarlierThanPredefinedMaxTime(updateTimeInMs: Long): Boolean {
         val currentTimeInMs = Calendar.getInstance().timeInMillis
@@ -134,21 +114,13 @@ class HomeFragmentViewModel : ViewModel() {
         return true
     }
 
-    private fun showProgressBar() {
-        interactor.progressBarScope.launch {
-            for (element in interactor.progressBarState) isProgressBarVisible.set(element)
-        }
-    }
-
     private fun registerOnChangeListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) {
         interactor.registerPreferencesListener(listener)
     }
 
     override fun onCleared() {
         super.onCleared()
-        interactor.progressBarScope.cancel()
-        if (this::onSharedPreferenceChangeListener.isInitialized) interactor.unRegisterPreferencesListener(
-            onSharedPreferenceChangeListener
-        )
+        if (this::onSharedPreferenceChangeListener.isInitialized)
+            interactor.unRegisterPreferencesListener(onSharedPreferenceChangeListener)
     }
 }
