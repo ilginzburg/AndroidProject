@@ -7,14 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import androidx.lifecycle.ViewModelProvider
 import com.ginzburgworks.filmfinder.App
-import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.databinding.FragmentSettingsBinding
-import com.ginzburgworks.filmfinder.viewmodels.HomeFragmentViewModel
 import com.ginzburgworks.filmfinder.viewmodels.SettingsFragmentViewModel
-import javax.inject.Inject
-import javax.inject.Singleton
 
 
 open class SettingsFragment : Fragment() {
@@ -26,8 +21,7 @@ open class SettingsFragment : Fragment() {
     private val viewModel by activityViewModels<SettingsFragmentViewModel>()
 
     override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?,
-        savedInstanceState: Bundle?
+        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
     ): View? {
         _binding = FragmentSettingsBinding.inflate(layoutInflater, container, false)
         return binding.root

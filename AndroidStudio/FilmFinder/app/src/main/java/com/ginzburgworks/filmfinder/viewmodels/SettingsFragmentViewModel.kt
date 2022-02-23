@@ -40,10 +40,13 @@ class SettingsFragmentViewModel : ViewModel() {
 
     fun onNightModeClick() {
         val currentNightMode = nightMode.value ?: true
-        val nextNightMode = !currentNightMode
-        val newNightModeInt = (nightModeToInt(nextNightMode))
+        toggleNightMode(!currentNightMode)
+    }
+
+    private fun toggleNightMode(newNightMode: Boolean) {
+        val newNightModeInt = (nightModeToInt(newNightMode))
         App.instance.setUINightMode(newNightModeInt)
-        setNightMode(nextNightMode)
+        setNightMode(newNightMode)
     }
 
     private fun getSavedNightMode(): Boolean {
@@ -59,18 +62,15 @@ class SettingsFragmentViewModel : ViewModel() {
         interactor.saveNightMode(nightModeToInt(mode))
     }
 
-
     private fun nightModeToBoolean(mode: Int): Boolean {
         var result = true
-        if (mode == PreferenceProvider.DAY_MODE)
-            result = false
+        if (mode == PreferenceProvider.DAY_MODE) result = false
         return result
     }
 
     private fun nightModeToInt(mode: Boolean): Int {
         var result = PreferenceProvider.DAY_MODE
-        if (mode)
-            result = PreferenceProvider.NIGHT_MODE
+        if (mode) result = PreferenceProvider.NIGHT_MODE
         return result
     }
 

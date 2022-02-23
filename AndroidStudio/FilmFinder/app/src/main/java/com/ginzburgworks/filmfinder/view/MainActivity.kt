@@ -1,6 +1,11 @@
 package com.ginzburgworks.filmfinder.view
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Bundle
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.ginzburgworks.filmfinder.App
@@ -15,12 +20,16 @@ private const val SETTINGS_FRAGMENT_TAG = "settings"
 private const val SELECTIONS_FRAGMENT_TAG = "selections"
 private const val WATCH_LATER_FRAGMENT_TAG = "watch_later"
 private const val FAVORITES_FRAGMENT_TAG = "favorites"
+private const val BATTERY_LOW_MSG = "Батарея скоро разрядится"
+private const val POWER_CONNECTED_MSG = "Подключено зарядное устройство"
 
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var activityMainBinding: ActivityMainBinding
     private lateinit var fragmentTag: String
+    private val receiver = ChargeEventsReceiver()
+    private val filter = IntentFilter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -28,6 +37,32 @@ class MainActivity : AppCompatActivity() {
         setContentView(activityMainBinding.root)
         initNavigation()
         setInitialFragment()
+        initChargeEventsReceiver()
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        unregisterReceiver(receiver)
+    }
+
+    private fun initChargeEventsReceiver() {
+        filter.addAction(Intent.ACTION_POWER_CONNECTED)
+        filter.addAction(Intent.ACTION_BATTERY_LOW)
+        registerReceiver(receiver, filter)
+    }
+
+    inner class ChargeEventsReceiver : BroadcastReceiver() {
+        override fun onReceive(context: Context?, intent: Intent?) {
+            when (intent?.action) {
+                Intent.ACTION_BATTERY_LOW -> Toast.makeText(
+                    context, BATTERY_LOW_MSG, Toast.LENGTH_SHORT
+                ).show()
+
+                Intent.ACTION_POWER_CONNECTED -> Toast.makeText(
+                    context, POWER_CONNECTED_MSG, Toast.LENGTH_SHORT
+                ).show()
+            }
+        }
     }
 
     private fun setInitialFragment() {
