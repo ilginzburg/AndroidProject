@@ -100,13 +100,31 @@ class Interactor(
 
     fun getNightMode(): Int = preferenceProvider.getNightModeSetting()
 
+    fun getNightModeBool(): Boolean = nightModeToBoolean(getNightMode())
+
     fun saveNightMode(mode: Int) = preferenceProvider.saveNightModeSetting(mode)
+
+    fun saveNightModeBool(mode: Boolean) =
+        preferenceProvider.saveNightModeSetting(nightModeToInt(mode))
 
     fun getLocalDataSourceUpdateTime() = preferenceProvider.getLocalDataSourceUpdateTime()
 
     private fun saveLocalDataSourceUpdateTime() {
         val dbUpdateTime = Calendar.getInstance().timeInMillis
         preferenceProvider.saveLocalDataSourceUpdateTime(dbUpdateTime)
+    }
+
+
+    private fun nightModeToBoolean(mode: Int): Boolean {
+        var result = true
+        if (mode == PreferenceProvider.DAY_MODE) result = false
+        return result
+    }
+
+    fun nightModeToInt(mode: Boolean): Int {
+        var result = PreferenceProvider.DAY_MODE
+        if (mode) result = PreferenceProvider.NIGHT_MODE
+        return result
     }
 
     fun registerPreferencesListener(listener: SharedPreferences.OnSharedPreferenceChangeListener) =

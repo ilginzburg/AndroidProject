@@ -4,7 +4,6 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.ginzburgworks.filmfinder.App
-import com.ginzburgworks.filmfinder.data.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.domain.Interactor
 import javax.inject.Inject
 
@@ -21,11 +20,10 @@ class SettingsFragmentViewModel : ViewModel() {
 
     init {
         App.instance.appComponent.injectSettingsVM(this)
-        initNightMode()
         setCategory(getSavedCategory())
     }
 
-    private fun initNightMode() {
+    fun initNightMode() {
         _nightMode.value = getSavedNightMode()
     }
 
@@ -40,38 +38,18 @@ class SettingsFragmentViewModel : ViewModel() {
 
     fun onNightModeClick() {
         val currentNightMode = nightMode.value ?: true
-        toggleNightMode(!currentNightMode)
+        setNightMode(!currentNightMode)
     }
 
-    private fun toggleNightMode(newNightMode: Boolean) {
-        val newNightModeInt = (nightModeToInt(newNightMode))
+    private fun setNightMode(newNightMode: Boolean) {
+        val newNightModeInt = (interactor.nightModeToInt(newNightMode))
         App.instance.setUINightMode(newNightModeInt)
-        setNightMode(newNightMode)
+        App.instance.nightModeIsOnBecauseOfLowBattery = false
+        _nightMode.value = newNightMode
     }
 
     private fun getSavedNightMode(): Boolean {
-        return nightModeToBoolean(interactor.getNightMode())
-    }
-
-    private fun setNightMode(mode: Boolean) {
-        _nightMode.value = mode
-        saveNightMode(mode)
-    }
-
-    private fun saveNightMode(mode: Boolean) {
-        interactor.saveNightMode(nightModeToInt(mode))
-    }
-
-    private fun nightModeToBoolean(mode: Int): Boolean {
-        var result = true
-        if (mode == PreferenceProvider.DAY_MODE) result = false
-        return result
-    }
-
-    private fun nightModeToInt(mode: Boolean): Int {
-        var result = PreferenceProvider.DAY_MODE
-        if (mode) result = PreferenceProvider.NIGHT_MODE
-        return result
+        return interactor.getNightModeBool()
     }
 
 }

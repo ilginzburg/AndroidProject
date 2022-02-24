@@ -54,13 +54,19 @@ class MainActivity : AppCompatActivity() {
     inner class ChargeEventsReceiver : BroadcastReceiver() {
         override fun onReceive(context: Context?, intent: Intent?) {
             when (intent?.action) {
-                Intent.ACTION_BATTERY_LOW -> Toast.makeText(
-                    context, BATTERY_LOW_MSG, Toast.LENGTH_SHORT
-                ).show()
+                Intent.ACTION_BATTERY_LOW -> {
+                    Toast.makeText(
+                        context, BATTERY_LOW_MSG, Toast.LENGTH_SHORT
+                    ).show()
+                    App.instance.switchToNightMode()
+                }
 
-                Intent.ACTION_POWER_CONNECTED -> Toast.makeText(
-                    context, POWER_CONNECTED_MSG, Toast.LENGTH_SHORT
-                ).show()
+                Intent.ACTION_POWER_CONNECTED -> {
+                    Toast.makeText(
+                        context, POWER_CONNECTED_MSG, Toast.LENGTH_SHORT
+                    ).show()
+                    if (App.instance.nightModeIsOnBecauseOfLowBattery) App.instance.switchToDayMode()
+                }
             }
         }
     }

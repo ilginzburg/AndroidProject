@@ -34,10 +34,10 @@ open class SettingsFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-
         _binding.apply {
             this?.viewModel = viewModel
         }
+        viewModel.initNightMode()
         App.instance.nightModeSwitched = true
     }
 

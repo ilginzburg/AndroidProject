@@ -2,6 +2,7 @@ package com.ginzburgworks.filmfinder
 
 import android.app.Application
 import androidx.appcompat.app.AppCompatDelegate
+import com.ginzburgworks.filmfinder.data.shared.PreferenceProvider
 import com.ginzburgworks.filmfinder.di.AppComponent
 import com.ginzburgworks.filmfinder.di.DaggerAppComponent
 import com.ginzburgworks.filmfinder.di.modules.DomainModule
@@ -17,6 +18,7 @@ class App : Application() {
     @Inject
     lateinit var interactor: Interactor
     var nightModeSwitched = false
+    var nightModeIsOnBecauseOfLowBattery = false
 
     override fun onCreate() {
         super.onCreate()
@@ -30,12 +32,26 @@ class App : Application() {
         initUINightMode()
     }
 
+    fun switchToNightMode() {
+        setUINightMode(PreferenceProvider.NIGHT_MODE)
+        nightModeIsOnBecauseOfLowBattery = true
+    }
+
+    fun switchToDayMode() {
+        setUINightMode(PreferenceProvider.DAY_MODE)
+    }
+
+    private fun saveNightMode(mode: Int) {
+        interactor.saveNightMode(mode)
+    }
+
     private fun initUINightMode() {
         setUINightMode(interactor.getNightMode())
     }
 
     fun setUINightMode(mode: Int) {
         AppCompatDelegate.setDefaultNightMode(mode)
+        saveNightMode(mode)
     }
 
     companion object {
