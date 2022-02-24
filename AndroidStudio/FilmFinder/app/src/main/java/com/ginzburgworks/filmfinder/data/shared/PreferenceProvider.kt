@@ -7,6 +7,7 @@ import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.domain.PagesController
 
+const val KEY_FILMS_CATEGORY = "films_category_key"
 private const val DEFAULT_MODE = PreferenceProvider.NIGHT_MODE
 private const val KEY_LAST_BD_UPDATE_TIME = "last_bd_update_time_key"
 private const val DEFAULT_BD_UPDATE_TIME = 0L
@@ -14,7 +15,6 @@ private const val KEY_TOTAL_PAGES_NUMBER = "total_pages_number_key"
 private const val KEY_FIRST_LAUNCH = "first_launch"
 private const val PREFERENCE_NAME = "settings"
 private const val KEY_NIGHT_MODE_STATE = "night_state_key"
-const val KEY_FILMS_CATEGORY = "films_category_key"
 private val DEFAULT_CATEGORY = App.instance.getString(R.string.popular_category)
 
 

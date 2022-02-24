@@ -13,7 +13,6 @@ import com.ginzburgworks.local_module.Film
 import java.io.FileNotFoundException
 import java.io.OutputStream
 
-
 private const val COMPRESS_FACTOR = 100
 private const val MS_TO_SEC_FACTOR = 1000
 private const val APP_GALLERY_RELATIVE_PATH = "Pictures/FilmFinderApp"

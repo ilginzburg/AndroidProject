@@ -41,17 +41,17 @@ class App : Application() {
         setUINightMode(PreferenceProvider.DAY_MODE)
     }
 
+    fun setUINightMode(mode: Int) {
+        AppCompatDelegate.setDefaultNightMode(mode)
+        saveNightMode(mode)
+    }
+
     private fun saveNightMode(mode: Int) {
         interactor.saveNightMode(mode)
     }
 
     private fun initUINightMode() {
         setUINightMode(interactor.getNightMode())
-    }
-
-    fun setUINightMode(mode: Int) {
-        AppCompatDelegate.setDefaultNightMode(mode)
-        saveNightMode(mode)
     }
 
     companion object {
