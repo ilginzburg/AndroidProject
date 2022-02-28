@@ -7,6 +7,7 @@ import com.ginzburgworks.filmfinder.App
 import com.ginzburgworks.filmfinder.R
 import com.ginzburgworks.filmfinder.databinding.ActivityMainBinding
 import com.ginzburgworks.filmfinder.view.fragments.*
+import com.ginzburgworks.filmfinder.view.notifications.NOTIFICATION_WATCH_LATER_NAME
 import com.ginzburgworks.local_module.Film
 
 private const val DETAILS_FRAGMENT_TAG = "details"
@@ -28,6 +29,9 @@ class MainActivity : AppCompatActivity() {
         setContentView(activityMainBinding.root)
         initNavigation()
         setInitialFragment()
+        if (intent.hasExtra(NOTIFICATION_WATCH_LATER_NAME)) intent.getParcelableExtra<Film>(
+            NOTIFICATION_WATCH_LATER_NAME
+        )?.let { launchDetailsFragment(it) }
     }
 
     private fun setInitialFragment() {

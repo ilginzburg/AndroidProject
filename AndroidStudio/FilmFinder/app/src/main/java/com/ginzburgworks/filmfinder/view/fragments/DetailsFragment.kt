@@ -20,6 +20,7 @@ import com.ginzburgworks.filmfinder.data.Favorites
 import com.ginzburgworks.filmfinder.databinding.FragmentDetailsBinding
 import com.ginzburgworks.filmfinder.domain.GalleryInteractor
 import com.ginzburgworks.filmfinder.domain.PermissionHandler
+import com.ginzburgworks.filmfinder.view.notifications.NotificationHelper
 import com.ginzburgworks.filmfinder.viewmodels.DetailsFragmentViewModel
 import com.ginzburgworks.local_module.DefaultFilm
 import com.ginzburgworks.local_module.Film
@@ -102,9 +103,6 @@ class DetailsFragment : Fragment() {
         }
     }
 
-    private fun getIntentExtraText(film: Film): String =
-        App.instance.getString(R.string.share_msg) + "  " + film.title + "\n" + film.description
-
     fun performAsyncLoadOfPoster(film: Film) {
         permissionHandler = PermissionHandler()
         galleryInteractor = GalleryInteractor()
@@ -127,6 +125,9 @@ class DetailsFragment : Fragment() {
         }
     }
 
+    private fun getIntentExtraText(film: Film): String =
+        App.instance.getString(R.string.share_msg) + "  " + film.title + "\n" + film.description
+
     private fun initSnackBar() {
         Snackbar.make(
             binding.root, R.string.downloaded_to_gallery, Snackbar.LENGTH_LONG
@@ -139,6 +140,9 @@ class DetailsFragment : Fragment() {
         }.show()
     }
 
+    fun openNotification(film: Film) {
+        NotificationHelper.createNotification(requireContext(), film)
+    }
 
     companion object {
 
